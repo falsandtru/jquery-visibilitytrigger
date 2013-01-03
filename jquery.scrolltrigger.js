@@ -6,7 +6,7 @@
  * @Copyright(c) 2012, FAT
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
  * @version -
- * @updated 2012/12/29
+ * @updated 2013/01/04
  * @author FAT  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
  * Note: 
@@ -55,15 +55,14 @@
 			jQuery.data( element , [ setting.gns , setting.ns , 'setting' ].join( '.' ) , setting ) ;
 		} ) ;
 		
-		var data = setting ;
 		jQuery( this )
-		.bind( [ 'scroll' , setting.gns , setting.ns ].join( '.' ) , data , function( event )
+		.bind( [ 'scroll' , setting.gns , setting.ns ].join( '.' ) , setting , function( event )
 		{
 			var
 			fire ,
 			driver = this ,
 			area = this == window ? document : this ,
-			setting = jQuery.data( area , [ data.gns , data.ns , 'setting' ].join( '.' ) ) ,
+			setting = jQuery.data( area , [ event.data.gns , event.data.ns , 'setting' ].join( '.' ) ) ,
 			targets = jQuery( setting.trigger , area ) ,
 			target = targets.eq( setting.count ) ;
 			
