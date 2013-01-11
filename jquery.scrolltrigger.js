@@ -3,11 +3,11 @@
  * scrolltrigger
  * 
  * ---
- * @Copyright(c) 2012, FAT
+ * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version -
- * @updated 2013/01/04
- * @author FAT  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
+ * @version 1.02
+ * @updated 2013/01/11
+ * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
  * Note: 
  * 
@@ -26,8 +26,10 @@
 
 ( function( $ )
 {
+	
 	jQuery.fn.scrolltrigger	= scrolltrigger ;
 	jQuery.scrolltrigger		= scrolltrigger ;
+	
 	function scrolltrigger( options )
 	{
 		if(typeof this == 'function'){ return arguments.callee.apply( jQuery( window ) , arguments ) ; }
@@ -37,8 +39,8 @@
 			gns : 'scrolltrigger' ,
 			ns : 'default' ,
 			trigger : undefined ,
-			callback : undefined ,
-			parameters : [] ,
+			callback : function(){} ,
+			parameter : [] ,
 			ahead : 0 ,
 			scope : this.get(0) == window ? jQuery( document ) : this ,
 			reset : true
@@ -82,7 +84,7 @@
 			
 			if( !fire ){ return this ; }
 			
-			setting.callback.apply( target , setting.parameters ) ;
+			setting.callback.apply( target , setting.parameter ) ;
 			
 			jQuery.extend
 			(
