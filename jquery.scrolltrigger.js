@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.02
- * @updated 2013/01/11
+ * @version 1.03
+ * @updated 2013/01/12
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
  * Note: 
@@ -34,7 +34,7 @@
 	{
 		if(typeof this == 'function'){ return arguments.callee.apply( jQuery( window ) , arguments ) ; }
 		var
-		defaults=
+		defaults =
 		{
 			gns : 'scrolltrigger' ,
 			ns : 'default' ,
@@ -45,56 +45,56 @@
 			scope : this.get(0) == window ? jQuery( document ) : this ,
 			reset : true
 		} ,
-		setting = jQuery.extend( {} , defaults , options ) ;
+		settings = jQuery.extend( {} , defaults , options ) ;
 		
 		
-		if( !setting.scope.length ){ return this ; }
+		if( !settings.scope.length ){ return this ; }
 		
-		setting.scope.each( function( index , element )
+		settings.scope.each( function( index , element )
 		{
-			var count = parseInt( setting.count ) ;
-			jQuery.extend( setting , { count : setting.reset || isNaN( count ) ? 0 : count } ) ;
-			jQuery.data( element , [ setting.gns , setting.ns , 'setting' ].join( '.' ) , setting ) ;
+			var count = parseInt( settings.count ) ;
+			jQuery.extend( settings , { count : settings.reset || isNaN( count ) ? 0 : count } ) ;
+			jQuery.data( element , [ settings.gns , settings.ns , 'settings' ].join( '.' ) , settings ) ;
 		} ) ;
 		
 		jQuery( this )
-		.bind( [ 'scroll' , setting.gns , setting.ns ].join( '.' ) , setting , function( event )
+		.bind( [ 'scroll' , settings.gns , settings.ns ].join( '.' ) , settings , function( event )
 		{
 			var
 			fire ,
 			driver = this ,
 			area = this == window ? document : this ,
-			setting = jQuery.data( area , [ event.data.gns , event.data.ns , 'setting' ].join( '.' ) ) ,
-			targets = jQuery( setting.trigger , area ) ,
-			target = targets.eq( setting.count ) ;
+			settings = jQuery.data( area , [ event.data.gns , event.data.ns , 'settings' ].join( '.' ) ) ,
+			targets = jQuery( settings.trigger , area ) ,
+			target = targets.eq( settings.count ) ;
 			
 			if( !target.length )
 			{
-				jQuery( this ).unbind( [ 'scroll' , setting.gns , setting.ns ].join( '.' ) ) ;
+				jQuery( this ).unbind( [ 'scroll' , settings.gns , settings.ns ].join( '.' ) ) ;
 				return this ;
 			}
 			
 			if( this == window )
 			{
-				fire = jQuery( window ).scrollTop() > ( target.offset().top - jQuery( window ).height() - setting.ahead ) ;
+				fire = jQuery( window ).scrollTop() > ( target.offset().top - jQuery( window ).height() - settings.ahead ) ;
 				}else{
 				fire = ( jQuery( window ).scrollTop() + jQuery ( this ).scrollTop() )
-					> ( target.offset().top + target.position().top - jQuery( window ).height() - jQuery( this ).height() - setting.ahead ) ;
+					> ( target.offset().top + target.position().top - jQuery( window ).height() - jQuery( this ).height() - settings.ahead ) ;
 			}
 			
 			if( !fire ){ return this ; }
 			
-			setting.callback.apply( target , setting.parameter ) ;
+			settings.callback.apply( target , settings.parameter ) ;
 			
 			jQuery.extend
 			(
-				setting ,
+				settings ,
 				{
-					count : setting.count + 1 ,
+					count : settings.count + 1 ,
 					reset : false
 				}
 			) ;
-			jQuery.data( area , [ setting.gns , setting.ns , 'setting' ].join( '.' ) , setting ) ;
+			jQuery.data( area , [ settings.gns , settings.ns , 'settings' ].join( '.' ) , settings ) ;
 			
 			return arguments.callee.apply( this , arguments ) ;
 			
