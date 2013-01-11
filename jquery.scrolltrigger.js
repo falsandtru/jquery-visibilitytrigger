@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.03
+ * @version 1.0.4
  * @updated 2013/01/12
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
@@ -17,10 +17,10 @@
  * 
  * $.scrolltrigger(
  * {
- * 	trigger: 'img[data-origin]',
- * 	callback: function(){$(this).attr('src', $(this).attr('data-origin'))},
- * 	ahead: 300
- * }).trigger('scroll');
+ * 	trigger : 'img[data-origin]' ,
+ * 	callback : function(){ $( this ).attr( 'src' , $( this ).attr( 'data-origin' ) ) } ,
+ * 	ahead : 300
+ * } ).trigger( 'scroll' ) ;
  * 
  */
 
