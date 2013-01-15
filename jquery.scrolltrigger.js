@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.0.7
- * @updated 2013/01/15
+ * @version 1.0.8
+ * @updated 2013/01/16
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
  * Note: 
@@ -56,14 +56,13 @@
 			settings.scope = this.get( 0 ) === window ? document : this ;
 			settings.count = 0 ;
 			settings.reset = false ;
-			return arguments.callee.apply( this , [ settings ] ) ;
 		}
 		
 		if( !jQuery( settings.scope ).length ){ return this ; }
 		
 		for( var i = 0 ; i < jQuery( settings.scope ).length ; i++ )
 		{
-			jQuery.data( jQuery( settings.scope ).eq( i ).get( 0 ) , settings.ns , settings ) ;
+			jQuery.data( jQuery( settings.scope ).eq( i ).get( 0 ) , settings.ns , jQuery.extend( {} , settings) ) ;
 		}
 		
 		jQuery( this )
@@ -71,6 +70,14 @@
 		{
 			jQuery( this ).trigger( settings.ns ) ;
 		} );
+		
+		if( settings.expand && this.get( 0 ) !== window )
+		{
+			jQuery( window ).bind( [ 'scroll' , settings.ns ].join( '.' ) , settings , function( event )
+			{
+				event.data.scope === document ? jQuery( window ).trigger( event.data.ns ) : jQuery( event.data.scope ).trigger( event.data.ns ) ;
+			} ) ;
+		}
 		
 		jQuery( this )
 		.bind( settings.ns , settings , function( event )
@@ -86,12 +93,17 @@
 			{
 				if( settings.terminate )
 				{
-					jQuery( this )
-					.unbind( [ 'scroll' , settings.ns ].join( '.' ) )
-					.unbind( settings.ns )
-					.unbind( settings.ns ) ;
+					var
+					remainder = 0 ;
 					
+					jQuery( this ).unbind( [ 'scroll' , settings.ns ].join( '.' ) ).unbind( settings.ns ) ;
 					jQuery.removeData( area , settings.ns ) ;
+					
+					for( var i = 0 ; i < jQuery( settings.scope ).length ; i++ )
+					{
+						remainder += ( undefined === jQuery.data( jQuery( settings.scope ).eq( i ).get( 0 ) , settings.ns ) ? 0 : 1 ) ;
+					}
+					remainder ? null : jQuery( window ).unbind( [ 'scroll' , settings.ns ].join( '.' ) ) ;
 				}
 				return this ;
 			}
@@ -108,14 +120,6 @@
 			return arguments.callee.apply( this , arguments ) ;
 			
 		} );
-		
-		if( settings.expand && this.get( 0 ) !== window )
-		{
-			jQuery( window ).bind( [ 'scroll' , settings.ns ].join( '.' ) , settings , function( event )
-			{
-				event.data.scope === document ? jQuery( window ).trigger( event.data.ns ) : jQuery( event.data.scope ).trigger( event.data.ns ) ;
-			} ) ;
-		}
 		
 		
 		/* function */
