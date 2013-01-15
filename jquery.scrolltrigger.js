@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.0.5
+ * @version 1.0.6
  * @updated 2013/01/13
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
@@ -33,7 +33,7 @@
 	
 	function scrolltrigger( options )
 	{
-		if(typeof this === 'function'){ return arguments.callee.apply( jQuery( window ) , arguments ) ; }
+		if( typeof this === 'function' ){ return arguments.callee.apply( jQuery( window ) , arguments ) ; }
 		var
 		defaults =
 		{
@@ -44,6 +44,7 @@
 			parameter : [] ,
 			ahead : 0 ,
 			beforehand: 0 ,
+			terminate : true ,
 			reset : true
 		} ,
 		settings = jQuery.extend( {} , defaults , options ) ;
@@ -75,11 +76,11 @@
 			
 			if( !target.length )
 			{
-				jQuery( this ).unbind( [ 'scroll' , settings.gns , settings.ns ].join( '.' ) ) ;
+				settings.terminate ? jQuery( this ).unbind( [ 'scroll' , settings.gns , settings.ns ].join( '.' ) ) : null ;
 				return this ;
 			}
 			
-			fire = settings.beforehand > settings.count ? true : jQuery( window ).scrollTop() > ( target.offset().top - jQuery( window ).height() - parseInt( settings.ahead ) ) ;
+			fire = settings.beforehand > settings.count ? true : jQuery( window ).scrollTop() > target.offset().top - jQuery( window ).height() - parseInt( settings.ahead ) ;
 			
 			if( !fire ){ return this ; }
 			
