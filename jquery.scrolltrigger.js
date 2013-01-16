@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.0.9
+ * @version 1.1.0
  * @updated 2013/01/16
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * ---
@@ -21,7 +21,7 @@
  * 	callback : function(){ $( this ).attr( 'src' , $( this ).attr( 'data-origin' ) ) } ,
  * 	ahead : 300 ,
  * 	beforehand : 1
- * } ).trigger( 'scroll' ) ;
+ * } ).trigger( 'scrolltrigger' ) ;
  * 
  */
 
@@ -128,7 +128,7 @@
 			
 			if( !fire ){ return this ; }
 			
-			settings.callback.apply( target , settings.parameter ) ;
+			settings.callback.apply( target , [ event , settings.parameter ] ) ;
 			
 			settings.count = settings.count + 1 ;
 			jQuery.data( area , settings.nss.data , settings ) ;
