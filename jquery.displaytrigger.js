@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.0.0
+ * @version 1.0.1
  * @updated 2013/04/07
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -65,7 +65,7 @@
             resize : [ 'resize' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             data : settings.gns + ( settings.ns ? ':' + settings.ns : '' )
           } ,
-          scope : this.get( 0 ) === win ? [ doc ] : this ,
+          scope : this.get( 0 ) === win ? jQuery( doc ) : this ,
           index : 0 ,
           height : {} ,
           direction : 'down' ,
@@ -78,7 +78,7 @@
     } ;
     
     
-    if ( !jQuery( settings.scope ).length || !jQuery( settings.trigger , settings.scope ).length || !arguments.length ) { return this ; } ;
+    if ( !settings.scope.length || !settings.scope.find( settings.trigger ).length || !arguments.length ) { return this ; } ;
     
     settings.height.window = 0 ;
     for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
@@ -89,13 +89,13 @@
     jQuery( win )
     .unbind( settings.nss.resize )
     .bind( settings.nss.resize , settings , function( event ) {
-      event.data.scope === document ? null : jQuery( window ).trigger( event.data.nss.displaytrigger , [ this ] ) ;
+      event.data.scope.get( 0 ) === document ? null : jQuery( window ).trigger( event.data.nss.displaytrigger , [ this ] ) ;
     } ).filter( function() {
-      return settings.expand && doc !== settings.scope ;
+      return settings.expand && doc !== settings.scope.get( 0 ) ;
     } )
     .unbind( settings.nss.scroll )
     .bind( settings.nss.scroll , settings , function( event ) {
-      jQuery( event.data.scope ).trigger( event.data.nss.displaytrigger , [ this ] ) ;
+      event.data.scope.trigger( event.data.nss.displaytrigger , [ this ] ) ;
     } ) ;
     
     jQuery( this )
