@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.0.1
- * @updated 2013/04/07
+ * @version 1.0.2
+ * @updated 2013/04/10
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -74,7 +74,7 @@
           end : false ,
           reset : false ,
         }
-      )
+      ) ;
     } ;
     
     
@@ -89,7 +89,7 @@
     jQuery( win )
     .unbind( settings.nss.resize )
     .bind( settings.nss.resize , settings , function( event ) {
-      event.data.scope.get( 0 ) === document ? null : jQuery( window ).trigger( event.data.nss.displaytrigger , [ this ] ) ;
+      event.data.scope.trigger( event.data.nss.displaytrigger , [ this ] ) ;
     } ).filter( function() {
       return settings.expand && doc !== settings.scope.get( 0 ) ;
     } )
@@ -109,7 +109,9 @@
         win = window ,
         doc = document ,
         area = this === win ? doc : this ,
-        fire ,
+        fire = false ,
+        targets ,
+        target ,
         settings = jQuery.data( area , event.data.nss.data ) ;
       
       if ( !settings ) { return this ; } ;
@@ -120,11 +122,9 @@
       
       switch ( true ) {
         case !targets.length :
-          fire = false ;
           break ;
           
         case settings.terminate && settings.index >= targets.length :
-          fire = false ;
           break ;
           
         case settings.index < 0 :
@@ -139,34 +139,8 @@
           jQuery.data( area , settings.nss.data , settings ) ;
           return arguments.callee.apply( this , arguments ) ;
           
-        case settings.once && jQuery.data( target.get( 0 ) , settings.nss.data + '.fired' ) :
-          fire = false ;
-          break ;
-          
-        case settings.beforehand > settings.index && !jQuery.data( target.get( 0 ) , settings.nss.data + '.fired' )  :
+        case settings.beforehand > settings.index && !jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' )  :
           fire = true ;
-          break ;
-          
-        case settings.once :
-          var
-            st = jQuery( win ).scrollTop() ,
-            ot = target.offset().top ,
-            wh = jQuery( win ).height() ,
-            th = target.height() ,
-            ahead = -1 < settings.ahead && settings.ahead < 1 ? th * settings.ahead : settings.ahead ,
-            topin = st >= ot - wh - ahead ,
-            bottomin = st <= ot + th + ahead ;
-          
-          fire = ( settings.skip ? topin && bottomin : topin ) && !jQuery.data( target.get( 0 ) , settings.nss.data + '.fired' ) ? true : false ;
-          
-          END : {
-            if ( fire || topin ) {
-              break END ;
-            } ;
-            
-            jQuery.data( area , settings.nss.data , settings ) ;
-            return this ; 
-          }
           break ;
           
         default :
@@ -201,9 +175,13 @@
             bottomin = st <= ot + th + ahead ;
             //bottomout = st > ot + th + ahead ;
           
-          fire = settings.turn && ( direction === 'up' ? st + settings.distance <= ot + th + ahead : st - settings.distance >= ot - wh - ahead ) ?
-                 false :
-                 ( settings.skip ? topin && bottomin : direction === 'up' ? bottomin : topin ) ;
+          FIRE : {
+            if ( settings.once && jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
+            
+            fire = settings.turn && !settings.once && ( direction === 'up' ? st + settings.distance <= ot + th + ahead : st - settings.distance >= ot - wh - ahead ) ?
+                   false :
+                   ( settings.skip ? topin && bottomin : direction === 'up' ? bottomin : topin ) ;
+          } ;
 　　　　　
           END : {
             if ( fire || ( settings.direction === 'up' ? bottomin : topin ) ) {
@@ -214,11 +192,11 @@
             //settings.index -= !settings.turn ? 0 : settings.direction === 'up' ? - settings.step : settings.step ;
             jQuery.data( area , settings.nss.data , settings ) ;
             return this ; 
-          }
+          } ;
           break ;
       } ;
       
-      if ( settings.terminate && !target.length ) {
+      if ( settings.terminate && ( !target.length || !targets.length ) ) {
         var remainder = 0 ;
         
         jQuery( this ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ) ;
@@ -234,13 +212,20 @@
         return this ;
       } ;
       
-      if ( fire ) {
-        jQuery.data( target.get( 0 ) , settings.nss.data + '.fired' , true ) ;
-        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
-      }
+      if ( settings.step === 0 && target.get( 0 ) === jQuery.data( area , settings.nss.data + '-last' ) ) {
+        jQuery.data( area , settings.nss.data + '-last' , null ) ;
+        return this ;
+      } ;
+      if ( settings.step === 0 ) { jQuery.data( area , settings.nss.data + '-last' , target.get( 0 ) ) ; } ;
       
-      settings.index += settings.once ? settings.step : settings.direction === 'up' ? - settings.step : settings.step ;
+      if ( fire ) {
+        jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' , true ) ;
+        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
+      } ;
+      
+      settings.index += settings.direction === 'up' ? - settings.step : settings.step ;
       jQuery.data( area , settings.nss.data , settings ) ;
+      
       
       win = doc = area = null ;
       return settings.end ? this : arguments.callee.apply( this , arguments ) ;
