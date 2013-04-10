@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.0.2
+ * @version 1.1.0
  * @updated 2013/04/10
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -31,6 +31,7 @@
   jQuery.fn.displaytrigger = displaytrigger ;
   jQuery.displaytrigger    = displaytrigger ;
   displaytrigger = null ;
+  var plugin_data = [ 'settings' ] ;
   
   function displaytrigger( options ) {
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( window ) , arguments ) ; } ;
@@ -38,6 +39,7 @@
       win = window ,
       doc = document ,
       defaults = {
+        id : 0 ,
         gns : 'displaytrigger' ,
         ns : undefined ,
         trigger : undefined ,
@@ -49,8 +51,10 @@
         once : true ,
         skip : false ,
         expand : true ,
+        delay : 300 ,
         terminate : true ,
-        reset : true
+        reset : true ,
+        queue : []
       } ,
       settings = jQuery.extend( true , {} , defaults , options ) ;
     
@@ -65,7 +69,7 @@
             resize : [ 'resize' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             data : settings.gns + ( settings.ns ? ':' + settings.ns : '' )
           } ,
-          scope : this.get( 0 ) === win ? jQuery( doc ) : this ,
+          scope : this.get( 0 ) === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
           height : {} ,
           direction : 'down' ,
@@ -80,43 +84,78 @@
     
     if ( !settings.scope.length || !settings.scope.find( settings.trigger ).length || !arguments.length ) { return this ; } ;
     
-    settings.height.window = 0 ;
-    for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
-      settings.height.element = 0 ;
-      jQuery.data( element , settings.nss.data , jQuery.extend( true , {} , settings) ) ;
-    } ;
     
-    jQuery( win )
-    .unbind( settings.nss.resize )
-    .bind( settings.nss.resize , settings , function( event ) {
-      event.data.scope.trigger( event.data.nss.displaytrigger , [ this ] ) ;
-    } ).filter( function() {
-      return settings.expand && doc !== settings.scope.get( 0 ) ;
-    } )
-    .unbind( settings.nss.scroll )
-    .bind( settings.nss.scroll , settings , function( event ) {
-      event.data.scope.trigger( event.data.nss.displaytrigger , [ this ] ) ;
-    } ) ;
+    register( settings ) ;
     
-    jQuery( this )
-    .unbind( settings.nss.scroll )
-    .bind( settings.nss.scroll , settings , function( event ) {
-      jQuery( this ).trigger( event.data.nss.displaytrigger , [ this ] ) ;
-    } )
-    .unbind( settings.nss.displaytrigger )
-    .bind( settings.nss.displaytrigger , settings , function( event , context ) {
+    
+    /* function */
+    
+    function register( settings ) {
+      settings.height.window = 0 ;
+      jQuery( win )
+      .unbind( settings.nss.resize )
+      for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
+        
+        settings.height.element = 0 ;
+        
+        settings.id = plugin_data.length ;
+        plugin_data.push( jQuery.extend( true , {} , settings ) ) ;
+        jQuery.data( element , settings.nss.data , settings.id ) ;
+        
+        jQuery( element === doc ? win : element )
+        .unbind( settings.nss.scroll )
+        .bind( settings.nss.scroll , settings.id , function( event ) {
+          var settings = plugin_data[ event.data ] ;
+          jQuery( this ).trigger( settings.nss.displaytrigger , [ this ] ) ;
+        } )
+        .unbind( settings.nss.displaytrigger )
+        .bind( settings.nss.displaytrigger , settings.id , function( event , context ) {
+          var settings = plugin_data[ event.data ] , id , scrollcontext , displaytriggercontext ;
+          
+          scrollcontext = context ;
+          displaytriggercontext = this ;
+          if ( !settings.delay ) {
+            drive( event , displaytriggercontext , scrollcontext || win ) ;
+          } else {
+            id = setTimeout( function() {
+              while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
+              plugin_data[ settings.id ] = settings ;
+              drive( event , displaytriggercontext , scrollcontext || win ) ;
+            } , settings.interval ) ;
+            
+            settings.queue.push( id ) ;
+            plugin_data[ settings.id ] = settings ;
+          } ;
+        } ) ;
+      } ;
+      
+      jQuery( win )
+      .unbind( settings.nss.resize )
+      .bind( settings.nss.resize , settings.id , function( event ) {
+        var settings = plugin_data[ event.data ] ;
+        settings.scope.trigger( settings.nss.displaytrigger , [ this ] ) ;
+      } ).filter( function() {
+        return settings.expand && doc !== settings.scope.get( 0 ) ;
+      } )
+      .unbind( settings.nss.scroll )
+      .bind( settings.nss.scroll , settings.id , function( event ) {
+        var settings = plugin_data[ event.data ] ;
+        settings.scope.trigger( settings.nss.displaytrigger , [ this ] ) ;
+      } ) ;
+    }
+    
+    function drive( event , displaytriggercontext , scrollcontext ) {
       var
         win = window ,
         doc = document ,
-        area = this === win ? doc : this ,
+        area = displaytriggercontext === win ? doc : displaytriggercontext ,
         fire = false ,
         targets ,
         target ,
-        settings = jQuery.data( area , event.data.nss.data ) ;
+        settings = plugin_data[ event.data ] ;
       
-      if ( !settings ) { return this ; } ;
+      if ( !settings ) { return displaytriggercontext ; } ;
       
-      context = context || win ;
       targets = jQuery( settings.trigger , area ) ;
       target = targets.eq( settings.index ) ;
       
@@ -130,14 +169,14 @@
         case settings.index < 0 :
           settings.index = 0 ;
           settings.end = true ;
-          jQuery.data( area , settings.nss.data , settings ) ;
-          return arguments.callee.apply( this , arguments ) ;
+          plugin_data[ event.data ] = settings ;
+          return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
         case settings.index >= targets.length :
           settings.index = targets.length - 1 ;
           settings.end = true ;
-          jQuery.data( area , settings.nss.data , settings ) ;
-          return arguments.callee.apply( this , arguments ) ;
+          plugin_data[ event.data ] = settings ;
+          return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
         case settings.beforehand > settings.index && !jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' )  :
           fire = true ;
@@ -145,8 +184,8 @@
           
         default :
           var
-            cs = jQuery( context ).scrollTop() ,
-            ch = settings.height[ context === win ? 'window' : 'element' ] ,
+            cs = jQuery( scrollcontext ).scrollTop() ,
+            ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
             direction = cs === ch ? settings.direction : cs < ch ? 'up' : 'down' ,
             distance = direction === 'up' ? ch - cs : cs - ch ;
           
@@ -160,7 +199,7 @@
             target = targets.eq( settings.index ) ;
           } ;
           settings.distance = distance === 0 ? settings.distance : distance ;
-          settings.height[ context === win ? 'window' : 'element' ] = cs ;
+          settings.height[ scrollcontext === win ? 'window' : 'element' ] = cs ;
           
           if ( settings.end ) { break ; } ;
           
@@ -190,8 +229,8 @@
             
             settings.turn = false ;
             //settings.index -= !settings.turn ? 0 : settings.direction === 'up' ? - settings.step : settings.step ;
-            jQuery.data( area , settings.nss.data , settings ) ;
-            return this ; 
+            plugin_data[ event.data ] = settings ;
+            return displaytriggercontext ; 
           } ;
           break ;
       } ;
@@ -199,7 +238,7 @@
       if ( settings.terminate && ( !target.length || !targets.length ) ) {
         var remainder = 0 ;
         
-        jQuery( this ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ) ;
+        jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ) ;
         jQuery.removeData( area , settings.nss.data ) ;
         
         for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
@@ -209,12 +248,12 @@
         
         settings.scope = null ;
         win = doc = area = null ;
-        return this ;
+        return displaytriggercontext ;
       } ;
       
       if ( settings.step === 0 && target.get( 0 ) === jQuery.data( area , settings.nss.data + '-last' ) ) {
         jQuery.data( area , settings.nss.data + '-last' , null ) ;
-        return this ;
+        return displaytriggercontext ;
       } ;
       if ( settings.step === 0 ) { jQuery.data( area , settings.nss.data + '-last' , target.get( 0 ) ) ; } ;
       
@@ -224,20 +263,15 @@
       } ;
       
       settings.index += settings.direction === 'up' ? - settings.step : settings.step ;
-      jQuery.data( area , settings.nss.data , settings ) ;
+      plugin_data[ event.data ] = settings ;
       
       
-      win = doc = area = null ;
-      return settings.end ? this : arguments.callee.apply( this , arguments ) ;
-    } );
-    
-    
-    /* function */
+      return settings.end ? displaytriggercontext : arguments.callee.apply( displaytriggercontext , arguments ) ;
+    }
     
     
     /* return */
     
-    win = doc = null ;
     return this ;
   }
 } )( jQuery )
