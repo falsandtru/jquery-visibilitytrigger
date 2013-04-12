@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.2
+ * @version 1.1.3
  * @updated 2013/04/12
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -30,18 +30,15 @@
   
   if ( typeof window[ 'jQuery' ] === 'undefined' ) { return ; } ;
   
-  window[ 'undefined' ] = void( 0 ) ;
-  var $ = jQuery = window[ 'jQuery' ] , plugin_data = [ 'settings' ] ;
+  var $ = jQuery = window[ 'jQuery' ] , undefined = void( 0 ) , win = window , doc = document , plugin_data = [ 'settings' ] ;
   
-  window[ 'jQuery' ][ 'fn' ][ 'displaytrigger' ] = displaytrigger ;
-  window[ 'jQuery' ][ 'displaytrigger' ]    = displaytrigger ;
+  win[ 'jQuery' ][ 'fn' ][ 'displaytrigger' ] = displaytrigger ;
+  win[ 'jQuery' ][ 'displaytrigger' ] = displaytrigger ;
   displaytrigger = null ;
   
   function displaytrigger( options ) {
-    if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( window ) , arguments ) ; } ;
+    if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
     var
-      win = window ,
-      doc = document ,
       defaults = {
         id : 0 ,
         gns : 'displaytrigger' ,
@@ -168,23 +165,23 @@
         case !targets.length :
           break ;
           
+        case settings.terminate && ( settings.index < 0 || settings.index >= targets.length ) :
+          break ;
+          
         case settings.index < 0 :
           settings.index = 0 ;
           settings.end = true ;
           plugin_data[ settings.id ] = settings ;
-          return settings.terminate ? null : arguments.callee.apply( displaytriggercontext , arguments ) ;
+          return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
         case settings.index >= targets.length :
           settings.index = targets.length - 1 ;
           settings.end = true ;
           plugin_data[ settings.id ] = settings ;
-          return settings.terminate ? null : arguments.callee.apply( displaytriggercontext , arguments ) ;
+          return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
         case settings.beforehand > settings.index && !jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' )  :
           fire = true ;
-          break ;
-          
-        case settings.once && jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' ) :
           break ;
           
         default :
@@ -222,8 +219,9 @@
             //bottomout = st > ot + th + ahead ;
           
           FIRE : {
-            fire = settings.turn &&
-                   !settings.once &&
+            if ( settings.once && jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
+            
+            fire = settings.turn && !settings.once &&
                    ( direction === -1 ? st + settings.distance <= ot + th + ahead
                                       : st - settings.distance >= ot - wh - ahead ) ? false
                                                                                     : ( settings.skip ? topin && bottomin
@@ -244,33 +242,37 @@
           break ;
       } ;
       
-      
-      if ( fire ) {
-        settings.once ? jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' , true ) : null ;
-        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
-      } ;
-      
       if ( settings.terminate && ( ( fire && ( ( settings.index === 0 && settings.step < 0 ) || ( settings.index === targets.length - 1 && settings.step > 0 ) ) ) || !targets.length ) ) {
         var remainder = 0 ;
         
-        scrollcontext === win ? null : jQuery( scrollcontext ).unbind( settings.nss.scroll ) ;
         jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ) ;
         jQuery.removeData( area , settings.nss.data ) ;
         
         for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
           remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ;
         } ;
-        remainder ? null : jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
+        remainder || scrollcontext === win ? null : jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         
         plugin_data[ settings.id ] = undefined ;
         return ;
+      } ;
+      
+      if ( settings.step === 0 && target.get( 0 ) === jQuery.data( area , settings.nss.data + '-last' ) ) {
+        jQuery.data( area , settings.nss.data + '-last' , null ) ;
+        return ;
+      } ;
+      if ( settings.step === 0 ) { jQuery.data( area , settings.nss.data + '-last' , target.get( 0 ) ) ; } ;
+      
+      if ( fire ) {
+        jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' , true ) ;
+        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
       } ;
       
       settings.index += settings.direction === -1 ? - settings.step : settings.step ;
       plugin_data[ settings.id ] = settings ;
       
       
-      return settings.end ? null : arguments.callee.apply( displaytriggercontext , arguments ) ;
+      return settings.end ? undefined : arguments.callee.apply( displaytriggercontext , arguments ) ;
     }
     
     
