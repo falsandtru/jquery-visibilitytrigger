@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.1
+ * @version 1.1.2
  * @updated 2013/04/12
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -26,12 +26,16 @@
  * 
  */
 
-( function( $ ) {
+( function() {
   
-  jQuery.fn.displaytrigger = displaytrigger ;
-  jQuery.displaytrigger    = displaytrigger ;
+  if ( typeof window[ 'jQuery' ] === 'undefined' ) { return ; } ;
+  
+  window[ 'undefined' ] = void( 0 ) ;
+  var $ = jQuery = window[ 'jQuery' ] , plugin_data = [ 'settings' ] ;
+  
+  window[ 'jQuery' ][ 'fn' ][ 'displaytrigger' ] = displaytrigger ;
+  window[ 'jQuery' ][ 'displaytrigger' ]    = displaytrigger ;
   displaytrigger = null ;
-  var plugin_data = [ 'settings' ] ;
   
   function displaytrigger( options ) {
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( window ) , arguments ) ; } ;
@@ -54,8 +58,7 @@
         expand : true ,
         delay : 300 ,
         terminate : true ,
-        reset : true ,
-        queue : []
+        reset : true
       } ,
       settings = jQuery.extend( true , {} , defaults , options ) ;
     
@@ -73,11 +76,12 @@
           scope : this.get( 0 ) === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
           height : {} ,
-          direction : 'down' ,
+          direction : 1 ,
           distance : 0 ,
           turn : false ,
           end : false ,
-          reset : false
+          reset : false ,
+          queue : []
         }
       ) ;
     } ;
@@ -187,8 +191,10 @@
           var
             cs = jQuery( scrollcontext ).scrollTop() ,
             ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
-            direction = cs === ch ? settings.direction : cs < ch ? 'up' : 'down' ,
-            distance = direction === 'up' ? ch - cs : cs - ch ;
+            direction = cs === ch ? settings.direction
+                                  : cs < ch ? -1
+                                            : 1 ,
+            distance = direction === -1 ? ch - cs : cs - ch ;
           
           TURN : {
             if ( settings.direction === direction ) { break TURN ; } ;
@@ -196,7 +202,7 @@
             settings.turn = true ;
             settings.end = false ;
             settings.direction = direction ;
-            //settings.index += settings.direction === 'up' ? - settings.step : settings.step ;
+            //settings.index += settings.direction === -1 ? - settings.step : settings.step ;
             target = targets.eq( settings.index ) ;
           } ;
           settings.distance = distance === 0 ? settings.distance : distance ;
@@ -216,18 +222,22 @@
             //bottomout = st > ot + th + ahead ;
           
           FIRE : {
-            fire = settings.turn && !settings.once && ( direction === 'up' ? st + settings.distance <= ot + th + ahead : st - settings.distance >= ot - wh - ahead ) ?
-                   false :
-                   ( settings.skip ? topin && bottomin : direction === 'up' ? bottomin : topin ) ;
+            fire = settings.turn &&
+                   !settings.once &&
+                   ( direction === -1 ? st + settings.distance <= ot + th + ahead
+                                      : st - settings.distance >= ot - wh - ahead ) ? false
+                                                                                    : ( settings.skip ? topin && bottomin
+                                                                                                      : direction === -1 ? bottomin
+                                                                                                                         : topin ) ;
           } ;
 　　　　　
           END : {
-            if ( fire || ( settings.direction === 'up' ? bottomin : topin ) ) {
+            if ( fire || ( settings.direction === -1 ? bottomin : topin ) ) {
               break END ;
             } ;
             
             settings.turn = false ;
-            //settings.index -= !settings.turn ? 0 : settings.direction === 'up' ? - settings.step : settings.step ;
+            //settings.index -= !settings.turn ? 0 : settings.direction === -1 ? - settings.step : settings.step ;
             plugin_data[ settings.id ] = settings ;
             return ; 
           } ;
@@ -256,7 +266,7 @@
         return ;
       } ;
       
-      settings.index += settings.direction === 'up' ? - settings.step : settings.step ;
+      settings.index += settings.direction === -1 ? - settings.step : settings.step ;
       plugin_data[ settings.id ] = settings ;
       
       
@@ -268,4 +278,4 @@
     
     return this ;
   }
-} )( jQuery )
+} )() ;
