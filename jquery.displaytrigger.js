@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.3
+ * @version 1.1.4
  * @updated 2013/04/12
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -38,6 +38,7 @@
   
   function displaytrigger( options ) {
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
+		
     var
       defaults = {
         id : 0 ,
@@ -242,6 +243,11 @@
           break ;
       } ;
       
+      if ( fire ) {
+        jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' , true ) ;
+        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
+      } ;
+      
       if ( settings.terminate && ( ( fire && ( ( settings.index === 0 && settings.step < 0 ) || ( settings.index === targets.length - 1 && settings.step > 0 ) ) ) || !targets.length ) ) {
         var remainder = 0 ;
         
@@ -255,17 +261,6 @@
         
         plugin_data[ settings.id ] = undefined ;
         return ;
-      } ;
-      
-      if ( settings.step === 0 && target.get( 0 ) === jQuery.data( area , settings.nss.data + '-last' ) ) {
-        jQuery.data( area , settings.nss.data + '-last' , null ) ;
-        return ;
-      } ;
-      if ( settings.step === 0 ) { jQuery.data( area , settings.nss.data + '-last' , target.get( 0 ) ) ; } ;
-      
-      if ( fire ) {
-        jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' , true ) ;
-        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
       } ;
       
       settings.index += settings.direction === -1 ? - settings.step : settings.step ;
