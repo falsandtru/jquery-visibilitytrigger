@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.4
- * @updated 2013/04/12
+ * @version 1.1.5
+ * @updated 2013/04/14
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -38,7 +38,7 @@
   
   function displaytrigger( options ) {
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
-		
+    
     var
       defaults = {
         id : 0 ,
@@ -71,7 +71,7 @@
             resize : [ 'resize' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             data : settings.gns + ( settings.ns ? ':' + settings.ns : '' )
           } ,
-          scope : this.get( 0 ) === win ? jQuery( doc ) : jQuery( this ) ,
+          scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
           height : {} ,
           direction : 1 ,
@@ -95,8 +95,7 @@
     
     function register( settings ) {
       settings.height.window = 0 ;
-      jQuery( win )
-      .unbind( settings.nss.resize )
+      
       for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
         
         settings.height.element = 0 ;
@@ -117,6 +116,7 @@
           
           scrollcontext = context ;
           displaytriggercontext = this ;
+          while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
           if ( !settings.delay ) {
             drive( event , displaytriggercontext , scrollcontext || win ) ;
           } else {
@@ -138,7 +138,7 @@
         var settings = plugin_data[ event.data ] ;
         settings.scope.trigger( settings.nss.displaytrigger , [ this ] ) ;
       } ).filter( function() {
-        return settings.expand && doc !== settings.scope.get( 0 ) ;
+        return settings.expand && doc !== settings.scope[ 0 ] ;
       } )
       .unbind( settings.nss.scroll )
       .bind( settings.nss.scroll , settings.id , function( event ) {
@@ -181,7 +181,7 @@
           plugin_data[ settings.id ] = settings ;
           return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
-        case settings.beforehand > settings.index && !jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' )  :
+        case settings.beforehand > settings.index && !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' )  :
           fire = true ;
           break ;
           
@@ -220,7 +220,7 @@
             //bottomout = st > ot + th + ahead ;
           
           FIRE : {
-            if ( settings.once && jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
+            if ( settings.once && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
             
             fire = settings.turn && !settings.once &&
                    ( direction === -1 ? st + settings.distance <= ot + th + ahead
@@ -244,14 +244,18 @@
       } ;
       
       if ( fire ) {
-        jQuery.data( target.get( 0 ) , settings.nss.data + '-fired' , true ) ;
-        settings.callback.apply( target.get( 0 ) , [ event , settings.parameter , settings.index , settings.direction ] ) ;
+        jQuery.data( target[ 0 ] , settings.nss.data + '-fired' , true ) ;
+        settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , direction : settings.direction } ] ) ;
       } ;
       
-      if ( settings.terminate && ( ( fire && ( ( settings.index === 0 && settings.step < 0 ) || ( settings.index === targets.length - 1 && settings.step > 0 ) ) ) || !targets.length ) ) {
+      if ( settings.terminate && ( ( fire && ( ( settings.index === 0 && settings.step < 0 ) || ( settings.index === targets.length - 1 && settings.step > 0 ) ) ) ||
+           target[ 0 ] === undefined ||
+           !targets.length ) ) {
+        
         var remainder = 0 ;
         
-        jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ) ;
+        jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ) ;
+        jQuery( scrollcontext ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         jQuery.removeData( area , settings.nss.data ) ;
         
         for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
