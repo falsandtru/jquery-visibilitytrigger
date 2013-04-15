@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.6
- * @updated 2013/04/14
+ * @version 1.1.7
+ * @updated 2013/04/16
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -73,6 +73,7 @@
           } ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
+          count : 0 ,
           height : {} ,
           direction : 1 ,
           distance : 0 ,
@@ -89,6 +90,8 @@
     
     
     register( settings ) ;
+    
+    return this ;
     
     
     /* function */
@@ -124,7 +127,7 @@
               while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
               plugin_data[ settings.id ] = settings ;
               drive( event , displaytriggercontext , scrollcontext || win ) ;
-            } , settings.interval ) ;
+            } , settings.delay ) ;
             
             settings.queue.push( id ) ;
             plugin_data[ settings.id ] = settings ;
@@ -200,7 +203,6 @@
             settings.turn = true ;
             settings.end = false ;
             settings.direction = direction ;
-            //settings.index += settings.direction === -1 ? - settings.step : settings.step ;
             target = targets.eq( settings.index ) ;
           } ;
           settings.distance = distance === 0 ? settings.distance : distance ;
@@ -236,7 +238,6 @@
             } ;
             
             settings.turn = false ;
-            //settings.index -= !settings.turn ? 0 : settings.direction === -1 ? - settings.step : settings.step ;
             plugin_data[ settings.id ] = settings ;
             return ; 
           } ;
@@ -245,11 +246,15 @@
       
       if ( fire && target[ 0 ] !== undefined ) {
         jQuery.data( target[ 0 ] , settings.nss.data + '-fired' , true ) ;
+        settings.count += 1 ;
         settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , direction : settings.direction } ] ) ;
       } ;
       
-      if ( ( settings.terminate && ( fire && ( ( settings.index === 0 && settings.step < 0 ) || ( settings.index === targets.length - 1 && settings.step > 0 ) ) ) ) ||
-           !targets.length || target[ 0 ] === undefined ) {
+      if ( ( settings.terminate && ( fire && ( ( settings.step !== 0 && settings.count >= targets.length ) ||
+                                               ( settings.step > 0 && !settings.skip && settings.index === targets.length - 1 ) ||
+                                               ( settings.step < 0 && !settings.skip && settings.index === 0 ) ) ) ) ||
+           !targets.length ||
+           target[ 0 ] === undefined /* settings.step === 0 */ ) {
         
         var remainder = 0 ;
         
@@ -272,10 +277,5 @@
       
       return settings.end ? undefined : arguments.callee.apply( displaytriggercontext , arguments ) ;
     }
-    
-    
-    /* return */
-    
-    return this ;
   }
 } )() ;
