@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.7
+ * @version 1.1.8
  * @updated 2013/04/16
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -71,6 +71,7 @@
             resize : [ 'resize' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             data : settings.gns + ( settings.ns ? ':' + settings.ns : '' )
           } ,
+          context: this ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
           count : 0 ,
@@ -97,57 +98,63 @@
     /* function */
     
     function register( settings ) {
-      settings.height.window = 0 ;
       
-      for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
-        
-        settings.height.element = 0 ;
+      for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) {
         
         settings.id = plugin_data.length ;
+        settings.height.window = 0 ;
+        settings.height.element = 0 ;
         plugin_data.push( jQuery.extend( true , {} , settings ) ) ;
-        jQuery.data( element , settings.nss.data , settings.id ) ;
         
-        jQuery( element === doc ? win : element )
-        .unbind( settings.nss.scroll )
-        .bind( settings.nss.scroll , settings.id , function( event ) {
-          var settings = plugin_data[ event.data ] ;
-          jQuery( this ).trigger( settings.nss.displaytrigger , [ this ] ) ;
-        } )
+        // custom event
+        jQuery( element )
         .unbind( settings.nss.displaytrigger )
         .bind( settings.nss.displaytrigger , settings.id , function( event , context ) {
-          var settings = plugin_data[ event.data ] , id , scrollcontext , displaytriggercontext ;
+          var
+            settings = plugin_data[ event.data ] ,
+            id ,
+            scrollcontext = context ,
+            displaytriggercontext = this ;
           
-          scrollcontext = context ;
-          displaytriggercontext = this ;
-          while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
           if ( !settings.delay ) {
             drive( event , displaytriggercontext , scrollcontext || win ) ;
           } else {
+            while ( id = plugin_data[ settings.id ].queue.shift() ) { clearTimeout( id ) ; } ;
             id = setTimeout( function() {
-              while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
+              if ( !plugin_data[ settings.id ] ) { return ; } ;
+              while ( id = plugin_data[ settings.id ].queue.shift() ) { clearTimeout( id ) ; } ;
               plugin_data[ settings.id ] = settings ;
               drive( event , displaytriggercontext , scrollcontext || win ) ;
             } , settings.delay ) ;
             
-            settings.queue.push( id ) ;
-            plugin_data[ settings.id ] = settings ;
+            plugin_data[ settings.id ].queue.push( id ) ;
           } ;
         } ) ;
-      } ;
+        
+        // node original event
+        jQuery.data( element , settings.nss.data , true ) ;
+        
+        jQuery( element )
+        .unbind( settings.nss.scroll )
+        .bind( settings.nss.scroll , settings.id , function( event ) {
+          jQuery( this ).trigger( plugin_data[ event.data ].nss.displaytrigger , [ this ] ) ;
+        } ) ;
       
-      jQuery( win )
-      .unbind( settings.nss.resize )
-      .bind( settings.nss.resize , settings.id , function( event ) {
-        var settings = plugin_data[ event.data ] ;
-        settings.scope.trigger( settings.nss.displaytrigger , [ this ] ) ;
-      } ).filter( function() {
-        return settings.expand && doc !== settings.scope[ 0 ] ;
-      } )
-      .unbind( settings.nss.scroll )
-      .bind( settings.nss.scroll , settings.id , function( event ) {
-        var settings = plugin_data[ event.data ] ;
-        settings.scope.trigger( settings.nss.displaytrigger , [ this ] ) ;
-      } ) ;
+        // root original event
+        if ( i !== 0 ) { continue ; } ;
+        
+        jQuery( win )
+        .filter( function() { return settings.context[ 0 ] === win || settings.expand ; } )
+        .unbind( settings.nss.resize )
+        .bind( settings.nss.resize , settings.id , function( event ) {
+          settings.context.trigger( plugin_data[ event.data ].nss.displaytrigger , [ this ] ) ;
+        } )
+        .filter( function() { return settings.context[ 0 ] !== win ; } )
+        .unbind( settings.nss.scroll )
+        .bind( settings.nss.scroll , settings.id , function( event ) {
+          settings.context.trigger( plugin_data[ event.data ].nss.displaytrigger , [ this ] ) ;
+        } ) ;
+      } ;
     }
     
     function drive( event , displaytriggercontext , scrollcontext ) {
@@ -169,8 +176,10 @@
         case !targets.length :
           break ;
           
-        case settings.terminate && ( settings.index < 0 || settings.index >= targets.length ) :
-          break ;
+        case settings.step === 0 && !target[ 0 ] :
+          settings.index += -1 ;
+          plugin_data[ settings.id ] = settings ;
+          return ;
           
         case settings.index < 0 :
           settings.index = 0 ;
@@ -250,11 +259,8 @@
         settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , direction : settings.direction } ] ) ;
       } ;
       
-      if ( ( settings.terminate && ( fire && ( ( settings.step !== 0 && settings.count >= targets.length ) ||
-                                               ( settings.step > 0 && !settings.skip && settings.index === targets.length - 1 ) ||
-                                               ( settings.step < 0 && !settings.skip && settings.index === 0 ) ) ) ) ||
-           !targets.length ||
-           target[ 0 ] === undefined /* settings.step === 0 */ ) {
+      if ( !targets.length ||
+           ( settings.terminate && settings.once && settings.step !== 0 && settings.count >= targets.length ) ) {
         
         var remainder = 0 ;
         
@@ -262,16 +268,16 @@
         jQuery( scrollcontext ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         jQuery.removeData( area , settings.nss.data ) ;
         
-        for ( var i = 0 , element ; element = settings.scope[ i ] ; i++ ) {
-          remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ;
-        } ;
-        remainder || scrollcontext === win ? null : jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
+        for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ; } ;
+        remainder || settings.context[ 0 ] === win ? null : jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         
         plugin_data[ settings.id ] = undefined ;
         return ;
       } ;
       
-      settings.index += settings.direction === -1 ? - settings.step : settings.step ;
+      settings.index += settings.step === 0 && !fire ? settings.direction
+                                                     : settings.step === 0 && settings.direction === -1 ? settings.direction
+                                                                                                        : settings.step * settings.direction ;
       plugin_data[ settings.id ] = settings ;
       
       
