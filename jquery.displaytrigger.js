@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.8
- * @updated 2013/04/16
+ * @version 1.1.9
+ * @updated 2013/04/18
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -36,7 +36,9 @@
   jQuery.displaytrigger = displaytrigger ;
   displaytrigger = null ;
   
+  
   function displaytrigger( options ) {
+    
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
     
     var
@@ -49,9 +51,8 @@
         parameter : [] ,
         ahead : 0 ,
         beforehand: 0 ,
-        index : 0 ,
         step : 1 ,
-        once : true ,
+        multi : true ,
         skip : false ,
         expand : true ,
         delay : 300 ,
@@ -73,6 +74,7 @@
           } ,
           context: this ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
+          once : settings.multi ? false : true ,
           index : 0 ,
           count : 0 ,
           height : {} ,
@@ -81,6 +83,7 @@
           turn : false ,
           end : false ,
           reset : false ,
+          called : false ,
           queue : []
         }
       ) ;
@@ -116,7 +119,8 @@
             scrollcontext = context ,
             displaytriggercontext = this ;
           
-          if ( !settings.delay ) {
+          if ( !settings.delay || !settings.called ) {
+            settings.called = true ;
             drive( event , displaytriggercontext , scrollcontext || win ) ;
           } else {
             while ( id = plugin_data[ settings.id ].queue.shift() ) { clearTimeout( id ) ; } ;
@@ -224,7 +228,7 @@
             ot = target.offset().top ,
             wh = jQuery( win ).height() ,
             th = target.height() ,
-            ahead = -1 < settings.ahead && settings.ahead < 1 ? th * settings.ahead : settings.ahead ,
+            ahead = -1 <= settings.ahead && settings.ahead <= 1 ? parseInt( th * settings.ahead ) : settings.ahead ,
             topin = st >= ot - wh - ahead ,
             //topout = st < ot - wh - ahead ,
             bottomin = st <= ot + th + ahead ;
