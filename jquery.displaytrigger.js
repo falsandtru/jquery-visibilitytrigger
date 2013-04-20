@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.9
- * @updated 2013/04/18
+ * @version 1.1.10
+ * @updated 2013/04/20
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -67,14 +67,13 @@
         true ,
         settings , {
           nss : {
-            scroll : [ 'scroll' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             displaytrigger : [ settings.gns + ( settings.ns ? '.' + settings.ns : '' ) ].join( '.' ) ,
+            scroll : [ 'scroll' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             resize : [ 'resize' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
             data : settings.gns + ( settings.ns ? ':' + settings.ns : '' )
           } ,
           context: this ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
-          once : settings.multi ? false : true ,
           index : 0 ,
           count : 0 ,
           height : {} ,
@@ -83,7 +82,6 @@
           turn : false ,
           end : false ,
           reset : false ,
-          called : false ,
           queue : []
         }
       ) ;
@@ -119,8 +117,7 @@
             scrollcontext = context ,
             displaytriggercontext = this ;
           
-          if ( !settings.delay || !settings.called ) {
-            settings.called = true ;
+          if ( !settings.delay || !context ) {
             drive( event , displaytriggercontext , scrollcontext || win ) ;
           } else {
             while ( id = plugin_data[ settings.id ].queue.shift() ) { clearTimeout( id ) ; } ;
@@ -235,9 +232,9 @@
             //bottomout = st > ot + th + ahead ;
           
           FIRE : {
-            if ( settings.once && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
+            if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
             
-            fire = settings.turn && !settings.once &&
+            fire = settings.turn && settings.multi &&
                    ( direction === -1 ? st + settings.distance <= ot + th + ahead
                                       : st - settings.distance >= ot - wh - ahead ) ? false
                                                                                     : ( settings.skip ? topin && bottomin
@@ -264,7 +261,7 @@
       } ;
       
       if ( !targets.length ||
-           ( settings.terminate && settings.once && settings.step !== 0 && settings.count >= targets.length ) ) {
+           ( settings.terminate && !settings.multi && settings.step !== 0 && settings.count >= targets.length ) ) {
         
         var remainder = 0 ;
         
@@ -273,7 +270,7 @@
         jQuery.removeData( area , settings.nss.data ) ;
         
         for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ; } ;
-        remainder || settings.context[ 0 ] === win ? null : jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
+        !remainder && !settings.context[ 0 ] === win && jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         
         plugin_data[ settings.id ] = undefined ;
         return ;
