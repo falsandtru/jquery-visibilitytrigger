@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.10
- * @updated 2013/04/20
+ * @version 1.1.11
+ * @updated 2013/04/21
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -52,14 +52,15 @@
         ahead : 0 ,
         beforehand: 0 ,
         step : 1 ,
-        multi : true ,
+        multi : false ,
         skip : false ,
         expand : true ,
         delay : 300 ,
         terminate : true ,
         reset : true
       } ,
-      settings = jQuery.extend( true , {} , defaults , options ) ;
+      settings = jQuery.extend( true , {} , defaults , options ) ,
+      nsArray = [ settings.gns ].concat( settings.ns || [] ) ;
     
     if ( settings.reset ) {
       jQuery.extend
@@ -67,10 +68,10 @@
         true ,
         settings , {
           nss : {
-            displaytrigger : [ settings.gns + ( settings.ns ? '.' + settings.ns : '' ) ].join( '.' ) ,
-            scroll : [ 'scroll' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
-            resize : [ 'resize' , settings.gns + ( settings.ns ? ':' + settings.ns : '' ) ].join( '.' ) ,
-            data : settings.gns + ( settings.ns ? ':' + settings.ns : '' )
+            displaytrigger : nsArray.join( '.' ) ,
+            scroll : [ 'scroll' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
+            resize : [ 'resize' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
+            data : nsArray.join( ':' )
           } ,
           context: this ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
