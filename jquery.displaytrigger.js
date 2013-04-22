@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.11
- * @updated 2013/04/21
+ * @version 1.1.12
+ * @updated 2013/04/23
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -71,11 +71,13 @@
             displaytrigger : nsArray.join( '.' ) ,
             scroll : [ 'scroll' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
             resize : [ 'resize' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
-            data : nsArray.join( ':' )
+            data : nsArray.join( ':' ) ,
+            array : nsArray
           } ,
           context: this ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
+          ahead : typeof settings.ahead in { string:1 , number:1 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
           count : 0 ,
           height : {} ,
           direction : 1 ,
@@ -226,7 +228,8 @@
             ot = target.offset().top ,
             wh = jQuery( win ).height() ,
             th = target.height() ,
-            ahead = -1 <= settings.ahead && settings.ahead <= 1 ? parseInt( th * settings.ahead ) : settings.ahead ,
+            aheadIndex = 0 > direction ? 0 : 1 ,
+            ahead = -1 <= settings.ahead[ aheadIndex ] && settings.ahead[ aheadIndex ] <= 1 ? parseInt( th * settings.ahead[ aheadIndex ] ) : parseInt( settings.ahead[ aheadIndex ] ) ,
             topin = st >= ot - wh - ahead ,
             //topout = st < ot - wh - ahead ,
             bottomin = st <= ot + th + ahead ;
