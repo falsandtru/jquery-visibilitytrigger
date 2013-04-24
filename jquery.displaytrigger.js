@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.12
- * @updated 2013/04/23
+ * @version 1.1.13
+ * @updated 2013/04/24
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -123,15 +123,14 @@
           if ( !settings.delay || !context ) {
             drive( event , displaytriggercontext , scrollcontext || win ) ;
           } else {
-            while ( id = plugin_data[ settings.id ].queue.shift() ) { clearTimeout( id ) ; } ;
+            while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
             id = setTimeout( function() {
-              if ( !plugin_data[ settings.id ] ) { return ; } ;
-              while ( id = plugin_data[ settings.id ].queue.shift() ) { clearTimeout( id ) ; } ;
-              plugin_data[ settings.id ] = settings ;
+              if ( !settings ) { return ; } ;
+              while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
               drive( event , displaytriggercontext , scrollcontext || win ) ;
             } , settings.delay ) ;
             
-            plugin_data[ settings.id ].queue.push( id ) ;
+            settings.queue.push( id ) ;
           } ;
         } ) ;
         
@@ -141,7 +140,8 @@
         jQuery( element )
         .unbind( settings.nss.scroll )
         .bind( settings.nss.scroll , settings.id , function( event ) {
-          jQuery( this ).trigger( plugin_data[ event.data ].nss.displaytrigger , [ this ] ) ;
+          var settings = plugin_data[ event.data ] ;
+          jQuery( this ).trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
       
         // root original event
@@ -151,12 +151,14 @@
         .filter( function() { return settings.context[ 0 ] === win || settings.expand ; } )
         .unbind( settings.nss.resize )
         .bind( settings.nss.resize , settings.id , function( event ) {
-          settings.context.trigger( plugin_data[ event.data ].nss.displaytrigger , [ this ] ) ;
+          var settings = plugin_data[ event.data ] ;
+          settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } )
         .filter( function() { return settings.context[ 0 ] !== win ; } )
         .unbind( settings.nss.scroll )
         .bind( settings.nss.scroll , settings.id , function( event ) {
-          settings.context.trigger( plugin_data[ event.data ].nss.displaytrigger , [ this ] ) ;
+          var settings = plugin_data[ event.data ] ;
+          settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
       } ;
     }
@@ -182,19 +184,16 @@
           
         case settings.step === 0 && !target[ 0 ] :
           settings.index += -1 ;
-          plugin_data[ settings.id ] = settings ;
           return ;
           
         case settings.index < 0 :
           settings.index = 0 ;
           settings.end = true ;
-          plugin_data[ settings.id ] = settings ;
           return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
         case settings.index >= targets.length :
           settings.index = targets.length - 1 ;
           settings.end = true ;
-          plugin_data[ settings.id ] = settings ;
           return arguments.callee.apply( displaytriggercontext , arguments ) ;
           
         case settings.beforehand > settings.index && !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' )  :
@@ -252,7 +251,6 @@
             } ;
             
             settings.turn = false ;
-            plugin_data[ settings.id ] = settings ;
             return ; 
           } ;
           break ;
@@ -283,8 +281,6 @@
       settings.index += settings.step === 0 && !fire ? settings.direction
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
                                                                                                         : settings.step * settings.direction ;
-      plugin_data[ settings.id ] = settings ;
-      
       
       return settings.end ? undefined : arguments.callee.apply( displaytriggercontext , arguments ) ;
     }
