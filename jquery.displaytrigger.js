@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.14
+ * @version 1.1.15
  * @updated 2013/04/27
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
@@ -125,13 +125,13 @@
             displaytriggercontext = this ;
           
           if ( !settings.delay || !context ) {
-            drive( event , displaytriggercontext , scrollcontext || win ) ;
+            drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
           } else {
             while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
             id = setTimeout( function () {
               if ( !settings ) { return ; } ;
               while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
-              drive( event , displaytriggercontext , scrollcontext || win ) ;
+              drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
             } , settings.delay ) ;
             
             settings.queue.push( id ) ;
@@ -167,17 +167,12 @@
       } ;
     }
     
-    function drive( event , displaytriggercontext , scrollcontext ) {
+    function drive( event , settings , displaytriggercontext , scrollcontext ) {
       var
-        win = window ,
-        doc = document ,
         area = displaytriggercontext === win ? doc : displaytriggercontext ,
         fire = false ,
         targets ,
-        target ,
-        settings = plugin_data[ event.data ] ;
-      
-      if ( !settings ) { return ; } ;
+        target ;
       
       targets = jQuery( settings.trigger , area ) ;
       target = targets.eq( settings.index ) ;
@@ -193,18 +188,15 @@
         case settings.index < 0 :
           settings.index = 0 ;
           settings.end = true ;
-          return arguments.callee.apply( displaytriggercontext , arguments ) ;
+          return arguments.callee.apply( this , arguments ) ;
           
         case settings.index >= targets.length :
           settings.index = targets.length - 1 ;
           settings.end = true ;
-          return arguments.callee.apply( displaytriggercontext , arguments ) ;
+          return arguments.callee.apply( this , arguments ) ;
           
         case settings.beforehand > settings.index && !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' )  :
           fire = true ;
-          break ;
-          
-        case settings.skip && ( target.css( 'display' ) === 'none' || target.css( 'visibility' ) === 'hidden' ) :
           break ;
           
         default :
@@ -263,7 +255,7 @@
           break ;
       } ;
       
-      if ( fire && target[ 0 ] !== undefined ) {
+      if ( fire ) {
         jQuery.data( target[ 0 ] , settings.nss.data + '-fired' , true ) ;
         settings.count += 1 ;
         settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , direction : settings.direction } ] ) ;
@@ -289,7 +281,7 @@
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
                                                                                                         : settings.step * settings.direction ;
       
-      return settings.end ? undefined : arguments.callee.apply( displaytriggercontext , arguments ) ;
+      return settings.end ? undefined : arguments.callee.apply( this , arguments ) ;
     }
   }
 } )() ;
