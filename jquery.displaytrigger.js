@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.13
- * @updated 2013/04/24
+ * @version 1.1.14
+ * @updated 2013/04/27
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -26,11 +26,11 @@
  * 
  */
 
-( function() {
+( function () {
   
-  if ( typeof window[ 'jQuery' ] === 'undefined' ) { return ; } ;
+  if ( typeof window.jQuery === 'undefined' ) { return ; } ;
   
-  var $ = jQuery = window[ 'jQuery' ] , undefined = void( 0 ) , win = window , doc = document , plugin_data = [ 'settings' ] ;
+  var $ = jQuery = window.jQuery , undefined = void( 0 ) , win = window , doc = document , plugin_data = [ 'settings' ] ;
   
   jQuery.fn.displaytrigger = displaytrigger ;
   jQuery.displaytrigger = displaytrigger ;
@@ -41,13 +41,18 @@
     
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
     
+    /* validate */ var validate = typeof window.validator === 'object' ? window.validator : false ;
+    /* validate */ var validate = validate ? validate.clone( { name : 'jquery.displaytrigger.js' , base : true } ) : validate ;
+    /* validate */ validate && validate.start() ;
+    /* validate */ validate && validate.test( 1, 1, 0, 'plugin load' ) ;
+    
     var
       defaults = {
         id : 0 ,
         gns : 'displaytrigger' ,
         ns : undefined ,
         trigger : undefined ,
-        callback : function() {} ,
+        callback : function () {} ,
         parameter : [] ,
         ahead : 0 ,
         beforehand: 0 ,
@@ -91,10 +96,9 @@
     } ;
     
     
-    if ( !settings.scope.length || !settings.scope.find( settings.trigger ).length || !arguments.length ) { return this ; } ;
+    if ( settings.scope.length && settings.scope.find( settings.trigger ).length && arguments.length ) { register( settings ) ; } ;
     
-    
-    register( settings ) ;
+    /* validate */ validate && validate.end() ;
     
     return this ;
     
@@ -113,7 +117,7 @@
         // custom event
         jQuery( element )
         .unbind( settings.nss.displaytrigger )
-        .bind( settings.nss.displaytrigger , settings.id , function( event , context ) {
+        .bind( settings.nss.displaytrigger , settings.id , function ( event , context ) {
           var
             settings = plugin_data[ event.data ] ,
             id ,
@@ -124,7 +128,7 @@
             drive( event , displaytriggercontext , scrollcontext || win ) ;
           } else {
             while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
-            id = setTimeout( function() {
+            id = setTimeout( function () {
               if ( !settings ) { return ; } ;
               while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
               drive( event , displaytriggercontext , scrollcontext || win ) ;
@@ -139,7 +143,7 @@
         
         jQuery( element )
         .unbind( settings.nss.scroll )
-        .bind( settings.nss.scroll , settings.id , function( event ) {
+        .bind( settings.nss.scroll , settings.id , function ( event ) {
           var settings = plugin_data[ event.data ] ;
           jQuery( this ).trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
@@ -148,15 +152,15 @@
         if ( i !== 0 ) { continue ; } ;
         
         jQuery( win )
-        .filter( function() { return settings.context[ 0 ] === win || settings.expand ; } )
+        .filter( function () { return settings.context[ 0 ] === win || settings.expand ; } )
         .unbind( settings.nss.resize )
-        .bind( settings.nss.resize , settings.id , function( event ) {
+        .bind( settings.nss.resize , settings.id , function ( event ) {
           var settings = plugin_data[ event.data ] ;
           settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } )
-        .filter( function() { return settings.context[ 0 ] !== win ; } )
+        .filter( function () { return settings.context[ 0 ] !== win ; } )
         .unbind( settings.nss.scroll )
-        .bind( settings.nss.scroll , settings.id , function( event ) {
+        .bind( settings.nss.scroll , settings.id , function ( event ) {
           var settings = plugin_data[ event.data ] ;
           settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
@@ -198,6 +202,9 @@
           
         case settings.beforehand > settings.index && !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' )  :
           fire = true ;
+          break ;
+          
+        case settings.skip && ( target.css( 'display' ) === 'none' || target.css( 'visibility' ) === 'hidden' ) :
           break ;
           
         default :
