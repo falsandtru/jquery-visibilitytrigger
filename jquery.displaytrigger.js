@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.1.15
- * @updated 2013/04/27
+ * @version 1.2.0
+ * @updated 2013/05/05
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -61,6 +61,7 @@
         skip : false ,
         expand : true ,
         delay : 300 ,
+        mode : 'show' , // value: show/hide/toggle/ratio/border
         terminate : true ,
         reset : true
       } ,
@@ -82,6 +83,7 @@
           context: this ,
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
+          length : 0 ,
           ahead : typeof settings.ahead in { string:1 , number:1 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
           count : 0 ,
           height : {} ,
@@ -177,6 +179,30 @@
       targets = jQuery( settings.trigger , area ) ;
       target = targets.eq( settings.index ) ;
       
+      var
+        cs = jQuery( scrollcontext ).scrollTop() ,
+        ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
+        direction = cs === ch ? settings.direction
+                              : cs < ch ? -1
+                                        : 1 ,
+        distance = Math.abs( cs - ch ) ;
+      
+      if ( settings.direction !== direction ) {
+        settings.turn = true ;
+        settings.end = false ;
+        settings.direction = direction ;
+        settings.index = settings.index < 0 ? 0
+                                            : targets.length <= settings.index ? targets.length - 1
+                                                                               : settings.index ;
+        target = targets.eq( settings.index ) ;
+      } ;
+      settings.distance = distance === 0 ? settings.distance : distance ;
+      settings.height[ scrollcontext === win ? 'window' : 'element' ] = cs ;
+      settings.end = target[ 0 ] ? false : settings.end ;
+      
+      if ( settings.direction === -1 && settings.length < targets.length ) { settings.turn = false ; settings.end = false ; } ;
+      settings.length = targets.length ;
+      
       switch ( true ) {
         case !targets.length :
           break ;
@@ -188,77 +214,71 @@
         case settings.index < 0 :
           settings.index = 0 ;
           settings.end = true ;
-          return arguments.callee.apply( this , arguments ) ;
+          break ;
           
-        case settings.index >= targets.length :
+        case targets.length <= settings.index :
           settings.index = targets.length - 1 ;
           settings.end = true ;
-          return arguments.callee.apply( this , arguments ) ;
+          break ;
           
         case settings.beforehand > settings.index && !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' )  :
           fire = true ;
           break ;
           
         default :
-          var
-            cs = jQuery( scrollcontext ).scrollTop() ,
-            ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
-            direction = cs === ch ? settings.direction
-                                  : cs < ch ? -1
-                                            : 1 ,
-            distance = direction === -1 ? ch - cs : cs - ch ;
-          
-          TURN : {
-            if ( settings.direction === direction ) { break TURN ; } ;
-            
-            settings.turn = true ;
-            settings.end = false ;
-            settings.direction = direction ;
-            target = targets.eq( settings.index ) ;
-          } ;
-          settings.distance = distance === 0 ? settings.distance : distance ;
-          settings.height[ scrollcontext === win ? 'window' : 'element' ] = cs ;
-          
           if ( settings.end ) { break ; } ;
-          
           var
-            st = jQuery( win ).scrollTop() ,
-            ot = target.offset().top ,
+            wt = jQuery( win ).scrollTop() ,
             wh = jQuery( win ).height() ,
+            tt = target.offset().top ,
             th = target.height() ,
-            aheadIndex = 0 > direction ? 0 : 1 ,
-            ahead = -1 <= settings.ahead[ aheadIndex ] && settings.ahead[ aheadIndex ] <= 1 ? parseInt( th * settings.ahead[ aheadIndex ] ) : parseInt( settings.ahead[ aheadIndex ] ) ,
-            topin = st >= ot - wh - ahead ,
-            //topout = st < ot - wh - ahead ,
-            bottomin = st <= ot + th + ahead ;
-            //bottomout = st > ot + th + ahead ;
+            aheadIndex = ( 0 > settings.direction ? 0 : 1 ) ,
+            ahead = ( -1 <= settings.ahead[ aheadIndex ] && settings.ahead[ aheadIndex ] <= 1 ? parseInt( wh * settings.ahead[ aheadIndex ] ) : parseInt( settings.ahead[ aheadIndex ] ) ) ,
+            topin ,
+            topout ,
+            bottomin ,
+            bottomout ;
           
-          FIRE : {
-            if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break FIRE ; } ;
-            
-            fire = settings.turn && settings.multi &&
-                   ( direction === -1 ? st + settings.distance <= ot + th + ahead
-                                      : st - settings.distance >= ot - wh - ahead ) ? false
-                                                                                    : ( settings.skip ? topin && bottomin
-                                                                                                      : direction === -1 ? bottomin
-                                                                                                                         : topin ) ;
+          switch ( settings.mode ) {
+            case 'ratio' :
+              break ;
+            case 'border' :
+              var border = wt + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
+              topin = border >= tt ;
+              bottomin = border <= tt + th ;
+              
+              fire = settings.turn &&
+                     ( settings.direction === 1 ? border - settings.distance > tt
+                                                : border + settings.distance < tt + th ) ? false
+                                                                                         : settings.skip ? topin && bottomin
+                                                                                                         : settings.direction === 1 ? topin
+                                                                                                                                    : bottomin ;
+              break ;
+            case 'toggle' :
+              break ;
+            case 'hide' :
+              break ;
+            case 'show' :
+            default :
+              topin = wt >= tt - wh - ahead ;
+              //topout = wt < tt - wh - ahead ;
+              bottomin = wt <= tt + th + ahead ;
+              //bottomout = wt > tt + th + ahead ;
+              
+              fire = settings.turn && settings.multi &&
+                     ( settings.direction === 1 ? wt - settings.distance > tt - wh - ahead
+                                                : wt + settings.distance < tt + th + ahead ) ? false
+                                                                                             : settings.skip ? topin && bottomin
+                                                                                                             : settings.direction === 1 ? topin
+                                                                                                                                        : bottomin ;
           } ;
-　　　　　
-          END : {
-            if ( fire || ( settings.direction === -1 ? bottomin : topin ) ) {
-              break END ;
-            } ;
-            
-            settings.turn = false ;
-            return ; 
-          } ;
-          break ;
+          if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { fire = false ; } ;
       } ;
       
       if ( fire ) {
         jQuery.data( target[ 0 ] , settings.nss.data + '-fired' , true ) ;
         settings.count += 1 ;
-        settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , direction : settings.direction } ] ) ;
+        settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , length : targets.length , direction : settings.direction } ] ) ;
       } ;
       
       if ( !targets.length ||
@@ -277,11 +297,14 @@
         return ;
       } ;
       
+      if ( !settings.end && !fire && isFinite( settings.direction ) && ( settings.direction === 1 ? !topin : !bottomin ) ) { settings.turn = false ; return ; } ;
+      
       settings.index += settings.step === 0 && !fire ? settings.direction
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
                                                                                                         : settings.step * settings.direction ;
       
-      return settings.end ? undefined : arguments.callee.apply( this , arguments ) ;
+      if ( settings.end ) { return ; } ;
+      return arguments.callee.apply( this , arguments ) ;
     }
   }
 } )() ;
