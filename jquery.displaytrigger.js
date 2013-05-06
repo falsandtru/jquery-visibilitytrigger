@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.2.0
- * @updated 2013/05/05
+ * @version 1.2.1
+ * @updated 2013/05/07
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -227,6 +227,8 @@
           
         default :
           if ( settings.end ) { break ; } ;
+          if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
+          
           var
             wt = jQuery( win ).scrollTop() ,
             wh = jQuery( win ).height() ,
@@ -272,7 +274,6 @@
                                                                                                              : settings.direction === 1 ? topin
                                                                                                                                         : bottomin ;
           } ;
-          if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { fire = false ; } ;
       } ;
       
       if ( fire ) {
@@ -297,7 +298,7 @@
         return ;
       } ;
       
-      if ( !settings.end && !fire && isFinite( settings.direction ) && ( settings.direction === 1 ? !topin : !bottomin ) ) { settings.turn = false ; return ; } ;
+      if ( !settings.end && !fire && isFinite( ahead ) && ( settings.direction === 1 ? !topin : !bottomin ) ) { settings.turn = false ; return ; } ;
       
       settings.index += settings.step === 0 && !fire ? settings.direction
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
