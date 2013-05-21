@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.2.1
- * @updated 2013/05/07
+ * @version 1.2.2
+ * @updated 2013/05/22
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -41,10 +41,10 @@
     
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
     
-    /* validate */ var validate = typeof window.validator === 'object' ? window.validator : false ;
+    /* validate */ var validate = window.validator instanceof Object ? window.validator : false ;
     /* validate */ var validate = validate ? validate.clone( { name : 'jquery.displaytrigger.js' , base : true } ) : validate ;
     /* validate */ validate && validate.start() ;
-    /* validate */ validate && validate.test( 1, 1, 0, 'plugin load' ) ;
+    /* validate */ validate && validate.test( '++', 1, 0, 'displaytrigger()' ) ;
     
     var
       defaults = {
