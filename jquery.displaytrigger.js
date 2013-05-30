@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.3.0
- * @updated 2013/05/30
+ * @version 1.3.1
+ * @updated 2013/05/31
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -61,7 +61,7 @@
         skip : false ,
         expand : true ,
         delay : 300 ,
-        suspend : 0 ,
+        suspend : -100 ,
         mode : 'show' , // value: show/hide/toggle/border
         terminate : true ,
         reset : true
@@ -85,14 +85,14 @@
           scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
           index : 0 ,
           length : 0 ,
-          ahead : typeof settings.ahead in { string:1 , number:1 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
+          ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
           count : 0 ,
           height : {} ,
           direction : 1 ,
           distance : 0 ,
           turn : false ,
           end : false ,
-          suspend : 1 < settings.suspend ? settings.suspend : parseInt( settings.delay * settings.suspend ) ,
+          suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
           reset : false ,
           queue : []
         }
@@ -142,15 +142,14 @@
             settings.queue.push( id ) ;
           } ;
           
-          if ( settings.delay < settings.suspend && !end ) { while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ; } ;
           if ( settings.suspend && !end ) {
             jQuery( this ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
               if ( !settings ) { return ; } ;
-              jQuery( this ).bind( settings.nss.displaytrigger , settings.id , fn ) ;
-              if ( settings.delay < settings.suspend ) { jQuery( this ).trigger( settings.nss.displaytrigger , [ context , true ] ) ; } ;
+              jQuery( this ).bind( settings.nss.displaytrigger , settings.id , fn ).trigger( settings.nss.displaytrigger , [ context , true ] ) ;
             } , settings.suspend ) ;
           } ;
+          
         } ) ;
         
         // node original event
