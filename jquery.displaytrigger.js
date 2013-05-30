@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.2.2
- * @updated 2013/05/22
+ * @version 1.3.0
+ * @updated 2013/05/30
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -61,7 +61,8 @@
         skip : false ,
         expand : true ,
         delay : 300 ,
-        mode : 'show' , // value: show/hide/toggle/ratio/border
+        suspend : 0 ,
+        mode : 'show' , // value: show/hide/toggle/border
         terminate : true ,
         reset : true
       } ,
@@ -91,6 +92,7 @@
           distance : 0 ,
           turn : false ,
           end : false ,
+          suspend : 1 < settings.suspend ? settings.suspend : parseInt( settings.delay * settings.suspend ) ,
           reset : false ,
           queue : []
         }
@@ -119,12 +121,13 @@
         // custom event
         jQuery( element )
         .unbind( settings.nss.displaytrigger )
-        .bind( settings.nss.displaytrigger , settings.id , function ( event , context ) {
+        .bind( settings.nss.displaytrigger , settings.id , function ( event , context , end ) {
           var
             settings = plugin_data[ event.data ] ,
             id ,
             scrollcontext = context ,
-            displaytriggercontext = this ;
+            displaytriggercontext = this ,
+            fn = arguments.callee ;
           
           if ( !settings.delay || !context ) {
             drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
@@ -137,6 +140,16 @@
             } , settings.delay ) ;
             
             settings.queue.push( id ) ;
+          } ;
+          
+          if ( settings.delay < settings.suspend && !end ) { while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ; } ;
+          if ( settings.suspend && !end ) {
+            jQuery( this ).unbind( settings.nss.displaytrigger ) ;
+            setTimeout( function () {
+              if ( !settings ) { return ; } ;
+              jQuery( this ).bind( settings.nss.displaytrigger , settings.id , fn ) ;
+              if ( settings.delay < settings.suspend ) { jQuery( this ).trigger( settings.nss.displaytrigger , [ context , true ] ) ; } ;
+            } , settings.suspend ) ;
           } ;
         } ) ;
         
@@ -171,6 +184,8 @@
     
     function drive( event , settings , displaytriggercontext , scrollcontext ) {
       var
+        win = window ,
+        doc = document ,
         area = displaytriggercontext === win ? doc : displaytriggercontext ,
         fire = false ,
         targets ,
@@ -242,8 +257,6 @@
             bottomout ;
           
           switch ( settings.mode ) {
-            case 'ratio' :
-              break ;
             case 'border' :
               var border = wt + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
               topin = border >= tt ;
