@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.3.1
- * @updated 2013/05/31
+ * @version 1.3.2
+ * @updated 2013/06/10
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -63,41 +63,37 @@
         delay : 300 ,
         suspend : -100 ,
         mode : 'show' , // value: show/hide/toggle/border
-        terminate : true ,
-        reset : true
+        terminate : true
       } ,
       settings = jQuery.extend( true , {} , defaults , options ) ,
       nsArray = [ settings.gns ].concat( settings.ns || [] ) ;
     
-    if ( settings.reset ) {
-      jQuery.extend
-      (
-        true ,
-        settings , {
-          nss : {
-            displaytrigger : nsArray.join( '.' ) ,
-            scroll : [ 'scroll' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
-            resize : [ 'resize' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
-            data : nsArray.join( ':' ) ,
-            array : nsArray
-          } ,
-          context: this ,
-          scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
-          index : 0 ,
-          length : 0 ,
-          ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
-          count : 0 ,
-          height : {} ,
-          direction : 1 ,
-          distance : 0 ,
-          turn : false ,
-          end : false ,
-          suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
-          reset : false ,
-          queue : []
-        }
-      ) ;
-    } ;
+    jQuery.extend
+    (
+      true ,
+      settings , {
+        nss : {
+          displaytrigger : nsArray.join( '.' ) ,
+          scroll : [ 'scroll' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
+          resize : [ 'resize' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
+          data : nsArray.join( ':' ) ,
+          array : nsArray
+        } ,
+        context: this ,
+        scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
+        index : 0 ,
+        length : 0 ,
+        ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
+        count : 0 ,
+        height : {} ,
+        direction : 1 ,
+        distance : 0 ,
+        turn : false ,
+        end : false ,
+        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
+        queue : []
+      }
+    ) ;
     
     
     if ( settings.scope.length && settings.scope.find( settings.trigger ).length && arguments.length ) { register( settings ) ; } ;
