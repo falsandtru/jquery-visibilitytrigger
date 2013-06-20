@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.3.2
- * @updated 2013/06/10
+ * @version 1.3.3
+ * @updated 2013/06/20
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -71,7 +71,8 @@
     jQuery.extend
     (
       true ,
-      settings , {
+      settings ,
+      {
         nss : {
           displaytrigger : nsArray.join( '.' ) ,
           scroll : [ 'scroll' ].concat( nsArray.join( ':' ) ).join( '.' ) ,
@@ -238,6 +239,7 @@
         default :
           if ( settings.end ) { break ; } ;
           if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
+          if ( target[ 0 ].style.display === 'none' ) { break ; } ;
           
           var
             wt = jQuery( win ).scrollTop() ,
