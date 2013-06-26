@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.3.3
- * @updated 2013/06/20
+ * @version 1.3.4
+ * @updated 2013/06/27
  * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -46,27 +46,26 @@
     /* validate */ validate && validate.start() ;
     /* validate */ validate && validate.test( '++', 1, 0, 'displaytrigger()' ) ;
     
-    var
-      defaults = {
-        id : 0 ,
-        gns : 'displaytrigger' ,
-        ns : undefined ,
-        trigger : undefined ,
-        callback : function () {} ,
-        parameter : [] ,
-        ahead : 0 ,
-        beforehand: 0 ,
-        step : 1 ,
-        multi : false ,
-        skip : false ,
-        expand : true ,
-        delay : 300 ,
-        suspend : -100 ,
-        mode : 'show' , // value: show/hide/toggle/border
-        terminate : true
-      } ,
-      settings = jQuery.extend( true , {} , defaults , options ) ,
-      nsArray = [ settings.gns ].concat( settings.ns || [] ) ;
+    var defaults = {
+          id : 0 ,
+          gns : 'displaytrigger' ,
+          ns : undefined ,
+          trigger : undefined ,
+          callback : function () {} ,
+          parameter : [] ,
+          ahead : 0 ,
+          beforehand: 0 ,
+          step : 1 ,
+          multi : false ,
+          skip : false ,
+          expand : true ,
+          delay : 300 ,
+          suspend : -100 ,
+          mode : 'show' , // value: show/hide/toggle/border
+          terminate : true
+        } ,
+        settings = jQuery.extend( true , {} , defaults , options ) ,
+        nsArray = [ settings.gns ].concat( settings.ns || [] ) ;
     
     jQuery.extend
     (
@@ -119,12 +118,11 @@
         jQuery( element )
         .unbind( settings.nss.displaytrigger )
         .bind( settings.nss.displaytrigger , settings.id , function ( event , context , end ) {
-          var
-            settings = plugin_data[ event.data ] ,
-            id ,
-            scrollcontext = context ,
-            displaytriggercontext = this ,
-            fn = arguments.callee ;
+          var settings = plugin_data[ event.data ] ,
+              id ,
+              scrollcontext = context ,
+              displaytriggercontext = this ,
+              fn = arguments.callee ;
           
           if ( !settings.delay || !context ) {
             drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
@@ -179,32 +177,22 @@
     }
     
     function drive( event , settings , displaytriggercontext , scrollcontext ) {
-      var
-        win = window ,
-        doc = document ,
-        area = displaytriggercontext === win ? doc : displaytriggercontext ,
-        fire = false ,
-        targets ,
-        target ;
-      
-      targets = jQuery( settings.trigger , area ) ;
-      target = targets.eq( settings.index ) ;
-      
-      var
-        cs = jQuery( scrollcontext ).scrollTop() ,
-        ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
-        direction = cs === ch ? settings.direction
-                              : cs < ch ? -1
-                                        : 1 ,
-        distance = Math.abs( cs - ch ) ;
+      var win = window ,
+          doc = document ,
+          area = displaytriggercontext === win ? doc : displaytriggercontext ,
+          fire = false ,
+          targets = jQuery( settings.trigger , area ) ,
+          target = targets.eq( settings.index ) ,
+          cs = jQuery( scrollcontext ).scrollTop() ,
+          ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
+          direction = cs === ch ? settings.direction : cs < ch ? -1 : 1 ,
+          distance = Math.abs( cs - ch ) ;
       
       if ( settings.direction !== direction ) {
         settings.turn = true ;
         settings.end = false ;
         settings.direction = direction ;
-        settings.index = settings.index < 0 ? 0
-                                            : targets.length <= settings.index ? targets.length - 1
-                                                                               : settings.index ;
+        settings.index = settings.index < 0 ? 0 : targets.length <= settings.index ? targets.length - 1 : settings.index ;
         target = targets.eq( settings.index ) ;
       } ;
       settings.distance = distance === 0 ? settings.distance : distance ;
@@ -241,17 +229,16 @@
           if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
           if ( target[ 0 ].style.display === 'none' ) { break ; } ;
           
-          var
-            wt = jQuery( win ).scrollTop() ,
-            wh = jQuery( win ).height() ,
-            tt = target.offset().top ,
-            th = target.height() ,
-            aheadIndex = ( 0 > settings.direction ? 0 : 1 ) ,
-            ahead = ( -1 <= settings.ahead[ aheadIndex ] && settings.ahead[ aheadIndex ] <= 1 ? parseInt( wh * settings.ahead[ aheadIndex ] ) : parseInt( settings.ahead[ aheadIndex ] ) ) ,
-            topin ,
-            topout ,
-            bottomin ,
-            bottomout ;
+          var wt = jQuery( win ).scrollTop() ,
+              wh = jQuery( win ).height() ,
+              tt = target.offset().top ,
+              th = target.height() ,
+              aheadIndex = ( 0 > settings.direction ? 0 : 1 ) ,
+              ahead = ( -1 <= settings.ahead[ aheadIndex ] && settings.ahead[ aheadIndex ] <= 1 ? parseInt( wh * settings.ahead[ aheadIndex ] ) : parseInt( settings.ahead[ aheadIndex ] ) ) ,
+              topin ,
+              topout ,
+              bottomin ,
+              bottomout ;
           
           switch ( settings.mode ) {
             case 'border' :
