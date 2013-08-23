@@ -5,9 +5,9 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.3.4
- * @updated 2013/06/27
- * @author falsandtru  http://fat.main.jp/  http://sa-kusaku.sakura.ne.jp/
+ * @version 1.3.5
+ * @updated 2013/08/23
+ * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
  * Note: 
@@ -23,6 +23,10 @@
  *   ahead : 300 ,
  *   beforehand : 1
  * } ).trigger( 'displaytrigger' ) ;
+ * 
+ * ---
+ * Document:
+ * http://sa-kusaku.sakura.ne.jp/output/displaytrigger/
  * 
  */
 
@@ -61,7 +65,7 @@
           expand : true ,
           delay : 300 ,
           suspend : -100 ,
-          mode : 'show' , // value: show/hide/toggle/border
+          mode : 'show' ,
           terminate : true
         } ,
         settings = jQuery.extend( true , {} , defaults , options ) ,
@@ -81,16 +85,16 @@
         } ,
         context: this ,
         scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
+        ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
+        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
         index : 0 ,
         length : 0 ,
-        ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
         count : 0 ,
         height : {} ,
         direction : 1 ,
         distance : 0 ,
         turn : false ,
         end : false ,
-        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
         queue : []
       }
     ) ;
@@ -124,6 +128,8 @@
               displaytriggercontext = this ,
               fn = arguments.callee ;
           
+          if ( !settings ) { return ; } ;
+          
           if ( !settings.delay || !context ) {
             drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
           } else {
@@ -140,8 +146,7 @@
           if ( settings.suspend && !end ) {
             jQuery( this ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
-              if ( !settings ) { return ; } ;
-              jQuery( this ).bind( settings.nss.displaytrigger , settings.id , fn ).trigger( settings.nss.displaytrigger , [ context , true ] ) ;
+              settings && jQuery( this ).bind( settings.nss.displaytrigger , settings.id , fn ).trigger( settings.nss.displaytrigger , [ context , true ] ) ;
             } , settings.suspend ) ;
           } ;
           
@@ -154,7 +159,7 @@
         .unbind( settings.nss.scroll )
         .bind( settings.nss.scroll , settings.id , function ( event ) {
           var settings = plugin_data[ event.data ] ;
-          jQuery( this ).trigger( settings.nss.displaytrigger , [ this ] ) ;
+          settings && jQuery( this ).trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
       
         // root original event
@@ -165,13 +170,13 @@
         .unbind( settings.nss.resize )
         .bind( settings.nss.resize , settings.id , function ( event ) {
           var settings = plugin_data[ event.data ] ;
-          settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
+          settings && settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } )
         .filter( function () { return settings.context[ 0 ] !== win ; } )
         .unbind( settings.nss.scroll )
         .bind( settings.nss.scroll , settings.id , function ( event ) {
           var settings = plugin_data[ event.data ] ;
-          settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
+          settings && settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
       } ;
     }
@@ -225,9 +230,7 @@
           break ;
           
         default :
-          if ( settings.end ) { break ; } ;
-          if ( !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
-          if ( target[ 0 ].style.display === 'none' ) { break ; } ;
+          if ( settings.end || target.is( ':hidden' ) || !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
           
           var wt = jQuery( win ).scrollTop() ,
               wh = jQuery( win ).height() ,
@@ -291,8 +294,7 @@
         for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ; } ;
         !remainder && !settings.context[ 0 ] === win && jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         
-        plugin_data[ settings.id ] = undefined ;
-        return ;
+        return plugin_data[ settings.id ] = undefined ;
       } ;
       
       if ( !settings.end && !fire && isFinite( ahead ) && ( settings.direction === 1 ? !topin : !bottomin ) ) { settings.turn = false ; return ; } ;
@@ -301,8 +303,7 @@
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
                                                                                                         : settings.step * settings.direction ;
       
-      if ( settings.end ) { return ; } ;
-      return arguments.callee.apply( this , arguments ) ;
+      settings.end || arguments.callee.apply( this , arguments ) ;
     }
   }
 } )() ;
