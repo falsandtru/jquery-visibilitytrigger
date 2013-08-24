@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.1
+ * @version 1.4.2
  * @updated 2013/08/24
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -274,10 +274,10 @@
             case 'show' :
             default :
               topin = wh + ws >= tt - aheadBottom && ( settings.window ? true : dt + dh >= tt - aheadBottom ) ;
-              topover = settings.window ? false : topin && dt > tt + th + aheadBottom ;
+              topover = settings.window ? false : topin && dt > tt + th + aheadTop ;
               //topout = ws < tt - wh - ahead ;
               bottomin = ws <= tt + th + aheadTop && ( settings.window ? true : dt <= tt + th + aheadTop ) ;
-              bottomover = settings.window ? false : bottomin && dt + dh < tt - aheadTop ;
+              bottomover = settings.window ? false : bottomin && dt + dh < tt - aheadBottom ;
               //bottomout = ws > tt + th + ahead ;
               
               fire = settings.turn && settings.multi &&
