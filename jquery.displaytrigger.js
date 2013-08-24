@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.0
+ * @version 1.4.1
  * @updated 2013/08/24
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -83,9 +83,10 @@
           data : nsArray.join( ':' ) ,
           array : nsArray
         } ,
+        window: this[ 0 ] === win ,
         context: this ,
         scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
-        ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : settings.ahead ,
+        ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : undefined ,
         suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
         index : 0 ,
         length : 0 ,
@@ -184,7 +185,7 @@
     function drive( event , settings , displaytriggercontext , scrollcontext ) {
       var win = window ,
           doc = document ,
-          area = displaytriggercontext === win ? doc : displaytriggercontext ,
+          area = settings.window ? doc : displaytriggercontext ,
           fire = false ,
           targets = jQuery( settings.trigger , area ) ,
           target = targets.eq( settings.index ) ,
@@ -235,21 +236,23 @@
           var wj = jQuery( win ) ,
               ws = wj.scrollTop() ,
               wt = 0 ,
-              wh = wj.height() ,
+              wh = wj.outerHeight( true ) ,
               dj = jQuery( displaytriggercontext ) ,
               //ds = dj.scrollTop() ,
-              dt = displaytriggercontext === win ? wt : dj.offset().top ,
-              dh = dj.height() ,
+              dt = settings.window ? wt : dj.offset().top ,
+              dh = dj.outerHeight( true ) ,
               tt = target.offset().top ,
-              th = target.height() ,
+              th = target.outerHeight( true ) ,
               aheadIndex = Math.max( 0 , settings.direction ) ,
-              aheadUp = -1 <= settings.ahead[ 0 ] && settings.ahead[ 0 ] <= 1 ? parseInt( wh * settings.ahead[ 0 ] ) : parseInt( settings.ahead[ 0 ] ) ,
-              aheadDown = -1 <= settings.ahead[ 1 ] && settings.ahead[ 1 ] <= 1 ? parseInt( wh * settings.ahead[ 1 ] ) : parseInt( settings.ahead[ 1 ] ) ,
-              ahead = aheadIndex ? aheadDown : aheadUp ,
+              aheadTop = -1 <= settings.ahead[ 0 ] && settings.ahead[ 0 ] <= 1 ? parseInt( wh * settings.ahead[ 0 ] ) : parseInt( settings.ahead[ 0 ] ) ,
+              aheadBottom = -1 <= settings.ahead[ 1 ] && settings.ahead[ 1 ] <= 1 ? parseInt( wh * settings.ahead[ 1 ] ) : parseInt( settings.ahead[ 1 ] ) ,
+              ahead = aheadIndex ? aheadBottom : aheadTop ,
               topin ,
               topout ,
+              topover ,
               bottomin ,
-              bottomout ;
+              bottomout ,
+              bottomover ;
           
           switch ( settings.mode ) {
             case 'border' :
@@ -270,17 +273,19 @@
               break ;
             case 'show' :
             default :
-              topin = ws >= tt - wh - aheadDown && ( displaytriggercontext === win ? true : dt + dh > tt - aheadDown ) ;
+              topin = wh + ws >= tt - aheadBottom && ( settings.window ? true : dt + dh >= tt - aheadBottom ) ;
+              topover = settings.window ? false : topin && dt > tt + th + aheadBottom ;
               //topout = ws < tt - wh - ahead ;
-              bottomin = ws <= tt + th + aheadUp && ( displaytriggercontext === win ? true : 0 <= tt + th - dt + aheadUp ) ;
+              bottomin = ws <= tt + th + aheadTop && ( settings.window ? true : dt <= tt + th + aheadTop ) ;
+              bottomover = settings.window ? false : bottomin && dt + dh < tt - aheadTop ;
               //bottomout = ws > tt + th + ahead ;
               
               fire = settings.turn && settings.multi &&
                      ( settings.direction === 1 ? ws - settings.distance + wh > tt - ahead
                                                 : ws + settings.distance < tt + th + ahead ) ? false
                                                                                              : settings.skip ? topin && bottomin
-                                                                                                             : settings.direction === 1 ? topin
-                                                                                                                                        : bottomin ;
+                                                                                                             : settings.direction === 1 ? topin && !topover
+                                                                                                                                        : bottomin && !bottomover ;
           } ;
       } ;
       
