@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.3.5
- * @updated 2013/08/23
+ * @version 1.4.0
+ * @updated 2013/08/24
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -232,12 +232,20 @@
         default :
           if ( settings.end || target.is( ':hidden' ) || !settings.multi && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
           
-          var wt = jQuery( win ).scrollTop() ,
-              wh = jQuery( win ).height() ,
+          var wj = jQuery( win ) ,
+              ws = wj.scrollTop() ,
+              wt = 0 ,
+              wh = wj.height() ,
+              dj = jQuery( displaytriggercontext ) ,
+              //ds = dj.scrollTop() ,
+              dt = displaytriggercontext === win ? wt : dj.offset().top ,
+              dh = dj.height() ,
               tt = target.offset().top ,
               th = target.height() ,
-              aheadIndex = ( 0 > settings.direction ? 0 : 1 ) ,
-              ahead = ( -1 <= settings.ahead[ aheadIndex ] && settings.ahead[ aheadIndex ] <= 1 ? parseInt( wh * settings.ahead[ aheadIndex ] ) : parseInt( settings.ahead[ aheadIndex ] ) ) ,
+              aheadIndex = Math.max( 0 , settings.direction ) ,
+              aheadUp = -1 <= settings.ahead[ 0 ] && settings.ahead[ 0 ] <= 1 ? parseInt( wh * settings.ahead[ 0 ] ) : parseInt( settings.ahead[ 0 ] ) ,
+              aheadDown = -1 <= settings.ahead[ 1 ] && settings.ahead[ 1 ] <= 1 ? parseInt( wh * settings.ahead[ 1 ] ) : parseInt( settings.ahead[ 1 ] ) ,
+              ahead = aheadIndex ? aheadDown : aheadUp ,
               topin ,
               topout ,
               bottomin ,
@@ -245,7 +253,7 @@
           
           switch ( settings.mode ) {
             case 'border' :
-              var border = wt + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
+              var border = ws + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
               topin = border >= tt ;
               bottomin = border <= tt + th ;
               
@@ -262,14 +270,14 @@
               break ;
             case 'show' :
             default :
-              topin = wt >= tt - wh - ahead ;
-              //topout = wt < tt - wh - ahead ;
-              bottomin = wt <= tt + th + ahead ;
-              //bottomout = wt > tt + th + ahead ;
+              topin = ws >= tt - wh - aheadDown && ( displaytriggercontext === win ? true : dt + dh > tt - aheadDown ) ;
+              //topout = ws < tt - wh - ahead ;
+              bottomin = ws <= tt + th + aheadUp && ( displaytriggercontext === win ? true : 0 <= tt + th - dt + aheadUp ) ;
+              //bottomout = ws > tt + th + ahead ;
               
               fire = settings.turn && settings.multi &&
-                     ( settings.direction === 1 ? wt - settings.distance > tt - wh - ahead
-                                                : wt + settings.distance < tt + th + ahead ) ? false
+                     ( settings.direction === 1 ? ws - settings.distance + wh > tt - ahead
+                                                : ws + settings.distance < tt + th + ahead ) ? false
                                                                                              : settings.skip ? topin && bottomin
                                                                                                              : settings.direction === 1 ? topin
                                                                                                                                         : bottomin ;
