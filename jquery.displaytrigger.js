@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.3
+ * @version 1.4.4
  * @updated 2013/08/25
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -16,8 +16,7 @@
  * Example:
  * @jquery 1.7.2
  * 
- * $.displaytrigger(
- * {
+ * $.displaytrigger( {
  *   trigger : 'img[data-origin]' ,
  *   callback : function(){ $( this ).attr( 'src' , $( this ).attr( 'data-origin' ) ) } ,
  *   ahead : 300 ,
@@ -30,18 +29,11 @@
  * 
  */
 
-( function () {
+( function ( jQuery ) {
   
-  if ( typeof window.jQuery === 'undefined' ) { return ; } ;
+  var win = window , doc = document , undefined = void( 0 ) , plugin_data = [ 'settings' ] ;
   
-  var $ = jQuery = window.jQuery , undefined = void( 0 ) , win = window , doc = document , plugin_data = [ 'settings' ] ;
-  
-  jQuery.fn.displaytrigger = displaytrigger ;
-  jQuery.displaytrigger = displaytrigger ;
-  displaytrigger = null ;
-  
-  
-  function displaytrigger( options ) {
+  jQuery.fn.displaytrigger = jQuery.displaytrigger = function ( options ) {
     
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
     
@@ -323,4 +315,4 @@
       settings.end || arguments.callee.apply( this , arguments ) ;
     }
   }
-} )() ;
+} )( jQuery ) ;
