@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.4
+ * @version 1.4.5
  * @updated 2013/08/25
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -37,11 +37,11 @@
     
     if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
     
-    /* validate */ var validate = window.validator instanceof Object ? window.validator : false ;
-    /* validate */ var validate = validate ? validate.clone( { name : 'jquery.displaytrigger.js' , base : true } ) : validate ;
+    /* validate */ var validate = window.validator instanceof Object ? window.validator.clone( { name : 'jquery.displaytrigger.js' , base : true } ) : false ;
     /* validate */ validate && validate.start() ;
-    /* validate */ validate && validate.test( '++', 1, 0, 'displaytrigger()' ) ;
+    /* validate */ validate && validate.test( '++', 1, options, 'displaytrigger()' ) ;
     
+    /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
     var defaults = {
           id : 0 ,
           gns : 'displaytrigger' ,
@@ -63,6 +63,7 @@
         settings = jQuery.extend( true , {} , defaults , options ) ,
         nsArray = [ settings.gns ].concat( settings.ns || [] ) ;
     
+    /* validate */ validate && validate.test( '++', 1, 0, 'overwrite' ) ;
     jQuery.extend
     (
       true ,
@@ -88,11 +89,14 @@
         distance : 0 ,
         turn : false ,
         end : false ,
-        queue : []
+        queue : [] ,
+        options : options ,
+        validate : validate
       }
     ) ;
     
     
+    /* validate */ validate && validate.test( '++', 1, 0, 'register' ) ;
     if ( settings.scope.length && settings.scope.find( settings.trigger ).length && arguments.length ) { register( settings ) ; } ;
     
     /* validate */ validate && validate.end() ;
@@ -179,6 +183,12 @@
     }
     
     function drive( event , settings , displaytriggercontext , scrollcontext ) {
+      /* validate */ var validate = settings.validate ? settings.validate.clone( { name : 'jquery.displaytrigger.js - drive()' } ) : false ;
+      /* validate */ validate && validate.start() ;
+      /* validate */ validate && ( validate.scope = function( code ){ return eval( code ) ; } ) ;
+      /* validate */ validate && validate.test( '++', 1, [ settings, window === scrollcontext ], 'drive()' ) ;
+      
+      /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
       var win = window ,
           doc = document ,
           area = settings.window ? doc : displaytriggercontext ,
@@ -190,6 +200,7 @@
           direction = cs === ch ? settings.direction : cs < ch ? -1 : 1 ,
           distance = Math.abs( cs - ch ) ;
       
+      /* validate */ validate && validate.test( '++', 1, 0, 'setting' ) ;
       if ( settings.direction !== direction ) {
         settings.turn = true ;
         settings.end = false ;
@@ -204,32 +215,41 @@
       if ( settings.direction === -1 && settings.length < targets.length ) { settings.turn = false ; settings.end = false ; } ;
       settings.length = targets.length ;
       
+      /* validate */ validate && validate.test( '++', 1, settings, 'switch' ) ;
       switch ( true ) {
         case !targets.length :
+          /* validate */ validate && validate.test( '*', 1, 0, 'case !targets.length' ) ;
           break ;
           
         case settings.step === 0 && !target[ 0 ] :
+          /* validate */ validate && validate.test( '*', 1, 0, 'case settings.step === 0 && !target[ 0 ]' ) ;
           settings.index += -1 ;
+          /* validate */ validate && validate.end() ;
           return ;
           
         case settings.index < 0 :
+          /* validate */ validate && validate.test( '*', 1, 0, 'case settings.index < 0' ) ;
           settings.index = 0 ;
           settings.end = true ;
           break ;
           
         case targets.length <= settings.index :
+          /* validate */ validate && validate.test( '*', 1, 0, 'case targets.length <= settings.index' ) ;
           settings.index = targets.length - 1 ;
           settings.end = true ;
           break ;
           
         case settings.beforehand > settings.index && ( settings.multi || !settings.skip || !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) :
+          /* validate */ validate && validate.test( '*', 1, 0, 'case settings.beforehand > settings.index &&' ) ;
           if ( settings.beforehand === settings.index + 1 ) { settings.beforehand = 0 ; } ;
           fire = true ;
           break ;
           
         default :
+          /* validate */ validate && validate.test( '*', 1, 0, 'default' ) ;
           if ( settings.end || target.is( ':hidden' ) || !settings.multi && settings.skip && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
           
+          /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
           var wj = jQuery( win ) ,
               ws = wj.scrollTop() ,
               wt = 0 ,
@@ -251,22 +271,25 @@
               bottomout ,
               bottomover ;
           
+          /* validate */ validate && validate.test( '++', 1, settings.mode, 'check' ) ;
           switch ( settings.mode ) {
             case 'border' :
               var border = ws + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
               topin = border >= tt ;
               bottomin = border <= tt + th ;
               
-              fire = settings.turn &&
-                     ( settings.direction === 1 ? border - settings.distance > tt
-                                                : border + settings.distance < tt + th ) ? false
-                                                                                         : settings.skip ? topin && bottomin
-                                                                                                         : settings.direction === 1 ? topin
-                                                                                                                                    : bottomin ;
+              /* validate */ validate && validate.test( '++', 1, [ border, topin, bottomin ], 'border' ) ;
+              fire = settings.turn && ( settings.direction === 1 ? border - settings.distance > tt : border + settings.distance < tt + th )
+                     ? false
+                     : settings.skip ? topin && bottomin
+                                     : settings.direction === 1 ? topin
+                                                                : bottomin ;
               break ;
             case 'toggle' :
+              /* validate */ validate && validate.test( '++', 1, [], 'toggle' ) ;
               break ;
             case 'hide' :
+              /* validate */ validate && validate.test( '++', 1, [], 'hide' ) ;
               break ;
             case 'show' :
             default :
@@ -277,41 +300,52 @@
               bottomover = settings.window ? false : bottomin && dt + dh < tt - aheadBottom ;
               //bottomout = ws > tt + th + ahead ;
               
-              fire = settings.turn && settings.multi &&
-                     ( settings.direction === 1 ? ws - settings.distance + wh > tt - ahead
-                                                : ws + settings.distance < tt + th + ahead ) ? false
-                                                                                             : settings.skip ? topin && bottomin
-                                                                                                             : settings.direction === 1 ? topin && !topover
-                                                                                                                                        : bottomin && !bottomover && settings.multi ;
+              /* validate */ validate && validate.test( '++', 1, [ topin, topover, bottomin, bottomover ], 'show' ) ;
+              fire = settings.turn && settings.multi && ( settings.direction === 1 ? ws - settings.distance + wh > tt - ahead : ws + settings.distance < tt + th + ahead )
+                     ? false
+                     : settings.skip ? topin && bottomin
+                                     : settings.direction === 1 ? topin && !topover
+                                                                : bottomin && !bottomover && settings.multi ;
           } ;
       } ;
       
+      /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
       if ( fire ) {
         !settings.multi && ++settings.count && settings.skip && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' , true ) ;
         settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , length : targets.length , direction : settings.direction } ] ) ;
       } ;
       
-      if ( !targets.length ||
-           ( settings.terminate && !settings.multi && settings.step !== 0 && settings.count >= targets.length ) ) {
+      /* validate */ validate && validate.test( '++', 1, 0, 'terminate' ) ;
+      if ( !targets.length || settings.terminate && !settings.multi && settings.step !== 0 && settings.count >= targets.length ) {
         
         var remainder = 0 ;
         
+        /* validate */ validate && validate.test( '*', 1, 0, 'unbind node event' ) ;
         jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
+        /* validate */ validate && validate.test( '++', 1, 0, 'remove data' ) ;
         jQuery.removeData( area , settings.nss.data ) ;
         !settings.multi && settings.skip && targets.removeData( settings.nss.data + '-fired' ) ;
         
         for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ; } ;
+        /* validate */ validate && validate.test( '++', 1, 0, 'unbind root event' ) ;
         !remainder && !settings.window && settings.expand && jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         
+        /* validate */ validate && validate.end() ;
         return plugin_data[ settings.id ] = undefined ;
       } ;
       
-      if ( !settings.end && !fire && isFinite( ahead ) && ( settings.direction === 1 ? !topin : !bottomin ) ) { settings.turn = false ; return ; } ;
+      /* validate */ validate && validate.test( '++', 1, 0, 'exit' ) ;
+      if ( !settings.end && !fire && isFinite( ahead ) && ( settings.direction === 1 ? !topin : !bottomin ) ) {
+        /* validate */ validate && validate.end() ;
+        return settings.turn = false ;
+      } ;
       
+      /* validate */ validate && validate.test( '++', 1, 0, 'increment' ) ;
       settings.index += settings.step === 0 && !fire ? settings.direction
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
                                                                                                         : settings.step * settings.direction ;
       
+      /* validate */ validate && validate.end() ;
       settings.end || arguments.callee.apply( this , arguments ) ;
     }
   }
