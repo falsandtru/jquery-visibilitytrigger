@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.5
+ * @version 1.4.6
  * @updated 2013/08/25
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -80,7 +80,7 @@
         context: this ,
         scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ) ,
         ahead : typeof settings.ahead in { string:0 , number:0 } ? [ settings.ahead , settings.ahead ] : undefined ,
-        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.min( 0 , settings.delay + settings.suspend ) ,
+        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.max( 0 , settings.delay + settings.suspend ) ,
         index : 0 ,
         length : 0 ,
         count : 0 ,
