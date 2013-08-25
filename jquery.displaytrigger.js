@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.6
- * @updated 2013/08/25
+ * @version 1.4.7
+ * @updated 2013/08/26
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -111,8 +111,7 @@
       for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) {
         
         settings.id = plugin_data.length ;
-        settings.height.window = 0 ;
-        settings.height.element = 0 ;
+        settings.height = [ 0 , 0 ] ;
         plugin_data.push( jQuery.extend( true , {} , settings ) ) ;
         
         // custom event
@@ -143,7 +142,7 @@
           if ( settings.suspend && !end ) {
             jQuery( this ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
-              settings && jQuery( this ).bind( settings.nss.displaytrigger , settings.id , fn ).trigger( settings.nss.displaytrigger , [ context , true ] ) ;
+              settings && jQuery( displaytriggercontext ).bind( settings.nss.displaytrigger , settings.id , fn ).trigger( settings.nss.displaytrigger , [ scrollcontext , true ] ) ;
             } , settings.suspend ) ;
           } ;
           
@@ -196,7 +195,7 @@
           targets = jQuery( settings.trigger , area ) ,
           target = targets.eq( settings.index ) ,
           cs = jQuery( scrollcontext ).scrollTop() ,
-          ch = settings.height[ scrollcontext === win ? 'window' : 'element' ] ,
+          ch = settings.height[ Number( scrollcontext === win ) ] ,
           direction = cs === ch ? settings.direction : cs < ch ? -1 : 1 ,
           distance = Math.abs( cs - ch ) ;
       
@@ -209,7 +208,7 @@
         target = targets.eq( settings.index ) ;
       } ;
       settings.distance = distance === 0 ? settings.distance : distance ;
-      settings.height[ scrollcontext === win ? 'window' : 'element' ] = cs ;
+      settings.height[ Number( scrollcontext === win ) ] = cs ;
       settings.end = target[ 0 ] ? false : settings.end ;
       
       if ( settings.direction === -1 && settings.length < targets.length ) { settings.turn = false ; settings.end = false ; } ;
@@ -294,10 +293,10 @@
             case 'show' :
             default :
               topin = wh + ws >= tt - aheadBottom && ( settings.window ? true : dt + dh >= tt - aheadBottom ) ;
-              topover = settings.window ? false : topin && dt > tt + th + aheadTop ;
+              topover = settings.window || scrollcontext !== win ? false : topin && dt > tt + th + aheadTop ;
               //topout = ws < tt - wh - ahead ;
               bottomin = ws <= tt + th + aheadTop && ( settings.window ? true : dt <= tt + th + aheadTop ) ;
-              bottomover = settings.window ? false : bottomin && dt + dh < tt - aheadBottom ;
+              bottomover = settings.window || scrollcontext !== win ? false : bottomin && dt + dh < tt - aheadBottom ;
               //bottomout = ws > tt + th + ahead ;
               
               /* validate */ validate && validate.test( '++', 1, [ topin, topover, bottomin, bottomover ], 'show' ) ;
