@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.7
- * @updated 2013/08/26
+ * @version 1.4.8
+ * @updated 2013/08/27
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -252,11 +252,11 @@
           var wj = jQuery( win ) ,
               ws = wj.scrollTop() ,
               wt = 0 ,
-              wh = wj.outerHeight( true ) ,
+              wh = wj.height() ,
               dj = jQuery( displaytriggercontext ) ,
               //ds = dj.scrollTop() ,
               dt = settings.window ? wt : dj.offset().top ,
-              dh = dj.outerHeight( true ) ,
+              dh = settings.window ? wh : dj.outerHeight( true ) ,
               tt = target.offset().top ,
               th = target.outerHeight( true ) ,
               aheadIndex = Math.max( 0 , settings.direction ) ,
