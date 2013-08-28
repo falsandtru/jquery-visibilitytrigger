@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.4.8
- * @updated 2013/08/27
+ * @version 1.4.9
+ * @updated 2013/08/29
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -35,7 +35,7 @@
   
   jQuery.fn.displaytrigger = jQuery.displaytrigger = function ( options ) {
     
-    if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; } ;
+    if ( typeof this === 'function' ) { return arguments.callee.apply( jQuery( win ) , arguments ) ; }
     
     /* validate */ var validate = window.validator instanceof Object ? window.validator.clone( { name : 'jquery.displaytrigger.js' , base : true } ) : false ;
     /* validate */ validate && validate.start() ;
@@ -97,7 +97,7 @@
     
     
     /* validate */ validate && validate.test( '++', 1, 0, 'register' ) ;
-    if ( settings.scope.length && settings.scope.find( settings.trigger ).length && arguments.length ) { register( settings ) ; } ;
+    if ( settings.scope.length && settings.scope.find( settings.trigger ).length && arguments.length ) { register( settings ) ; }
     
     /* validate */ validate && validate.end() ;
     
@@ -124,27 +124,27 @@
               displaytriggercontext = this ,
               fn = arguments.callee ;
           
-          if ( !settings ) { return ; } ;
+          if ( !settings ) { return ; }
           
           if ( !settings.delay || !context ) {
             drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
           } else {
-            while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
+            while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
             id = setTimeout( function () {
-              if ( !settings ) { return ; } ;
-              while ( id = settings.queue.shift() ) { clearTimeout( id ) ; } ;
+              if ( !settings ) { return ; }
+              while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
               drive( event , settings , displaytriggercontext , scrollcontext || win ) ;
             } , settings.delay ) ;
             
             settings.queue.push( id ) ;
-          } ;
+          }
           
           if ( settings.suspend && !end ) {
             jQuery( this ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
               settings && jQuery( displaytriggercontext ).bind( settings.nss.displaytrigger , settings.id , fn ).trigger( settings.nss.displaytrigger , [ scrollcontext , true ] ) ;
             } , settings.suspend ) ;
-          } ;
+          }
           
         } ) ;
         
@@ -164,7 +164,7 @@
         } ) ;
       
         // root original event
-        if ( i !== 0 ) { continue ; } ;
+        if ( i !== 0 ) { continue ; }
         
         jQuery( win )
         .filter( function () { return !settings.window && settings.expand ; } )
@@ -178,7 +178,7 @@
           var settings = plugin_data[ event.data ] ;
           settings && settings.context.trigger( settings.nss.displaytrigger , [ this ] ) ;
         } ) ;
-      } ;
+      }
     }
     
     function drive( event , settings , displaytriggercontext , scrollcontext ) {
@@ -206,12 +206,12 @@
         settings.direction = direction ;
         settings.index = settings.index < 0 ? 0 : targets.length <= settings.index ? targets.length - 1 : settings.index ;
         target = targets.eq( settings.index ) ;
-      } ;
+      }
       settings.distance = distance === 0 ? settings.distance : distance ;
       settings.height[ Number( scrollcontext === win ) ] = cs ;
       settings.end = target[ 0 ] ? false : settings.end ;
       
-      if ( settings.direction === -1 && settings.length < targets.length ) { settings.turn = false ; settings.end = false ; } ;
+      if ( settings.direction === -1 && settings.length < targets.length ) { settings.turn = false ; settings.end = false ; }
       settings.length = targets.length ;
       
       /* validate */ validate && validate.test( '++', 1, settings, 'switch' ) ;
@@ -240,13 +240,13 @@
           
         case settings.beforehand > settings.index && ( settings.multi || !settings.skip || !jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) :
           /* validate */ validate && validate.test( '*', 1, 0, 'case settings.beforehand > settings.index &&' ) ;
-          if ( settings.beforehand === settings.index + 1 ) { settings.beforehand = 0 ; } ;
+          if ( settings.beforehand === settings.index + 1 ) { settings.beforehand = 0 ; }
           fire = true ;
           break ;
           
         default :
           /* validate */ validate && validate.test( '*', 1, 0, 'default' ) ;
-          if ( settings.end || target.is( ':hidden' ) || !settings.multi && settings.skip && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; } ;
+          if ( settings.end || target.is( ':hidden' ) || !settings.multi && settings.skip && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' ) ) { break ; }
           
           /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
           var wj = jQuery( win ) ,
@@ -305,14 +305,14 @@
                      : settings.skip ? topin && bottomin
                                      : settings.direction === 1 ? topin && !topover
                                                                 : bottomin && !bottomover && settings.multi ;
-          } ;
-      } ;
+          }
+      }
       
       /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
       if ( fire ) {
         !settings.multi && ++settings.count && settings.skip && jQuery.data( target[ 0 ] , settings.nss.data + '-fired' , true ) ;
         settings.callback.apply( target[ 0 ] , [ event , settings.parameter , { index : settings.index , length : targets.length , direction : settings.direction } ] ) ;
-      } ;
+      }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'terminate' ) ;
       if ( !targets.length || settings.terminate && !settings.multi && settings.step !== 0 && settings.count >= targets.length ) {
@@ -325,19 +325,19 @@
         jQuery.removeData( area , settings.nss.data ) ;
         !settings.multi && settings.skip && targets.removeData( settings.nss.data + '-fired' ) ;
         
-        for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ; } ;
+        for ( var i = 0 , element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element , settings.nss.data ) ? 1 : 0 ; }
         /* validate */ validate && validate.test( '++', 1, 0, 'unbind root event' ) ;
         !remainder && !settings.window && settings.expand && jQuery( win ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         
         /* validate */ validate && validate.end() ;
         return plugin_data[ settings.id ] = undefined ;
-      } ;
+      }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'exit' ) ;
       if ( !settings.end && !fire && isFinite( ahead ) && ( settings.direction === 1 ? !topin : !bottomin ) ) {
         /* validate */ validate && validate.end() ;
         return settings.turn = false ;
-      } ;
+      }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'increment' ) ;
       settings.index += settings.step === 0 && !fire ? settings.direction
