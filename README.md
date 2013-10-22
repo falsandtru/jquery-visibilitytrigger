@@ -150,7 +150,7 @@ displaytriggerの動作モードを設定します。`show``border`モード（�
 
 実行する関数は`callback`に設定し、実行時に渡す引数は`parameter`に設定します。引数は第一引数がイベントオブジェクト、第二引数が設定した`parameter`となります。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/install/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/install/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback }).trigger('displaytrigger');
@@ -210,7 +210,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 
 白色のブロックを下方向へのスクロールにより表示された場合は黄色に、上方向へのスクロールにより表示された場合は緑色に塗ります。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/multi/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/multi/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback, multi: true, delay: 300 }).trigger('displaytrigger');
@@ -219,7 +219,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 ###先読み - ahead
 表示領域に`ahead`で設定した距離まで近づいた時点でコールバック関数を実行します。通常は正数を設定しますが今回は負数を設定して表示領域内でコールバック関数の動作を視認できる形で実行させます。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/ahead/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/ahead/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback, ahead: -200 }).trigger('displaytrigger');
@@ -228,7 +228,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 ###事前実行 - beforehand
 先頭から`beforehand`で設定した数のHTML要素のコールバック関数をあらかじめ実行します。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/beforehand/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/beforehand/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback, ahead: -200, beforehand: 10 }).trigger('displaytrigger');
@@ -239,7 +239,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 
 スクロール中の`displaytrigger`イベントをキャンセルすることでトリガー要素の表示状態を確認する回数を大幅に減らすことができるため、実行速度の低い環境（IE8以下のブラウザ）では有効にすることを推奨します。スマートフォンなどのブラウザではスクロールイベントの発生自体が抑制されているため考慮は不要です。実行環境による設定の切り替えは<a href="http://sa-kusaku.sakura.ne.jp/output/clientenv/">jquery.clientenv.js</a>を使用すると簡単に行うことができます
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/delay/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/delay/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback, delay: 1000 }).trigger('displaytrigger');
@@ -248,7 +248,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 ###迂回実行 - skip
 表示領域が瞬間的に移動された場合に、移動元と移動先の間に存在し、移動前後いずれにおいても表示されなかったトリガー要素に対してはコールバック関数を実行しません。旧版のscrolltrigerとの主な相違点となる動作です。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/skip/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/skip/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback, delay: 1000, skip: true }).trigger('displaytrigger');
@@ -257,7 +257,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 ###対象指定 - $.fn.displaytrigger
 指定のHTML要素にイベントアクションを登録できます。`expand: false`を設定しなければ`window`オブジェクトのスクロールイベントからもイベントアクションが起動します。スクロールイベントを持つHTML要素が複数対象となる場合でも個別にイベントを管理します。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/fn/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/fn/" target="_blank">demo</a>**
 
 ```javascript
   $('ol').displaytrigger({ trigger: 'li', callback: callback, ahead: -200, beforehand: 5 }).trigger('displaytrigger');
@@ -266,7 +266,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 ###名前空間 - ns
 ネームスペースを`ns`で設定することで同一の領域に複数のイベントアクションを登録できます。トリガーの引数にネームスペースを加えると個別にイベントアクションが実行されます。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/ns/sequent/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/ns/sequent/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: ['odd'], ahead: -200 }).trigger('displaytrigger.odd');
@@ -275,7 +275,7 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 
 複数のイベントアクションを登録後にネームスペースを設定せずに`displaytrigger`イベントを実行することで同じオブジェクトに登録されているイベントアクションをまとめて実行することもできます。
 
-**<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/demo/ns/mass/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/displaytrigger/demo/ns/mass/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: ['odd'], ahead: -200 });
