@@ -312,3 +312,9 @@ JavaScriptの動作検証とエラーレポートを行う、インストール�
 
 ###<a href="http://sa-kusaku.sakura.ne.jp/output/spage/">spage</a>
 AutoPagerやAutoPatchWorkのようなページの自動読み込み＆継ぎ足し機能をウェブサイトに実装します。
+
+<style>
+body {
+  font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", Helvetica, Arial, freesans, clean, sans-serif;
+}
+</style>
