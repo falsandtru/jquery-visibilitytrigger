@@ -49,14 +49,14 @@ v1.4.2から動作します。
 ####*$.displaytrigger( Parameter as object )*
 イベントアクション（displaytriggerカスタムイベント）を登録します。`window`オブジェクトに登録されます。複数の登録を行う場合は個別にネームスペースを設定してください。
 
-このプラグインは独自の`displaytrigger`イベントを持ち、末尾に`.trigger('displaytrigger')`を加えて`displaytrigger`イベントを実行することで`scroll`イベントを発生させずにイベントアクションを実行させることができます。ネームスペースを設定した場合は`.trigger('displaytrigger.namespace')`となります。ネームスペースを設定せずに`.trigger('displaytrigger')`により`displaytrigger`イベントを実行した場合、同じオブジェクトに登録されたすべての`displaytrigger`イベントとそのイベントアクションが実行されます。`scroll`イベントを介さず`displaytrigger`イベントを直接実行するため`scroll`イベントとそのイベントアクションに影響を与えません。displaytriggerのイベントアクションの実行によりトリガー要素がチェックされ、条件に一致するトリガー要素を基点として個別にコールバック関数が実行されます。独自イベント名は初期値では`displaytrigger`となっていますが`gns`プロパティを設定することで変更できます。
+このプラグインは独自の`displaytrigger`イベントを持ち、末尾に`.trigger('displaytrigger')`を加えて`displaytrigger`イベントを実行することで`scroll`イベントを発生させずにイベントアクションを実行させることができます。ネームスペースを設定した場合は`.trigger('displaytrigger.namespace')`となります。ネームスペースを設定せずに`.trigger('displaytrigger')`により`displaytrigger`イベントを実行した場合、同じオブジェクトに登録されたすべての`displaytrigger`イベントとそのイベントアクションが実行されます。`scroll`イベントを介さず`displaytrigger`イベントを直接実行するため`scroll`イベントとそのイベントアクションに影響を与えません。displaytriggerのイベントアクションの実行によりトリガー要素がチェックされ、条件に一致するトリガー要素を基点として個別にコールバック関数が実行されます。`mult`パラメータが無効かつ`skip`パラメータが有効である場合のみ、コールバック関数の戻り値に`false`を指定することで実行をスキップすることができます。独自イベント名は初期値では`displaytrigger`となっていますが`gns`パラメータを設定することで変更できます。
 
 ```javascript
 $.displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
 ```
 
 ####*$.fn.displaytrigger( Parameter as object )*
-CSSの`overflow`プロパティの値を`auto`または`scroll`に設定し、かつ、`position`プロパティの値を初期値である`static`以外に設定した個別のHTML要素にイベントアクションを登録できます。
+CSSの`overflow`パラメータの値を`auto`または`scroll`に設定し、かつ、`position`パラメータの値を初期値である`static`以外に設定した個別のHTML要素にイベントアクションを登録できます。
 
 `expand: false`を設定せずに`$.fn.displaytrigger`により複数のHTML要素に登録を行う場合は必ずネームスペースを設定してください。
 
@@ -251,7 +251,14 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 **<a href="http://falsandtru.github.io/displaytrigger/demo/skip/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, delay: 1000, skip: true }).trigger('displaytrigger');
+  $.displaytrigger({ trigger: 'li', callback: callback, skip: true }).trigger('displaytrigger');
+```
+
+###実行中止 - return false
+コールバック関数の戻り値に`false`を設定した場合、そのトリガー要素のイベントアクションを実行しなかったものとして扱い、再度実行可能な状態にします。`skip`が無効または`multi`が有効である場合は無効です。
+
+```javascript
+  $.displaytrigger({ trigger: 'li', callback: callback, skip: true }).trigger('displaytrigger');
 ```
 
 ###対象指定 - $.fn.displaytrigger
