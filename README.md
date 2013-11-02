@@ -255,7 +255,9 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
 ```
 
 ###実行中止 - return false
-コールバック関数の戻り値に`false`を設定した場合、そのトリガー要素のイベントアクションを実行しなかったものとして扱い、再度実行可能な状態にします。`skip`が無効または`multi`が有効である場合は無効です。
+コールバック関数の戻り値に`false`を設定した場合、そのトリガー要素のイベントアクションを実行しなかったものとして扱い、再度実行可能な状態にします。`skip`が無効または`multi`が有効である場合は無効です。デモは5の倍数番目の要素が1回目の実行はキャンセルされ2回目の実行で完了します。
+
+**<a href="http://falsandtru.github.io/displaytrigger/demo/cancel/" target="_blank">demo</a>**
 
 ```javascript
   $.displaytrigger({ trigger: 'li', callback: callback, skip: true }).trigger('displaytrigger');
