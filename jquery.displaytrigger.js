@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.5.0
- * @updated 2013/11/01
+ * @version 1.5.1
+ * @updated 2013/11/03
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -149,7 +149,7 @@
         } ) ;
         
         // node original event
-        jQuery.data( element, settings.nss.data, true ) ;
+        jQuery.data( element, settings.nss.data, settings.id ) ;
         
         jQuery( element )
         .unbind( settings.nss.scroll )
@@ -200,6 +200,7 @@
           distance = Math.abs( cs - ch ) ;
       
       /* validate */ validate && validate.test( '++', 1, 0, 'setting' ) ;
+      if ( settings.id !== jQuery.data( displaytriggercontext, settings.nss.data ) ) { return plugin_data[ settings.id ] = undefined ; }
       if ( settings.direction !== direction ) {
         settings.turn = true ;
         settings.end = false ;
@@ -310,9 +311,9 @@
       
       /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
       if ( fire ) {
-        !settings.multi && ++settings.count && settings.skip && jQuery.data( target[ 0 ], settings.nss.data + '-fired', true ) ;
+        !settings.multi && ++settings.count && settings.skip && jQuery.data( target[ 0 ], settings.nss.data + '-fired', settings.id ) ;
         false === settings.callback.apply( target[ 0 ], [ event, settings.parameter, { index : settings.index, length : targets.length, direction : settings.direction } ] ) &&
-        !settings.multi && --settings.count && settings.skip && jQuery.removeData( target[ 0 ], settings.nss.data + '-fired' ) && ( fire = false ) ;
+        !settings.multi && settings.count-- && settings.skip && jQuery.removeData( target[ 0 ], settings.nss.data + '-fired' ) && ( fire = false ) ;
       }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'terminate' ) ;
