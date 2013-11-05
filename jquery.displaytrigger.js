@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.5.1
- * @updated 2013/11/03
+ * @version 1.5.2
+ * @updated 2013/11/05
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -80,7 +80,7 @@
         context: this,
         scope : this[ 0 ] === win ? jQuery( doc ) : jQuery( this ),
         ahead : typeof settings.ahead in { string:0, number:0 } ? [ settings.ahead, settings.ahead ] : undefined,
-        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend ) : Math.max( 0, settings.delay + settings.suspend ),
+        suspend : 1 <= settings.suspend ? settings.suspend : 0 <= settings.suspend ? parseInt( settings.delay * settings.suspend, 10 ) : Math.max( 0, parseInt( settings.delay + settings.suspend, 10 ) ),
         index : 0,
         length : 0,
         count : 0,
@@ -261,8 +261,8 @@
               tt = target.offset().top,
               th = target.outerHeight( true ),
               aheadIndex = Math.max( 0, settings.direction ),
-              aheadTop = -1 <= settings.ahead[ 0 ] && settings.ahead[ 0 ] <= 1 ? parseInt( wh * settings.ahead[ 0 ] ) : parseInt( settings.ahead[ 0 ] ),
-              aheadBottom = -1 <= settings.ahead[ 1 ] && settings.ahead[ 1 ] <= 1 ? parseInt( wh * settings.ahead[ 1 ] ) : parseInt( settings.ahead[ 1 ] ),
+              aheadTop = -1 <= settings.ahead[ 0 ] && settings.ahead[ 0 ] <= 1 ? parseInt( wh * settings.ahead[ 0 ], 10 ) : parseInt( settings.ahead[ 0 ], 10 ),
+              aheadBottom = -1 <= settings.ahead[ 1 ] && settings.ahead[ 1 ] <= 1 ? parseInt( wh * settings.ahead[ 1 ], 10 ) : parseInt( settings.ahead[ 1 ], 10 ),
               ahead = aheadIndex ? aheadBottom : aheadTop,
               topin,
               topout,
