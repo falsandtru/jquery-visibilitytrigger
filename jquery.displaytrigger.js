@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.5.2
- * @updated 2013/11/05
+ * @version 1.5.3
+ * @updated 2013/11/11
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -198,6 +198,8 @@
           ch = settings.height[ Number( scrollcontext === win ) ],
           direction = cs === ch ? settings.direction : cs < ch ? -1 : 1,
           distance = Math.abs( cs - ch ) ;
+      
+      if ( !settings.skip && !settings.multi && 0 > direction ) { return ; }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'setting' ) ;
       if ( settings.id !== jQuery.data( displaytriggercontext, settings.nss.data ) ) { return plugin_data[ settings.id ] = undefined ; }
