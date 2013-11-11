@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.5.3
- * @updated 2013/11/11
+ * @version 1.5.4
+ * @updated 2013/11/12
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -127,13 +127,21 @@
           if ( !settings ) { return ; }
           
           if ( !settings.delay || !context ) {
-            drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
+            if ( settings.id === jQuery.data( displaytriggercontext, settings.nss.data ) ) {
+              drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
+            } else {
+              plugin_data[ settings.id ] = undefined ;
+            }
           } else {
             while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
             id = setTimeout( function () {
               if ( !settings ) { return ; }
               while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
-              drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
+                if ( settings.id === jQuery.data( displaytriggercontext, settings.nss.data ) ) {
+                  drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
+                } else {
+                  plugin_data[ settings.id ] = undefined ;
+                }
             }, settings.delay ) ;
             
             settings.queue.push( id ) ;
@@ -202,7 +210,6 @@
       if ( !settings.skip && !settings.multi && 0 > direction ) { return ; }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'setting' ) ;
-      if ( settings.id !== jQuery.data( displaytriggercontext, settings.nss.data ) ) { return plugin_data[ settings.id ] = undefined ; }
       if ( settings.direction !== direction ) {
         settings.turn = true ;
         settings.end = false ;
