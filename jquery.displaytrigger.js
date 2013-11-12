@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.5.4
- * @updated 2013/11/12
+ * @version 1.5.5
+ * @updated 2013/11/13
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -108,6 +108,7 @@
     
     function register( settings ) {
       
+      !settings.multi && jQuery( settings.trigger, settings.window ? doc : settings.context ).removeData( settings.nss.data + '-fired' ) ;
       for ( var i = 0, element ; element = settings.context[ i ] ; i++ ) {
         
         settings.id = plugin_data.length ;
@@ -127,21 +128,15 @@
           if ( !settings ) { return ; }
           
           if ( !settings.delay || !context ) {
-            if ( settings.id === jQuery.data( displaytriggercontext, settings.nss.data ) ) {
-              drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
-            } else {
-              plugin_data[ settings.id ] = undefined ;
-            }
+            duplication( settings, displaytriggercontext ) &&
+            drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
           } else {
             while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
             id = setTimeout( function () {
               if ( !settings ) { return ; }
               while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
-                if ( settings.id === jQuery.data( displaytriggercontext, settings.nss.data ) ) {
-                  drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
-                } else {
-                  plugin_data[ settings.id ] = undefined ;
-                }
+              duplication( settings, displaytriggercontext ) &&
+              drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
             }, settings.delay ) ;
             
             settings.queue.push( id ) ;
@@ -150,8 +145,16 @@
           if ( settings.suspend && !end ) {
             jQuery( this ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
-              settings && jQuery( displaytriggercontext ).bind( settings.nss.displaytrigger, settings.id, fn ).trigger( settings.nss.displaytrigger, [ scrollcontext, true ] ) ;
+              if ( !settings ) { return ; }
+              duplication( settings, displaytriggercontext ) &&
+              jQuery( displaytriggercontext ).bind( settings.nss.displaytrigger, settings.id, fn ).trigger( settings.nss.displaytrigger, [ scrollcontext, true ] ) ;
             }, settings.suspend ) ;
+          }
+          
+          function duplication( settings, displaytriggercontext ) {
+            var result = true ;
+            if ( settings.id !== jQuery.data( displaytriggercontext, settings.nss.data ) ) { result = plugin_data[ settings.id ] = undefined ; }
+            return result;
           }
           
         } ) ;
@@ -207,8 +210,6 @@
           direction = cs === ch ? settings.direction : cs < ch ? -1 : 1,
           distance = Math.abs( cs - ch ) ;
       
-      if ( !settings.skip && !settings.multi && 0 > direction ) { return ; }
-      
       /* validate */ validate && validate.test( '++', 1, 0, 'setting' ) ;
       if ( settings.direction !== direction ) {
         settings.turn = true ;
@@ -248,7 +249,7 @@
           settings.end = true ;
           break ;
           
-        case settings.beforehand > settings.index && ( settings.multi || !settings.skip || !jQuery.data( target[ 0 ], settings.nss.data + '-fired' ) ) :
+        case settings.beforehand > settings.index && ( settings.multi || !jQuery.data( target[ 0 ], settings.nss.data + '-fired' ) ) :
           /* validate */ validate && validate.test( '*', 1, 0, 'case settings.beforehand > settings.index &&' ) ;
           if ( settings.beforehand === settings.index + 1 ) { settings.beforehand = 0 ; }
           fire = true ;
@@ -256,7 +257,7 @@
           
         default :
           /* validate */ validate && validate.test( '*', 1, 0, 'default' ) ;
-          if ( settings.end || target.is( ':hidden' ) || !settings.multi && settings.skip && jQuery.data( target[ 0 ], settings.nss.data + '-fired' ) ) { break ; }
+          if ( settings.end || target.is( ':hidden' ) || !settings.multi && jQuery.data( target[ 0 ], settings.nss.data + '-fired' ) ) { break ; }
           
           /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
           var wj = jQuery( win ),
@@ -313,16 +314,16 @@
               fire = settings.turn && settings.multi && ( settings.direction === 1 ? ws - settings.distance + wh > tt - ahead : ws + settings.distance < tt + th + ahead )
                      ? false
                      : settings.skip ? topin && bottomin
-                                     : settings.direction === 1 ? topin && !topover
-                                                                : bottomin && !bottomover && settings.multi ;
+                                     : settings.direction === 1 || !settings.multi ? topin && !topover
+                                                                                   : bottomin && !bottomover ;
           }
       }
       
       /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
       if ( fire ) {
-        !settings.multi && ++settings.count && settings.skip && jQuery.data( target[ 0 ], settings.nss.data + '-fired', settings.id ) ;
+        !settings.multi && ++settings.count && jQuery.data( target[ 0 ], settings.nss.data + '-fired', settings.id ) ;
         false === settings.callback.apply( target[ 0 ], [ event, settings.parameter, { index : settings.index, length : targets.length, direction : settings.direction } ] ) &&
-        !settings.multi && settings.count-- && settings.skip && jQuery.removeData( target[ 0 ], settings.nss.data + '-fired' ) && ( fire = false ) ;
+        !settings.multi && settings.count-- && jQuery.removeData( target[ 0 ], settings.nss.data + '-fired' ) && ( fire = false ) ;
       }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'terminate' ) ;
@@ -334,7 +335,7 @@
         jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ).unbind( settings.nss.scroll ).unbind( settings.nss.resize ) ;
         /* validate */ validate && validate.test( '++', 1, 0, 'remove data' ) ;
         jQuery.removeData( area, settings.nss.data ) ;
-        !settings.multi && settings.skip && targets.removeData( settings.nss.data + '-fired' ) ;
+        !settings.multi && targets.removeData( settings.nss.data + '-fired' ) ;
         
         for ( var i = 0, element ; element = settings.context[ i ] ; i++ ) { remainder += jQuery.data( element, settings.nss.data ) ? 1 : 0 ; }
         /* validate */ validate && validate.test( '++', 1, 0, 'unbind root event' ) ;
@@ -353,7 +354,8 @@
       /* validate */ validate && validate.test( '++', 1, 0, 'increment' ) ;
       settings.index += settings.step === 0 && !fire ? settings.direction
                                                      : settings.step === 0 && settings.direction === -1 ? settings.direction
-                                                                                                        : settings.step * settings.direction ;
+                                                                                                        : !settings.multi && !settings.skip ? settings.step
+                                                                                                                                            : settings.step * settings.direction ;
       
       /* validate */ validate && validate.end() ;
       settings.end || arguments.callee.apply( this, arguments ) ;
