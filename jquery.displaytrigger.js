@@ -4,9 +4,9 @@
  * 
  * ---
  * @Copyright(c) 2012, falsandtru
- * @license MIT  http://opensource.org/licenses/mit-license.php  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
- * @version 1.5.5
- * @updated 2013/11/13
+ * @license MIT http://opensource.org/licenses/mit-license.php
+ * @version 1.6.0
+ * @updated 2013/11/15
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -54,9 +54,11 @@
           step : 1,
           multi : false,
           skip : false,
+          jump : 0,
           expand : true,
           delay : 300,
           suspend : -100,
+          interval : 0,
           mode : 'show',
           terminate : true
         },
@@ -90,6 +92,7 @@
         turn : false,
         end : false,
         queue : [],
+        timestamp : 0,
         options : options,
         validate : validate
       }
@@ -128,14 +131,14 @@
           if ( !settings ) { return ; }
           
           if ( !settings.delay || !context ) {
-            duplication( settings, displaytriggercontext ) &&
+            duplication( settings ) && ( !context || settings.interval <= ( new Date() ).getTime() - settings.timestamp ) &&
             drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
           } else {
             while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
             id = setTimeout( function () {
               if ( !settings ) { return ; }
               while ( id = settings.queue.shift() ) { clearTimeout( id ) ; }
-              duplication( settings, displaytriggercontext ) &&
+              duplication( settings ) && settings.interval <= ( new Date() ).getTime() - settings.timestamp &&
               drive( event, settings, displaytriggercontext, scrollcontext || win ) ;
             }, settings.delay ) ;
             
@@ -146,17 +149,15 @@
             jQuery( this ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
               if ( !settings ) { return ; }
-              duplication( settings, displaytriggercontext ) &&
+              duplication( settings ) &&
               jQuery( displaytriggercontext ).bind( settings.nss.displaytrigger, settings.id, fn ).trigger( settings.nss.displaytrigger, [ scrollcontext, true ] ) ;
             }, settings.suspend ) ;
           }
           
-          function duplication( settings, displaytriggercontext ) {
-            var result = true ;
-            if ( settings.id !== jQuery.data( displaytriggercontext, settings.nss.data ) ) { result = plugin_data[ settings.id ] = undefined ; }
-            return result;
+          function duplication( settings ) {
+            if ( settings.id === jQuery.data( displaytriggercontext, settings.nss.data ) ) { return true ; }
+            plugin_data[ settings.id ] = undefined ;
           }
-          
         } ) ;
         
         // node original event
@@ -282,6 +283,17 @@
               bottomover ;
           
           /* validate */ validate && validate.test( '++', 1, settings.mode, 'check' ) ;
+          if ( settings.jump ) {
+            var next, prev;
+            next = jQuery( targets[ settings.index + settings.step * settings.jump * settings.direction ] ) ;
+            prev = jQuery( targets[ settings.index - settings.step * settings.jump * settings.direction ] ) ;
+            if ( 1 === settings.direction ) {
+              fire = prev[ 0 ] && prev.offset().top > tt || next[ 0 ] && next.offset().top <= tt ;
+            } else {
+              fire = prev[ 0 ] && prev.offset().top + prev.outerHeight( true ) >= tt || next[ 0 ] && next.offset().top + next.outerHeight( true ) < tt + th ;
+            }
+            if ( fire ) { break ; }
+          }
           switch ( settings.mode ) {
             case 'border' :
               var border = ws + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
@@ -321,6 +333,22 @@
       
       /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
       if ( fire ) {
+        if ( settings.interval ) {
+          var now = ( new Date() ).getTime() ;
+          if ( settings.interval <= now - settings.timestamp ) {
+            settings.timestamp = now ;
+          } else {
+            id = setTimeout( function () {
+              if ( !settings ) { return ; }
+              jQuery( displaytriggercontext ).trigger( settings.nss.displaytrigger, [ scrollcontext, true ] ) ;
+            }, Math.max( settings.interval - now + settings.timestamp, 50 ) ) ;
+            settings.queue.push( id ) ;
+            
+            /* validate */ validate && validate.end() ;
+            return settings.turn = false ;
+          }
+        }
+        
         !settings.multi && ++settings.count && jQuery.data( target[ 0 ], settings.nss.data + '-fired', settings.id ) ;
         false === settings.callback.apply( target[ 0 ], [ event, settings.parameter, { index : settings.index, length : targets.length, direction : settings.direction } ] ) &&
         !settings.multi && settings.count-- && jQuery.removeData( target[ 0 ], settings.nss.data + '-fired' ) && ( fire = false ) ;

@@ -105,6 +105,9 @@ $('.container').displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
 ####*skip: boolean*
 画面の表示領域外に存在するトリガー要素のコールバック関数の実行をスキップするかを設定します。初期値は`false`であり、旧版であるscrolltriggerの互換として動作します。この場合、画面の表示領域外であっても画面の下端より上に位置しているすべてのトリガー要素でコールバック関数が実行されます。
 
+####*jump: Index as number*
+スクロール方向に向かって設定数分先のトリガー要素の位置を調べ、表示順序（位置）が現在のトリガー要素より後になければコールバック関数を実行します。初期値は`0`で無効です。
+
 ####*expand: boolean*
 `$.fn.displaytrigger`により登録したイベントアクションを、設定したHTML要素のスクロールに加えて`window`オブジェクトのスクロールからも実行させるかを設定します。初期値は`true`で有効です。
 
@@ -114,13 +117,16 @@ $('.container').displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
 コールバック関数（正確にはコールバック関数を実行するかを決めるトリガー要素のチェック）がスクロールイベント発生後実行されるまでの待機時間をミリ秒で設定します。待機時間が経過する前に新たなスクロールが行われた場合は前回までのスクロールによる待機中のコールバック関数の実行はキャンセルされます。jQueryの`trigger`メソッドによりdisplaytriggerイベントを直接発生させた場合は`delay`の設定にかかわらずただちに実行されます。初期値は`300`です。
 
 ####*suspend: number*
-displaytriggerイベントの発生後、このイベントの発生を抑制する時間をミリ秒で設定します。抑制中はdisplaytriggerイベントを発生させても無効となります。設定値を0にするとイベントが抑制されません。初期値は`-100`です。
+`displaytrigger`イベントの発生後、このイベントの発生を抑制する時間をミリ秒で設定します。抑制中はdisplaytriggerイベントを発生させても無効となります。設定値を0にするとイベントが抑制されません。初期値は`-100`です。
 
 #####*suspend: Millisecond as number*
 設定値が正数である場合、設定値が抑制時間となります。設定値が負数である場合、`delay`に設定値を加えた値（最小値を0とする`delay`より短い時間）が抑制時間となります。
 
 #####*suspend: Rate as number*
 設定値が0以上1未満の小数である場合、`delay`に設定値を乗じた値が抑制時間となります。
+
+####*interval: Millisecond as number*
+コールバック関数の実行間隔をミリ秒で設定します。初期値は`0`で無効です。
 
 ####*mode: Mode as string*
 displaytriggerの動作モードを設定します。`show``border`モード（設定値）が設定できます。初期値は`"show"`です。
@@ -254,7 +260,16 @@ displaytriggerの動作がもっとも可視化されたデモであり、旧版
   $.displaytrigger({ trigger: 'li', callback: callback, skip: true }).trigger('displaytrigger');
 ```
 
-###実行中止 - return false
+###例外実行 - jump
+やむを得ず表示順序が逆転するトリガー要素が含まれる場合に使用します。単にマルチカラムやCSSのミスへの対応のために使用するべきではありません。
+
+**<a href="http://falsandtru.github.io/displaytrigger/demo/jump/" target="_blank">demo</a>**
+
+```javascript
+  $.displaytrigger({ trigger: 'li', callback: callback, jump: 10 }).trigger('displaytrigger');
+```
+
+###実行撤回 - return false
 コールバック関数の戻り値に`false`を設定した場合、そのトリガー要素のイベントアクションを実行しなかったものとして扱い、再度実行可能な状態にします。`skip`が無効または`multi`が有効である場合は無効です。デモは5の倍数番目の要素が1回目の実行はキャンセルされ2回目の実行で完了します。
 
 **<a href="http://falsandtru.github.io/displaytrigger/demo/cancel/" target="_blank">demo</a>**
