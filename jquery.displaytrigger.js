@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 1.6.0
- * @updated 2013/11/15
+ * @version 1.6.1
+ * @updated 2013/11/23
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -146,7 +146,7 @@
           }
           
           if ( settings.suspend && !end ) {
-            jQuery( this ).unbind( settings.nss.displaytrigger ) ;
+            jQuery( displaytriggercontext ).unbind( settings.nss.displaytrigger ) ;
             setTimeout( function () {
               if ( !settings ) { return ; }
               duplication( settings ) &&
@@ -204,6 +204,7 @@
           doc = document,
           area = settings.window ? doc : displaytriggercontext,
           fire = false,
+          checked = false,
           targets = jQuery( settings.trigger, area ),
           target = targets.eq( settings.index ),
           cs = jQuery( scrollcontext ).scrollTop(),
@@ -294,6 +295,7 @@
             }
             if ( fire ) { break ; }
           }
+          
           switch ( settings.mode ) {
             case 'border' :
               var border = ws + ( settings.direction === 1 ? -ahead : wh + ahead ) ;
@@ -329,6 +331,8 @@
                                      : settings.direction === 1 || !settings.multi ? topin && !topover
                                                                                    : bottomin && !bottomover ;
           }
+          
+          checked = true ;
       }
       
       /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
@@ -374,7 +378,7 @@
       }
       
       /* validate */ validate && validate.test( '++', 1, 0, 'exit' ) ;
-      if ( !settings.end && !fire && isFinite( ahead ) && ( settings.direction === 1 ? !topin : !bottomin ) ) {
+      if ( !settings.end && !fire && checked && ( settings.direction === 1 ? !topin : !bottomin ) ) {
         /* validate */ validate && validate.end() ;
         return settings.turn = false ;
       }

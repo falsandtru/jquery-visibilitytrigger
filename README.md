@@ -126,7 +126,7 @@ $('.container').displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
 設定値が0以上1未満の小数である場合、`delay`に設定値を乗じた値が抑制時間となります。
 
 ####*interval: Millisecond as number*
-コールバック関数の実行間隔をミリ秒で設定します。初期値は`0`で無効です。
+コールバック関数の実行間隔をミリ秒で設定します。`skip`が有効である場合のみ有効となります。初期値は`0`で無効です。
 
 ####*mode: Mode as string*
 displaytriggerの動作モードを設定します。`show``border`モード（設定値）が設定できます。初期値は`"show"`です。
