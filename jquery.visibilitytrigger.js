@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.1
- * @updated 2013/11/29
+ * @version 0.0.2
+ * @updated 2013/11/30
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -55,12 +55,16 @@
     /* validate */ validate && validate.test( '++', 1, [ option ], 'visibilitytrigger()' ) ;
     
     /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
-    var $context = this instanceof jQuery ? this.add() : this ;
+    var $context = this ;
     
     // polymorphism
     switch ( true ) {
+      case typeof option === 'object' && ( jQuery( option, document )[0] || option === window || option === document ):
+        $context = $context instanceof jQuery ? $context.add( option ) : jQuery( option ) ;
+        Store.setProperties.call( $context, null, Store ) ;
+        return $context ;
       case typeof option === 'object':
-        $context = $context instanceof jQuery ? $context : jQuery( document ) ;
+        $context = $context instanceof jQuery ? $context.add() : jQuery( document ) ;
         Store.setAlias( option.gns ) ;
         Store.setProperties.call( $context, option.ns || '', Store ) ;
         if ( !option.trigger || !option.callback ) {
@@ -70,6 +74,7 @@
         
       case option === 'string':
       default :
+        $context = $context instanceof jQuery ? $context.add() : $context ;
         Store.setAlias( option ) ;
         Store.setProperties.call( $context, null, Store ) ;
         return $context ;
@@ -293,10 +298,8 @@
       return this ;
     },
     setAlias:  function ( name ) {
-      name = name || Store.alias ;
-      name = name ? String( name ) : '' ;
-      if ( name && Store.name !== name && !jQuery[ name ] ) {
-        Store.alias = name ;
+      Store.alias = typeof name === 'string' ? name : Store.alias ;
+      if ( Store.name !== Store.alias && !jQuery[ Store.alias ] ) {
         jQuery.fn[ Store.alias ] = jQuery[ Store.alias ] = jQuery.fn[ Store.name ] ;
       }
     },
