@@ -354,7 +354,7 @@ visibilitytriggerの動作がもっとも可視化されたデモです。
 ```javascript
   $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: 'odd' });
   $.vt({ ns: 'even', trigger: 'li:even', callback: callback, parameter: 'even' });
-  $(document).vt().vtrigger()  /* または $(window).vtrigger(); */
+  $.vt(document).vtrigger();
 ```
 
 ##補足
