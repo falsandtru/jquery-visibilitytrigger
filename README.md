@@ -1,6 +1,6 @@
-#displaytrigger
+#visibilitytrigger
 
-displaytriggerは特定のHTML要素が画面内に表示されることをトリガーとしてスクリプトを遅延実行するjQueryプラグインです。
+visibilitytrigger(vt)は特定のHTML要素が画面内に表示されることをトリガーとしてスクリプトを遅延実行するjQueryプラグインです。
 
 ページの初期表示時において、表示領域外にあるコンテンツの読み込みやこれに対するスクリプトの実行などを抑制・待機することでページの表示を高速化することができます。
 
@@ -10,15 +10,15 @@ displaytriggerは特定のHTML要素が画面内に表示されることをト�
 たとえば、LazyLoadのような画像遅延読み込み機能を次のような形で簡単に実装できます。
 
 ```javascript
-$.displaytrigger({
+$.visibilitytrigger({
   trigger : 'img[data-origin]' ,
   callback : function(){ this.src = $(this).attr('data-origin'); }
-}).trigger('displaytrigger') ;
+}).vtrigger() ;
 ```
 
-<a href="http://sa-kusaku.sakura.ne.jp/output/displaytrigger/" target="_blank">このサイト</a>の画像読み込みやコードのシンタックスハイライトもdisplaytriggerの機能により実行されています。これは、スマートフォンなど処理能力の低い端末でサイトを表示する場合に顕著なレスポンス向上効果があります。
+<a href="http://sa-kusaku.sakura.ne.jp/output/visibilitytrigger/" target="_blank">このサイト</a>の画像読み込みやコードのシンタックスハイライトもvisibilitytriggerの機能により実行されています。これは、スマートフォンなど処理能力の低い端末でサイトを表示する場合に顕著なレスポンス向上効果があります。
 
-※パラメータで`skip`を有効にしていない場合、画面の下端より上に位置しているトリガーとなるHTML要素（以下トリガー要素）は画面の表示領域外にあってもすべて表示されているものとして扱われ、コールバック関数が実行されます（旧版であるscrolltriggerの互換動作）。
+※パラメータで`skip`を有効にしていない場合、画面の下端より上に位置しているトリガーとなるHTML要素（以下トリガー要素）は画面の表示領域外にあってもすべて表示されているものとして扱われ、コールバック関数が実行されます。
 
 ##特徴
 
@@ -34,10 +34,20 @@ $.displaytrigger({
 ##対応
 
 + コールバック関数を実行する画面端からの距離の設定（`ahead`）。
-+ displaytriggerの実行頻度の制御（`delay``suspend`）。
++ visibilitytriggerの実行頻度の制御（`delay``suspend`）。
 + <a href="http://sa-kusaku.sakura.ne.jp/output/validator/">validator</a>によるユーザー環境下でのエラー検出
 
 ##使用法
+visibilitytriggerはvtというエイリアスで呼び出すことができます。以下、vtをvisibilitytriggerの略称として使用します。また、エイリアスはすでにjQueryで使用されていない範囲で自由に追加することができます。ただし、最初の1回は必ずvisibilitytriggerを使用してエイリアスを登録しなければなりません。
+
+###用語
+説明のため以下のとおり定義して用語を使用します。
+
+####イベントアクション
+クリックやスクロールなどのイベントに結び付けられて実行される関数の動作
+
+####トリガー要素
+表示状態の確認対象であるHTML要素
 
 ###jQuery
 v1.7.2の使用を推奨します。
@@ -46,41 +56,74 @@ v1.4.2から動作します。
 
 ###Register
 
-####*$.displaytrigger( Parameter as object )*
-イベントアクション（displaytriggerカスタムイベント）を登録します。`window`オブジェクトに登録されます。複数の登録を行う場合は個別にネームスペースを設定してください。
+####*$.visibilitytrigger( Setting as object )*
+####*$.fn.visibilitytrigger( Setting as object )*
+イベントアクション（vtカスタムイベント）を登録します。コンテキストが指定されなかった場合は`document`オブジェクトに登録されます。コンテキストには複数の要素を設定することができ、実行状態は個別に管理されます。複数回vtを実行して登録する場合は個別にネームスペースを設定してください。
 
-このプラグインは独自の`displaytrigger`イベントを持ち、末尾に`.trigger('displaytrigger')`を加えて`displaytrigger`イベントを実行することで`scroll`イベントを発生させずにイベントアクションを実行させることができます。ネームスペースを設定した場合は`.trigger('displaytrigger.namespace')`となります。ネームスペースを設定せずに`.trigger('displaytrigger')`により`displaytrigger`イベントを実行した場合、同じオブジェクトに登録されたすべての`displaytrigger`イベントとそのイベントアクションが実行されます。`scroll`イベントを介さず`displaytrigger`イベントを直接実行するため`scroll`イベントとそのイベントアクションに影響を与えません。displaytriggerのイベントアクションの実行によりトリガー要素がチェックされ、条件に一致するトリガー要素を基点として個別にコールバック関数が実行されます。`mult`パラメータが無効かつ`skip`パラメータが有効である場合のみ、コールバック関数の戻り値に`false`を指定することで実行をスキップすることができます。独自イベント名は初期値では`displaytrigger`となっていますが`gns`パラメータを設定することで変更できます。
-
-```javascript
-$.displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
-```
-
-####*$.fn.displaytrigger( Parameter as object )*
-CSSの`overflow`パラメータの値を`auto`または`scroll`に設定し、かつ、`position`パラメータの値を初期値である`static`以外に設定した個別のHTML要素にイベントアクションを登録できます。
-
-`expand: false`を設定せずに`$.fn.displaytrigger`により複数のHTML要素に登録を行う場合は必ずネームスペースを設定してください。
+このプラグインは独自の`vt`イベントを持ち、末尾に`.vtrigger()`を加えて`vt`イベントを実行することで`scroll`イベントを発生させずにイベントアクションを実行させることができます。ネームスペースを設定した場合は`.vtrigger('namespace')`となります。`scroll`イベントを介さず`vt`イベントを直接実行するため`scroll`イベントとそのイベントアクションに影響を与えません。vtのイベントアクションの実行によりトリガー要素がチェックされ、条件に一致するトリガー要素を基点として個別にコールバック関数が実行されます。`mult`パラメータが無効かつ`skip`パラメータが有効である場合のみ、コールバック関数の戻り値に`false`を指定することで実行をスキップすることができます。
 
 ```javascript
-$('.container').displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
+$.visibilitytrigger({ trigger:'.target' }).vtrigger();
+$('.container').visibilitytrigger({ trigger:'.target' }).vtrigger();
 ```
+
+####*$.visibilitytrigger( Alias as string )*
+####*$.visibilitytrigger()*
+visibilitytriggerのエイリアスを登録します。パラメータが設定されなかった場合は初期値である`vt`が登録されます。空文字`''`を設定した場合は初期値が削除されエイリアスが登録されません。
+
+```javascript
+$.visibilitytrigger();
+$.vt('vtalias');
+$.vtalias(Setting);
+```
+
+```javascript
+$.visibilitytrigger('');
+$.vt(); // error
+```
+
 
 ###Parameter
 パラメータはすべてパラメータ用オブジェクトのプロパティに設定して渡します。パラメータとなるオブジェクトのプロパティは以下のとおりです
 
-####*gns: Namespace as string*
-グローバルネームスペースです。通常は設定は不要です。
+####*gns: Alias as string*
+グローバルネームスペースです。エイリアスとして登録されます。
 
 ####*ns: Namespace as string*
-ネームスペースです。ネームスペースを設定する場合はこちらを使用してください。
+ネームスペースです。vtを複数登録する場合は個別のネームスペースを設定してください。
 
 ####*trigger: Selector as string* **（必須）**
-表示状態を確認するHTML要素をjQueryセレクタで選択します。
+表示状態を評価するHTML要素をjQueryセレクタで設定します。
 
-####*callback: function( event, parameter, scrollinfo )*
-トリガー実行時に呼ばれるコールバック関数を設定します。
+####*callback: function( customEvent, nativeEvent, info )* **（必須）**
+トリガー実行時に呼ばれるコールバック関数を設定します。コンテキストとして評価対象のHTML要素が与えられます。`info`の内容は次のとおりです。
 
-####*parameter: array*
-コールバック関数に渡されるパラメータを配列で設定します。
+#####*activator*
+イベントを起動した要素
+
+#####*contaner*
+vtのコンテキストのうちトリガー要素の属するもの
+
+#####*selector*
+vt登録時に設定されたセレクタ
+
+#####*index*
+トリガー要素のインデクス
+
+#####*direction*
+スクロール方向
+
+#####*distance*
+スクロール距離
+
+#####*relations*
+コンテキストに複数の要素が設定された場合、それらの要素
+
+#####*parameter*
+登録時に設定したパラメータ
+
+####*parameter: any*
+コールバック関数に渡されるパラメータを設定します。
 
 ####*ahead: Distance*
 コールバック関数を実行する表示位置を画面端からの距離で設定します。設定値が`-1`以上`1`以下である場合は、画面の高さに設定値を乗じた値（トリガー要素の-100～100%の高さ）となります。初期値は`0`です。
@@ -95,7 +138,7 @@ $('.container').displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
 あらかじめコールバック関数を実行するHTML要素の範囲を先頭からの数で設定します。初期値は`0`です。
 
 ####*step: Step as number*
-次に表示状態を確認するHTML要素のインデクスの増減値を設定します。初期値は`1`です。
+次に表示状態を評価するHTML要素のインデクスの増減値を設定します。初期値は`1`です。
 
 通常は設定の必要はありませんが、コールバック関数の実行により基点となったHTML要素が削除される場合に`0`を設定するなど、DOM上において基点となったHTML要素以前の位置に存在したトリガー要素の数が固定的に変化する場合に有用です。
 
@@ -103,49 +146,49 @@ $('.container').displaytrigger({ trigger:'.target' }).trigger('displaytrigger');
 同一のトリガー要素に対してコールバック関数を複数回実行可能にするかを設定します。初期値は`false`で無効です。
 
 ####*skip: boolean*
-画面の表示領域外に存在するトリガー要素のコールバック関数の実行をスキップするかを設定します。初期値は`false`であり、旧版であるscrolltriggerの互換として動作します。この場合、画面の表示領域外であっても画面の下端より上に位置しているすべてのトリガー要素でコールバック関数が実行されます。
+画面の表示領域外に存在するトリガー要素のコールバック関数の実行をスキップするかを設定します。初期値は`false`で無効です。
 
-####*jump: Index as number*
-スクロール方向に向かって設定数分先のトリガー要素の位置を調べ、表示順序（位置）が現在のトリガー要素より後になければコールバック関数を実行します。初期値は`0`で無効です。
+####*extend: boolean*
+`$.fn.visibilitytrigger`により登録したイベントアクションを、設定したHTML要素のスクロールに加えて`window`オブジェクトのスクロールからも実行させるかを設定します。初期値は`true`で有効です。
 
-####*expand: boolean*
-`$.fn.displaytrigger`により登録したイベントアクションを、設定したHTML要素のスクロールに加えて`window`オブジェクトのスクロールからも実行させるかを設定します。初期値は`true`で有効です。
-
-`$.fn.displaytrigger`によりイベントアクションが登録されたHTML要素（スクロール領域を持つHTML要素。トリガー要素ではない。）が大量にある場合は動作が重くなる可能性があるため、`$.fn.displaytrigger`を使用して重くなった場合は無効の設定を試してください。
+`$.fn.visibilitytrigger`によりイベントアクションが登録されたHTML要素（スクロール領域を持つHTML要素。トリガー要素ではない。）が大量にある場合は動作が重くなる可能性があるため、`$.fn.visibilitytrigger`を使用して重くなった場合は無効の設定を試してください。
 
 ####*delay: Millisecond as number*
-コールバック関数（正確にはコールバック関数を実行するかを決めるトリガー要素のチェック）がスクロールイベント発生後実行されるまでの待機時間をミリ秒で設定します。待機時間が経過する前に新たなスクロールが行われた場合は前回までのスクロールによる待機中のコールバック関数の実行はキャンセルされます。jQueryの`trigger`メソッドによりdisplaytriggerイベントを直接発生させた場合は`delay`の設定にかかわらずただちに実行されます。初期値は`300`です。
-
-####*suspend: number*
-`displaytrigger`イベントの発生後、このイベントの発生を抑制する時間をミリ秒で設定します。抑制中はdisplaytriggerイベントを発生させても無効となります。設定値を0にするとイベントが抑制されません。初期値は`-100`です。
-
-#####*suspend: Millisecond as number*
-設定値が正数である場合、設定値が抑制時間となります。設定値が負数である場合、`delay`に設定値を加えた値（最小値を0とする`delay`より短い時間）が抑制時間となります。
-
-#####*suspend: Rate as number*
-設定値が0以上1未満の小数である場合、`delay`に設定値を乗じた値が抑制時間となります。
+コールバック関数（正確にはコールバック関数を実行するかを決めるトリガー要素のチェック）がスクロールイベント発生後実行されるまでの待機時間をミリ秒で設定します。待機時間が経過する前に新たなスクロールが行われた場合は前回までのスクロールによる待機中のコールバック関数の実行はキャンセルされます。jQueryの`trigger`メソッドによりvisibilitytriggerイベントを直接発生させた場合は`delay`の設定にかかわらずただちに実行されます。初期値は`300`です。
 
 ####*interval: Millisecond as number*
-コールバック関数の実行間隔をミリ秒で設定します。`skip`が有効である場合のみ有効となります。初期値は`0`で無効です。
+コールバック関数の実行間隔をミリ秒で設定します。ほかの処理を割り込ませる隙間を作ることになるため擬似的なプライオリティーとして使用できます。`setTimeout`を使用しているため`50`以上の数値を使用することを推奨します。初期値は`0`で無効です。
 
-####*mode: Mode as string*
-displaytriggerの動作モードを設定します。`show``border`モード（設定値）が設定できます。初期値は`"show"`です。
-
-各モードの動作は次のとおりです。
-
-#####*show*
-トリガー要素が画面内に表示されることをトリガーとしてイベントアクションを実行します。
-
-#####*border*
-トリガー要素が境界線を越えることをトリガーとしてイベントアクションを実行します。初期状態では下方向へのスクロール時は画面上端、上方向へのスクロール時は画面下端が境界となります。画面内に表示されている（上下に）隣接するトリガー要素を交互に切り替えてコールバック関数を実行することができます。
+####*reset: reset: Switch as boolean / Setting as object*
+`reset`メソッドを実行した場合の動作を設定します。`true`を設定した場合は既存の登録を削除し、同じ設定で新たに登録しなおします。オブジェクトによりパラメータの初期化値を設定した場合はその値で実行状態を初期化します（例：`{ index: 0, count: 0 }`）。`false`を設定した場合は既存の登録を変更しません。初期値は`true`です。
 
 ####*terminate: boolean*
-すべてのトリガー要素のコールバック関数の実行後にdisplaytriggerイベントの登録を自動的に解除するかを設定します。`multi: true`が設定されている場合は無効です。初期値は`true`で自動的に解除されます。ただし、トリガー要素が存在しなくなった時点で設定にかかわらず自動的に解除されます。
-
-このように基本的にその他の設定に応じて適切なタイミングで自動的に解除されるため通常は設定は不要です。
+すべてのトリガー要素のコールバック関数の実行後に`vt`イベントの登録を自動的に解除するかを設定します。`multi`が有効の場合は無効です。初期値は`true`で自動的に解除されます。
 
 ###Method
-なし
+コンテキストが設定されている場合（`$(document).vt().method`）はコンテキストで絞込み、設定されていない場合（`$.vt.function`）はすべての登録が対象となります。コンテキストが設定されている場合の走査はjQueryの`trigger`メソッドを使用し、設定されていない場合はすべての登録を持つ配列を使用して行われます。
+
+`Key`にはネームスペースを設定し、設定された場合はこれによりネームスペースが絞り込まれます。`img`は`img.0``img.abc`に一致し、`imgimg``some.img`に一致しません。設定されなかった場合はコンテキスト内のすべての登録が対象となります。
+
+`Bubbling`にはコンテキストを設定して使用する場合（内部で`trigger`メソッドを使用）にバブリングにより親要素も対象とするかを設定します。
+
+####*enable( [ Key as string [, Bubbling as boolean ]] )*
+vtを有効にします。
+
+####*disable( [ Key as string [, Bubbling as boolean ]] )*
+vtを無効にします。
+
+####*reset( [ Key as string [, Bubbling as boolean ]] )*
+`Setting.reset`の値に応じてvtの登録を初期化します。
+
+####*release( [ Key as string [, Bubbling as boolean ]] )*
+vtの登録を削除します。
+
+####*vtrigger( [ Key as string [, Bubbling as boolean ]] )*
+vtのイベントアクションを実行します。jQueryの`trigger`メソッドの拡張です。イベントタイプを省略し、ネームスペースのみで動作します。また、カンマ区切りで複数のネームスペースを設定できます。
+
+####*isRegistrate( [ Key as string [, Bubbling as boolean ]] )*
+vtが登録されているかを確認します。親要素は対象となりません。
 
 ###Property
 なし
@@ -156,10 +199,10 @@ displaytriggerの動作モードを設定します。`show``border`モード（�
 
 実行する関数は`callback`に設定し、実行時に渡す引数は`parameter`に設定します。引数は第一引数がイベントオブジェクト、第二引数が設定した`parameter`となります。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/install/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/install/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback }).vtrigger();
 ```
 
 ```html
@@ -167,9 +210,9 @@ displaytriggerの動作モードを設定します。`show``border`モード（�
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>displaytrigger</title>
+<title>visibilitytrigger</title>
 <script type="text/javascript" charset="utf-8" src="/lib/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="/lib/jquery.displaytrigger.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/lib/jquery.visibilitytrigger.min.js"></script>
 <script type="text/javascript">
 
 $(function()
@@ -177,14 +220,15 @@ $(function()
   var elt=$('li:first-child');
   for(var i=1;i<300;i++){ $(elt).clone(true).insertAfter(elt); }
   
-  $.displaytrigger({ trigger: 'li', callback: callback }).trigger('displaytrigger');
+  $.visibilitytrigger();
   
-  
+  $.vt({ trigger: 'li', callback: callback }).vtrigger();
 });
 
 function callback(event, arg)
 {
-  $(this).removeClass('green').addClass('yellow').text(arg);
+  $(this).removeClass('green').addClass('yellow');
+  ++this.innerHTML;
   $('div.green').text($('li.green').length);
   $('div.yellow').text($('li.yellow').length);
 }
@@ -197,7 +241,7 @@ function callback(event, arg)
 </style>
 </head>
 <body>
-  <h1>displaytrigger</h1>
+  <h1>visibilitytrigger</h1>
   <div class="counter">
     <div class="yellow"></div>
     <div class="green"></div>
@@ -210,101 +254,103 @@ function callback(event, arg)
 ```
 
 ###複数回実行 - multi
-displaytriggerの動作がもっとも可視化されたデモであり、旧版のscrolltrigerとの主な相違点となる動作です。
+visibilitytriggerの動作がもっとも可視化されたデモです。
 
 `multi`を有効にすることにより実行回数制限を解除することで同一のトリガー要素に対して繰り返しコールバック関数を実行させることができます。この場合は`terminate`の設定にかかわらず、トリガー要素が存在しなくなることが解除条件となります。
 
 白色のブロックを下方向へのスクロールにより表示された場合は黄色に、上方向へのスクロールにより表示された場合は緑色に塗ります。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/multi/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/multi/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, multi: true, delay: 300 }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback, multi: true }).vtrigger();
 ```
 
 ###先読み - ahead
 表示領域に`ahead`で設定した距離まで近づいた時点でコールバック関数を実行します。通常は正数を設定しますが今回は負数を設定して表示領域内でコールバック関数の動作を視認できる形で実行させます。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/ahead/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/ahead/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, ahead: -200 }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback, ahead: -200 }).vtrigger();
 ```
 
 ###事前実行 - beforehand
 先頭から`beforehand`で設定した数のHTML要素のコールバック関数をあらかじめ実行します。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/beforehand/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/beforehand/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, ahead: -200, beforehand: 10 }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback, beforehand: 10 }).vtrigger();
 ```
 
 ###実行待機 - delay
 コールバック関数がスクロール完了後実行されるまでの待機時間をミリ秒で設定します。待機時間が経過する前に新たなスクロールが行われた場合は前回までのスクロールによる待機中のコールバック関数はキャンセルされます。つまり、待機時間がスクロール中のスクロールイベントの発生間隔より長ければスクロール中にはコールバック関数が実行されません。待機とキャンセルを行わず、コールバック関数をスクロールイベントの発生ごとに即座に実行させたい場合は`0`を設定します。
 
-スクロール中の`displaytrigger`イベントをキャンセルすることでトリガー要素の表示状態を確認する回数を大幅に減らすことができるため、実行速度の低い環境（IE8以下のブラウザ）では有効にすることを推奨します。スマートフォンなどのブラウザではスクロールイベントの発生自体が抑制されているため考慮は不要です。実行環境による設定の切り替えは<a href="http://sa-kusaku.sakura.ne.jp/output/clientenv/">jquery.clientenv.js</a>を使用すると簡単に行うことができます
+スクロール中の`visibilitytrigger`イベントをキャンセルすることでトリガー要素の表示状態を評価する回数を大幅に減らすことができるため、実行速度の低い環境（IE8以下のブラウザ）では有効にすることを推奨します。スマートフォンなどのブラウザではスクロールイベントの発生自体が抑制されているため考慮は不要です。実行環境による設定の切り替えは<a href="http://sa-kusaku.sakura.ne.jp/output/clientenv/">jquery.clientenv.js</a>を使用すると簡単に行うことができます
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/delay/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/delay/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, delay: 1000 }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback, delay: 1000 }).vtrigger();
+```
+
+###実行間隔 - interval
+コールバック関数を実行する間隔を設定します。サーバーへのリクエスト間隔を制御したい場合などに有効です。また、コールバック関数を連続して実行せず待機中にほかの処理を割り込ませることができるため擬似的なプライオリティーとしても使用できます。
+
+スクロール中の`visibilitytrigger`イベントをキャンセルすることでトリガー要素の表示状態を評価する回数を大幅に減らすことができるため、実行速度の低い環境（IE8以下のブラウザ）では有効にすることを推奨します。スマートフォンなどのブラウザではスクロールイベントの発生自体が抑制されているため考慮は不要です。実行環境による設定の切り替えは<a href="http://sa-kusaku.sakura.ne.jp/output/clientenv/">jquery.clientenv.js</a>を使用すると簡単に行うことができます
+
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/interval/" target="_blank">demo</a>**
+
+```javascript
+  $.vt({ trigger: 'li', callback: callback, interval: 1000 }).vtrigger();
 ```
 
 ###迂回実行 - skip
 表示領域が瞬間的に移動された場合に、移動元と移動先の間に存在し、移動前後いずれにおいても表示されなかったトリガー要素に対してはコールバック関数を実行しません。旧版のscrolltrigerとの主な相違点となる動作です。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/skip/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/skip/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, skip: true }).trigger('displaytrigger');
-```
-
-###例外実行 - jump
-やむを得ず表示順序が逆転するトリガー要素が含まれる場合に使用します。単にマルチカラムやCSSのミスへの対応のために使用するべきではありません。
-
-**<a href="http://falsandtru.github.io/displaytrigger/demo/jump/" target="_blank">demo</a>**
-
-```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, jump: 10 }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback, skip: true }).vtrigger();
 ```
 
 ###実行撤回 - return false
 コールバック関数の戻り値に`false`を設定した場合、そのトリガー要素のイベントアクションを実行しなかったものとして扱い、再度実行可能な状態にします。`skip`が無効または`multi`が有効である場合は無効です。デモは5の倍数番目の要素が1回目の実行はキャンセルされ2回目の実行で完了します。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/cancel/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/cancel/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ trigger: 'li', callback: callback, skip: true }).trigger('displaytrigger');
+  $.vt({ trigger: 'li', callback: callback }).vtrigger();
 ```
 
-###対象指定 - $.fn.displaytrigger
-指定のHTML要素にイベントアクションを登録できます。`expand: false`を設定しなければ`window`オブジェクトのスクロールイベントからもイベントアクションが起動します。スクロールイベントを持つHTML要素が複数対象となる場合でも個別にイベントを管理します。
+###対象指定 - $.fn.visibilitytrigger
+指定のHTML要素にイベントアクションを登録できます。`extend: false`を設定しなければ`window`オブジェクトのスクロールイベントからもイベントアクションが起動します。スクロールイベントを持つHTML要素が複数対象となる場合でも個別にイベントを管理します。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/fn/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/fn/" target="_blank">demo</a>**
 
 ```javascript
-  $('ol').displaytrigger({ trigger: 'li', callback: callback, ahead: -200, beforehand: 5 }).trigger('displaytrigger');
+  $('ol').visibilitytrigger({ trigger: 'li', callback: callback }).vtrigger();
 ```
 
 ###名前空間 - ns
 ネームスペースを`ns`で設定することで同一の領域に複数のイベントアクションを登録できます。トリガーの引数にネームスペースを加えると個別にイベントアクションが実行されます。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/ns/sequent/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/ns/sequent/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: ['odd'], ahead: -200 }).trigger('displaytrigger.odd');
-  $.displaytrigger({ ns: 'even', trigger: 'li:even', callback: callback, parameter: ['even'], ahead: -200 }).trigger('displaytrigger.even');
+  $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback }).trigger('odd');
+  $.vt({ ns: 'even', trigger: 'li:even', callback: callback }).trigger('even');
 ```
 
-複数のイベントアクションを登録後にネームスペースを設定せずに`displaytrigger`イベントを実行することで同じオブジェクトに登録されているイベントアクションをまとめて実行することもできます。
+複数のイベントアクションを登録後にネームスペースを設定せずに`visibilitytrigger`イベントを実行することで同じオブジェクトに登録されているイベントアクションをまとめて実行することもできます。
 
-**<a href="http://falsandtru.github.io/displaytrigger/demo/ns/mass/" target="_blank">demo</a>**
+**<a href="http://falsandtru.github.io/visibilitytrigger/demo/ns/mass/" target="_blank">demo</a>**
 
 ```javascript
-  $.displaytrigger({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: ['odd'], ahead: -200 });
-  $.displaytrigger({ ns: 'even', trigger: 'li:even', callback: callback, parameter: ['even'], ahead: -200 });
-  $.displaytrigger().trigger('displaytrigger')  /* または $(window).trigger('displaytrigger'); */
+  $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback });
+  $.vt({ ns: 'even', trigger: 'li:even', callback: callback });
+  $(document).vtrigger()  /* または $(window).vtrigger(); */
 ```
 
 ##補足
@@ -325,7 +371,7 @@ HTML上の記述順序とブラウザ上の表示順序が一致していない�
 ###<a href="https://github.com/falsandtru/jquery.pjax.js">pjax</a>
 HTML5による高速なページ移動機能をウェブサイトに実装します。
 
-###<a href="https://github.com/falsandtru/jquery.displaytrigger.js">displaytrigger</a>
+###<a href="https://github.com/falsandtru/jquery.visibilitytrigger.js">visibilitytrigger</a>
 スクロールにより特定のHTML要素が画面に表示されることを条件としてスクリプトを遅延実行させます。
 
 ###<a href="http://sa-kusaku.sakura.ne.jp/output/clientenv/">clientenv</a>
