@@ -339,8 +339,8 @@ visibilitytriggerの動作がもっとも可視化されたデモです。
 **<a href="http://falsandtru.github.io/visibilitytrigger/demo/ns/sequent/" target="_blank">demo</a>**
 
 ```javascript
-  $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback }).trigger('odd');
-  $.vt({ ns: 'even', trigger: 'li:even', callback: callback }).trigger('even');
+  $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: 'odd' }).trigger('odd');
+  $.vt({ ns: 'even', trigger: 'li:even', callback: callback, parameter: 'even' }).trigger('even');
 ```
 
 複数のイベントアクションを登録後にネームスペースを設定せずに`visibilitytrigger`イベントを実行することで同じオブジェクトに登録されているイベントアクションをまとめて実行することもできます。
@@ -348,9 +348,9 @@ visibilitytriggerの動作がもっとも可視化されたデモです。
 **<a href="http://falsandtru.github.io/visibilitytrigger/demo/ns/mass/" target="_blank">demo</a>**
 
 ```javascript
-  $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback });
-  $.vt({ ns: 'even', trigger: 'li:even', callback: callback });
-  $(document).vtrigger()  /* または $(window).vtrigger(); */
+  $.vt({ ns: 'odd', trigger: 'li:odd', callback: callback, parameter: 'odd' });
+  $.vt({ ns: 'even', trigger: 'li:even', callback: callback, parameter: 'even' });
+  $(document).vt().vtrigger()  /* または $(window).vtrigger(); */
 ```
 
 ##補足

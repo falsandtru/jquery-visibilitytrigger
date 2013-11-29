@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.0
+ * @version 0.0.1
  * @updated 2013/11/29
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -16,7 +16,7 @@
  * Example:
  * @jquery 1.7.2
  * 
- * $.vt( {
+ * $.visibilitytrigger( {
  *   trigger: 'img[data-origin]',
  *   callback: function(){ $( this ).attr( 'src', $( this ).attr( 'data-origin' ) ) },
  *   ahead: 300,
@@ -211,7 +211,7 @@
               id = event.data ;
               switch ( key ? typeof key : String( key ) ) {
                 case 'number':
-                  if ( setting = settings[ id ] ) {
+                  if ( ( setting = settings[ id ] ) && id === key ) {
                     if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
                   }
                   break ;
@@ -677,6 +677,7 @@
               } else {
                 setting.beforehand = 0 ;
               }
+              break ;
             case !setting.skip && !setting.multi:
               // !skip
               fire = setting.direction === 1 ? topin : bottomin ;
