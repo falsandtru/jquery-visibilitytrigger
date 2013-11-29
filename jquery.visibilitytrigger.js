@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.2
+ * @version 0.0.3
  * @updated 2013/11/30
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -31,30 +31,21 @@
 
 ( function ( jQuery, window, document, undefined ) {
   
-  /* validate */ var validate = window.validator ? window.validator.clone( { name: 'jquery.visibilitytrigger.js', base: true } ) : false ;
-  /* validate */ validate && validate.start() ;
-  /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
-  
   var Store ;
   
-  /* validate */ validate && validate.test( '++', 1, [ Store ], 'set plugin' ) ;
   function registrate( jQuery, window, document, undefined, Store ) {
     jQuery.fn[ Store.name ] = jQuery[ Store.name ] = function () {
       
       return initialize.apply( this, [
         jQuery, window, document, undefined, Store
       ].concat( [].slice.call( arguments ) ) ) ;
-    }
+    } ;
     Store.setProperties.call( jQuery[ Store.name ] ) ;
   }
   
   function initialize( jQuery, window, document, undefined, Store, option ) {
     
-    /* validate */ var validate = option && option.validator ? option.validator.clone( { name: 'jquery.visibilitytrigger.js', base: true } ) : false ;
-    /* validate */ validate && validate.start() ;
-    /* validate */ validate && validate.test( '++', 1, [ option ], 'visibilitytrigger()' ) ;
     
-    /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
     var $context = this ;
     
     // polymorphism
@@ -81,7 +72,6 @@
     }
     
     // setting
-    /* validate */ validate && validate.test( '++', 1, 0, 'set variable' ) ;
     var setting ;
     setting = typeof option === 'object' && jQuery.extend( true,
       {
@@ -143,10 +133,8 @@
     ) ;
     
     // registrate
-    /* validate */ validate && validate.test( '++', 1, 0, 'registrate' ) ;
     Store.registrate.call( $context, jQuery, window, document, undefined, Store, setting ) ;
     
-    /* validate */ validate && validate.end() ;
     return $context ;
   }
   
@@ -155,7 +143,7 @@
     return function () {
       callback.apply( this, args.concat( [].slice.call( arguments ) ) ) ;
     } ;
-  } ;
+  }
   
   Store = {
     name: 'visibilitytrigger',
@@ -192,7 +180,7 @@
         // namespace + context
         case 'string':
         case '':
-          reg = new RegExp( key ? '^' + key + '(?:$|\.)' : '^$' ) ;
+          reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
         // context
         case 'undefined':
         case 'null':
@@ -274,7 +262,7 @@
         case 'direct:':
           ids = Store.ids ;
           settings = Store.settings ;
-          reg = new RegExp( key ? '^' + key + '(?:$|\.)' : '^$' ) ;
+          reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
           for ( var i = 1, len = ids.length ; id = ids[ i ] ; i++ ) {
             if ( ( setting = settings[ id ] ) && reg.test( setting.nss.name ) ) {
               if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
@@ -310,7 +298,7 @@
       this.vtNamespace = typeof namespace === 'string' ? namespace : null ;
       
       this.isRegistrate = function ( key ) {
-        var reg = new RegExp( key ? '^' + key + '$' : key === '' ? '^$' : '' ) ;
+        var reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
         return true === Store.search.call( this, key, function ( setting ) {
           if ( reg.test( setting.nss.name ) ) {
             return true ;
@@ -331,7 +319,7 @@
       } ;
       
       this.reset = function ( key, bubbling ) {
-        var reg = new RegExp( key ? '^' + key + '$' : key === '' ? '^$' : '' ) ;
+        var reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
         return Store.redirect.call( this, key, bubbling, function ( setting ) {
           if ( reg.test( setting.nss.name ) ) {
             this.release( setting.id )[ Store.name ]( setting.option ) ;
@@ -456,6 +444,8 @@
               customEvent.stopPropagation() ;
           }
           
+          if ( jQuery( setting.trigger, eventcontext ).first().is( ':hidden' ) ) { return ; }
+          
           task = new Task( function ( customEvent, nativeEvent, eventcontext, setting ) {
             switch ( true ) {
               case !Store.settings[ setting.id ]:
@@ -572,16 +562,10 @@
       }
     },
     drive: function ( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting, info ) {
-      /* validate */ var validate = setting.validate ? setting.validate.clone( { name: 'jquery.visibilitytrigger.js - drive()' } ) : false ;
-      /* validate */ validate && validate.start() ;
-      /* validate */ validate && ( validate.scope = function( code ){ return eval( code ) ; } ) ;
-      /* validate */ validate && validate.test( '++', 1, [ setting ], 'drive()' ) ;
       
-      /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
       Store.countDrive++ ;
       var $context, $eventcontext, layer,  fire, increment, call, targets, target, evtScroll, evtHeight, direction, distance ;
       
-      /* validate */ validate && validate.test( '++', 1, 0, 'setting' ) ;
       info = info || {} ;
       $context = info.context = info.update ? info.context : jQuery( customEvent.currentTarget ) ;
       $eventcontext = info.eventcontext = info.update ? info.eventcontext : jQuery( eventcontext ) ;
@@ -608,22 +592,15 @@
       setting.distance = distance === 0 ? setting.distance : distance ;
       setting.height[ layer ] = evtScroll ;
       
-      /* validate */ validate && validate.test( '++', 1, setting, 'switch' ) ;
       switch ( true ) {
-        case !targets.length || !target[0]:
-          /* validate */ validate && validate.test( '*', 1, 0, 'case !targets.length || !target[0]' ) ;
-          //setting.end = true ;
+        case setting.index < 0 || targets.length <= setting.index:
           break ;
           
-        case setting.index < 0 || targets.length <= setting.index:
-          /* validate */ validate && validate.test( '*', 1, 0, 'case setting.index < 0 || targets.length <= setting.index' ) ;
-          //setting.end = true ;
+        case !targets.length || !target[0]:
           break ;
           
         default:
-          /* validate */ validate && validate.test( '*', 1, 0, 'default' ) ;
           
-          /* validate */ validate && validate.test( '++', 1, 0, 'initialize' ) ;
           var $win, winTop, winHeight, winBottom,
               $frame, frameTop, frameHeight, frameBottom,
               tgtTop, tgtHeight, tgtBottom,
@@ -662,11 +639,9 @@
           tgtHeight = target.outerHeight() ;
           tgtBottom = tgtTop + tgtHeight ;
           
-          /* validate */ validate && validate.test( '++', 1, setting.mode, 'check' ) ;
           topin = visibleBottom >= tgtTop - aheadBottom ;
           bottomin = visibleTop <= tgtBottom + aheadTop ;
           
-          /* validate */ validate && validate.test( '++', 1, [ topin, bottomin ], 'show' ) ;
           call = setting.direction === 1 ? topin : bottomin ;
           switch ( true ) {
             case !layer ? visibleTop > frameBottom + ahead || visibleBottom < frameTop - ahead : false:
@@ -708,7 +683,7 @@
               }
               break ;
           }
-          increment = setting.step ? setting.step * setting.direction : fire ? 0 : setting.direction ;
+          increment = setting.step ? setting.step * setting.direction : fire ? setting.direction === -1 && -1 || 0 : setting.direction ;
           
           if ( fire && !setting.multi ) {
             fire = target[ 0 ] && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
@@ -718,16 +693,12 @@
           break ;
       }
       
-      /* validate */ validate && validate.test( '/', 1, fire, 'fire' ) ;
       if ( fire ) {
-          /* validate */ validate && validate.test( '*', 1, setting.interval, 'interval' ) ;
         if ( setting.interval ) {
           var now = ( new Date() ).getTime() ;
           if ( setting.interval <= now - setting.timestamp ) {
-            /* validate */ validate && validate.test( '++', 1, 0, 'pass' ) ;
             setting.timestamp = now ;
           } else {
-            /* validate */ validate && validate.test( '++', 1, 0, 'cancel' ) ;
             var task = new Task( function ( customEvent, nativeEvent, setting ) {
               jQuery( customEvent.currentTarget ).trigger( setting.nss.event, [ nativeEvent ] ) ;
             }, customEvent, nativeEvent ) ;
@@ -737,7 +708,6 @@
             }, Math.max( setting.interval - now + setting.timestamp, 50 ) ) ;
             setting.queue.push( id ) ;
             
-            /* validate */ validate && validate.end() ;
             return true ;
         } } // if | if
         
@@ -760,17 +730,13 @@
         !setting.multi && setting.count-- && jQuery.removeData( target[ 0 ], setting.nss.data_fired ) && ( fire = false ) ;
       }
       
-      /* validate */ validate && validate.test( '/', 1, 0, 'terminate' ) ;
       if ( setting.terminate && ( !targets.length || setting.step && setting.count >= targets.length ) ) {
         $context[ Store.name ]().release( setting.id ) ;
-        /* validate */ validate && validate.end() ;
         return true;
       }
       
-      /* validate */ validate && validate.test( '++', 1, 0, 'increment' ) ;
       setting.index += call ? increment : 0 ;
       
-      /* validate */ validate && validate.test( '++', 1, 0, 'recursion' ) ;
       info.update = info.update || setting.cache ;
       if ( !info.recursion ) {
         info.recursion = true ;
@@ -782,7 +748,6 @@
       setting.first = false ;
       setting.turn = false ;
       info.recursion = false ;
-      /* validate */ validate && validate.end() ;
       return true ;
     },
     terminate: function ( setting ) {
@@ -825,5 +790,5 @@
     }
   } ;
   
-  registrate( jQuery, window, document, undefined, Store );
+  registrate.apply( this, [].slice.call( arguments ).concat( [ Store ] ) ) ;
 } ) ( jQuery, window, document, void 0 ) ;
