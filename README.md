@@ -68,7 +68,7 @@ $('.container').visibilitytrigger({ trigger:'.target' }).vtrigger();
 ```
 
 ####*$.visibilitytrigger( Element as element )*
-コンテキストを追加します。`$( Element )``$().add( Element )`のショートカットです。コンテキストがある状態でvtを実行した場合、パラメータなしで実行した場合を除きjQueryの`.end()`メソッドにより実行前の選択状態に戻ることができます。
+コンテキストを追加します。`$( Element )``$().add( Element )`のショートカットです。コンテキストがある状態でvtを実行した場合、jQueryの`.end()`メソッドにより実行前の選択状態に戻ることができます。
 
 ####*$.visibilitytrigger( Alias as string )*
 visibilitytriggerのエイリアスを登録します。パラメータが設定されなかった場合は初期値である`vt`が登録されます。空文字`''`を設定した場合は初期値が削除されエイリアスが登録されません。
