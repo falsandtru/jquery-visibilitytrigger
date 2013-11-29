@@ -263,7 +263,7 @@ visibilitytriggerの動作がもっとも可視化されたデモです。
 **<a href="http://falsandtru.github.io/visibilitytrigger/demo/multi/" target="_blank">demo</a>**
 
 ```javascript
-  $.vt({ trigger: 'li', callback: callback, multi: true }).vtrigger();
+  $('ol').vt({ trigger: 'li', callback: callback, multi: true }).vtrigger();
 ```
 
 ###先読み - ahead
