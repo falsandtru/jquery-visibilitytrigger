@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.4
- * @updated 2013/11/30
+ * @version 0.0.5
+ * @updated 2013/12/01
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -408,7 +408,7 @@
         .bind( setting.nss.event, setting.id, function ( event, arg1, arg2 ) {
           
           Store.countEvent++ ;
-          var setting, nativeEvent, customEvent, context, eventcontext, manual, task ;
+          var setting, nativeEvent, customEvent, context, eventcontext, manual ;
           var fn, bubbling ;
           
           setting = Store.settings[ event.data ] ;
@@ -446,7 +446,7 @@
           
           if ( jQuery( setting.trigger, eventcontext ).first().is( ':hidden' ) ) { return ; }
           
-          task = new Task( function ( customEvent, nativeEvent, eventcontext, setting ) {
+          ( new Task( function ( customEvent, nativeEvent, eventcontext, setting ) {
             switch ( true ) {
               case !Store.settings[ setting.id ]:
               case !setting.status.active:
@@ -455,24 +455,23 @@
                 jQuery( customEvent.currentTarget )[ Store.name ]().release( setting.id ) ;
                 break ;
               default :
-                Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
+                if ( manual || !setting.delay ) {
+                  Store.countTask++ ;
+                  Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
+                } else if ( 3 > setting.queue.length ) {
+                  var id ;
+                  while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
+                  id = setTimeout( function () {
+                    if ( !setting ) { return ; }
+                    while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
+                    Store.countTask++ ;
+                    Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
+                  }, Math.max( setting.delay, 50 ) ) ;
+                  setting.queue.push( id ) ;
+                }
+                break ;
             }
-          }, customEvent, nativeEvent, eventcontext ) ;
-          
-          if ( manual || !setting.delay ) {
-            task = task( setting ) ;
-          } else if ( 3 > setting.queue.length ) {
-            var id ;
-            while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
-            id = setTimeout( function () {
-              if ( !setting ) { return ; }
-              while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
-              Store.countTask++ ;
-              task = setting && task( setting ) ;
-            }, Math.max( setting.delay, 50 ) ) ;
-            
-            setting.queue.push( id ) ;
-          }
+          }, customEvent, nativeEvent, eventcontext, setting ) ) () ;
           
         } ) ;
         
