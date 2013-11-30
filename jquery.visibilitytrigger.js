@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.3
+ * @version 0.0.4
  * @updated 2013/11/30
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -461,7 +461,7 @@
           
           if ( manual || !setting.delay ) {
             task = task( setting ) ;
-          } else {
+          } else if ( 3 > setting.queue.length ) {
             var id ;
             while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
             id = setTimeout( function () {
@@ -469,7 +469,7 @@
               while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
               Store.countTask++ ;
               task = setting && task( setting ) ;
-            }, setting.delay ) ;
+            }, Math.max( setting.delay, 50 ) ) ;
             
             setting.queue.push( id ) ;
           }
