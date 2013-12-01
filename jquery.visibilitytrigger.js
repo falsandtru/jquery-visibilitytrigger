@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.1
+ * @version 0.1.2
  * @updated 2013/12/02
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -376,13 +376,13 @@
         $element = jQuery( element ) ;
         if ( setting.terminate && !$element.find( setting.trigger )[0] ) { return ; }
         
-        if ( !Store.search.call( $element, setting.nss.name, function ( setting ) {
+        if ( !Store.search.call( $element[ Store.name ](), setting.nss.name, function ( setting ) {
           switch ( setting.reset && typeof setting.reset || setting.reset ) {
             case 'boolean':
               this.release( setting.nss.name ) ;
               return true ;
             case 'object':
-              Store.redirect.call( $element, setting.nss.name, false, function ( setting ) {
+              Store.redirect.call( this, setting.nss.name, false, function ( setting ) {
                 jQuery.extend( true, setting, setting.reset ) ;
               } ) ;
               return false;
