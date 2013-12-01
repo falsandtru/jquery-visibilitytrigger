@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.6
+ * @version 0.0.7
  * @updated 2013/12/01
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -128,7 +128,8 @@
           data: setting.nss.array.join( '-' ),
           data_fired: setting.nss.array.concat( 'fired' ).join( '-' )
         },
-        ahead: typeof setting.ahead in { string: 0, number: 0 } ? [ setting.ahead, setting.ahead ]: undefined
+        ahead: typeof setting.ahead in { string: 0, number: 0 } ? [ setting.ahead, setting.ahead ]: undefined,
+        beforehand: typeof setting.beforehand === 'boolean' ? - Number( setting.beforehand ) : setting.beforehand
       }
     ) ;
     
@@ -443,23 +444,25 @@
             switch ( true ) {
               case !Store.settings[ setting.id ]:
               case !setting.status.active:
+              case 3 < setting.queue.length:
                 break ;
               case setting.id !== jQuery.data( customEvent.currentTarget, setting.nss.data ):
                 jQuery( customEvent.currentTarget )[ Store.name ]().release( setting.id ) ;
                 break ;
               default :
-                if ( manual || !setting.delay ) {
+                if ( manual || !setting.delay && !setting.interval ) {
+                  while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
                   Store.countTask++ ;
                   Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
-                } else if ( 3 > setting.queue.length ) {
-                  var id ;
+                } else {
+                  var id, elapse ;
+                  elapse = setting.interval ? ( new Date() ).getTime() - setting.timestamp : 0 ;
                   while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
                   id = setTimeout( function () {
-                    if ( !setting ) { return ; }
                     while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
                     Store.countTask++ ;
                     Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
-                  }, Math.max( setting.delay, 50 ) ) ;
+                  }, Math.max( setting.delay, setting.interval - elapse, 50 ) ) ;
                   setting.queue.push( id ) ;
                 }
                 break ;
@@ -611,6 +614,7 @@
           aheadTop = info.aheadTop = info.update ? info.aheadTop : -1 <= setting.ahead[ 0 ] && setting.ahead[ 0 ] <= 1 ? parseInt( winHeight * setting.ahead[ 0 ], 10 ) : parseInt( setting.ahead[ 0 ], 10 ) ;
           aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : -1 <= setting.ahead[ 1 ] && setting.ahead[ 1 ] <= 1 ? parseInt( winHeight * setting.ahead[ 1 ], 10 ) : parseInt( setting.ahead[ 1 ], 10 ) ;
           ahead = aheadIndex ? aheadBottom : aheadTop ;
+          beforehand = info.beforehand = info.beforehand ? info.beforehand : 0 > setting.beforehand ? targets.length + setting.beforehand + 1 : setting.beforehand ;
           
           
           $frame = $context ;
@@ -640,12 +644,10 @@
               call = setting.direction === 1 ? visibleTop > frameBottom && frameBottom >= tgtTop - aheadBottom
                                              : visibleBottom < frameTop && frameTop <= tgtBottom + aheadTop ;
               break ;
-            case setting.first && setting.beforehand > setting.index && ( setting.multi || !jQuery.data( target[ 0 ], setting.nss.data_fired ) ):
+            case setting.first && beforehand > setting.index && ( setting.multi || !jQuery.data( target[ 0 ], setting.nss.data_fired ) ):
               // beforehand
-              if ( setting.beforehand > setting.index ) {
+              if ( beforehand > setting.index ) {
                 fire = call = true ;
-              } else {
-                setting.beforehand = 0 ;
               }
               break ;
             case !setting.skip && !setting.multi:
