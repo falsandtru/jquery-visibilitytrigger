@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.0
+ * @version 0.1.1
  * @updated 2013/12/02
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -712,7 +712,7 @@
         } } // if | if
         
         Store.countCallback++ ;
-        !setting.multi && ++setting.count && jQuery.data( target[ 0 ], setting.nss.data_fired, setting.id ) ;
+        ++setting.count && jQuery.data( target[ 0 ], setting.nss.data_fired, setting.id ) ;
         false === setting.callback.apply( target[ 0 ], [
           customEvent,
           nativeEvent,
@@ -727,10 +727,10 @@
             parameter: setting.parameter
           }
         ] ) &&
-        !setting.multi && setting.count-- && jQuery.removeData( target[ 0 ], setting.nss.data_fired ) && ( fire = false ) ;
+        setting.count-- && jQuery.removeData( target[ 0 ], setting.nss.data_fired ) && ( fire = false ) ;
       }
       
-      if ( setting.terminate && ( !targets.length || setting.step && setting.count >= targets.length ) ) {
+      if ( setting.terminate && ( !targets.length || !setting.multi && setting.step && setting.count >= targets.length ) ) {
         $context[ Store.name ]().release( setting.id ) ;
         return true;
       }
