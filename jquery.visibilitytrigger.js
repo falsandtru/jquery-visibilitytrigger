@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.5
+ * @version 0.0.6
  * @updated 2013/12/01
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -136,13 +136,6 @@
     Store.registrate.call( $context, jQuery, window, document, undefined, Store, setting ) ;
     
     return $context ;
-  }
-  
-  function Task( callback ) {
-    var args = [].slice.call( arguments, 1 ) ;
-    return function () {
-      callback.apply( this, args.concat( [].slice.call( arguments ) ) ) ;
-    } ;
   }
   
   Store = {
@@ -446,7 +439,7 @@
           
           if ( jQuery( setting.trigger, eventcontext ).first().is( ':hidden' ) ) { return ; }
           
-          ( new Task( function ( customEvent, nativeEvent, eventcontext, setting ) {
+          ( function ( customEvent, nativeEvent, eventcontext, setting ) {
             switch ( true ) {
               case !Store.settings[ setting.id ]:
               case !setting.status.active:
@@ -471,7 +464,7 @@
                 }
                 break ;
             }
-          }, customEvent, nativeEvent, eventcontext, setting ) ) () ;
+          } ) ( customEvent, nativeEvent, eventcontext, setting ) ;
           
         } ) ;
         
@@ -698,14 +691,12 @@
           if ( setting.interval <= now - setting.timestamp ) {
             setting.timestamp = now ;
           } else {
-            var task = new Task( function ( customEvent, nativeEvent, setting ) {
-              jQuery( customEvent.currentTarget ).trigger( setting.nss.event, [ nativeEvent ] ) ;
-            }, customEvent, nativeEvent ) ;
-            
-            id = setTimeout( function () {
-              task = setting && task( setting ) ;
-            }, Math.max( setting.interval - now + setting.timestamp, 50 ) ) ;
-            setting.queue.push( id ) ;
+            ( function ( customEvent, nativeEvent, setting ) {
+              var id = setTimeout( function () {
+                jQuery( customEvent.currentTarget ).trigger( setting.nss.event, [ nativeEvent ] ) ;
+              }, Math.max( setting.interval - now + setting.timestamp, 50 ) ) ;
+              setting.queue.push( id ) ;
+            } ) ( customEvent, nativeEvent, setting ) ;
             
             return true ;
         } } // if | if
