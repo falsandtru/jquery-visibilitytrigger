@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.0.7
- * @updated 2013/12/01
+ * @version 0.1.0
+ * @updated 2013/12/02
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -128,7 +128,7 @@
           data: setting.nss.array.join( '-' ),
           data_fired: setting.nss.array.concat( 'fired' ).join( '-' )
         },
-        ahead: typeof setting.ahead in { string: 0, number: 0 } ? [ setting.ahead, setting.ahead ]: undefined,
+        ahead: setting.ahead instanceof Array ? setting.ahead.concat( setting.ahead ).slice( 0, 2 ) : [ setting.ahead, setting.ahead ],
         beforehand: typeof setting.beforehand === 'boolean' ? - Number( setting.beforehand ) : setting.beforehand
       }
     ) ;
@@ -174,7 +174,8 @@
         // namespace + context
         case 'string':
         case '':
-          reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
+          key = key.split( '.' ).sort().join( '.' ) ;
+          reg = new RegExp( typeof key === 'string' ? key && '(?:^|\.)' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
         // context
         case 'undefined':
         case 'null':
@@ -256,7 +257,8 @@
         case 'direct:':
           ids = Store.ids ;
           settings = Store.settings ;
-          reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
+          key = key.split( '.' ).sort().join( '.' ) ;
+          reg = new RegExp( typeof key === 'string' ? key && '(?:^|\.)' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
           for ( var i = 1, len = ids.length ; id = ids[ i ] ; i++ ) {
             if ( ( setting = settings[ id ] ) && reg.test( setting.nss.name ) ) {
               if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
@@ -272,9 +274,11 @@
         case 'undefined':
         case 'null':
         case '0':
-        case 'boolean':
-        case 'false':
           this.trigger( Store.name, [ callback, bubbling ] ) ;
+        case 'boolean':
+          this.trigger( Store.name, [ callback, true ] ) ;
+        case 'false':
+          this.trigger( Store.name, [ callback, false ] ) ;
           break ;
       }
       return this ;
@@ -292,11 +296,8 @@
       this.vtNamespace = typeof namespace === 'string' ? namespace : null ;
       
       this.isRegistrate = function ( key ) {
-        var reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
         return true === Store.search.call( this, key, function ( setting ) {
-          if ( reg.test( setting.nss.name ) ) {
-            return true ;
-          }
+          return true ;
         } ) ;
       } ;
       
@@ -313,11 +314,8 @@
       } ;
       
       this.reset = function ( key, bubbling ) {
-        var reg = new RegExp( typeof key === 'string' ? key && '^' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
         return Store.redirect.call( this, key, bubbling, function ( setting ) {
-          if ( reg.test( setting.nss.name ) ) {
-            this.release( setting.id )[ Store.name ]( setting.option ) ;
-          }
+          this.release( setting.id )[ Store.name ]( setting.option ) ;
         } ), this ;
       } ;
       
@@ -329,7 +327,7 @@
       
       this.vtrigger = function ( key, bubbling, layer ) {
         var keys ;
-        keys = typeof key === 'string' ? key.split( /,\s*/ ) : [ key ] ;
+        keys = typeof key === 'string' ? key.split( /[,\s]\s*/ ) : [ key ] ;
         for ( var i = 0, len = keys.length ; i < len ; i++ ) {
           key = keys[ i ] ;
           Store.redirect.call( this, key, bubbling, function ( setting, layer ) {
@@ -339,9 +337,23 @@
         return this ;
       } ;
     },
+    relations:  function ( name, element, remove ) {
+      var ret, names ;
+      names = name.split( '.' ) ;
+      ret = jQuery() ;
+      for ( var i = 0, len = names.length ; i < len ; i++ ) {
+        name = names[ i ] ;
+        if ( element ) {
+          Store.relations[ name ] = !remove ? ( Store.relations[ name ] || jQuery() ).add( element )
+                                            : ( Store.relations[ name ] || jQuery() ).not( element ) ;
+        }
+        ret = ret.add( Store.relations[ name ] ) ;
+      }
+      return ret ;
+    },
     registrate: function ( jQuery, window, document, undefined, Store, setting ) {
       
-      var $context, settings, $relations, ids ;
+      var $context, settings, ids ;
       $context = this ;
       ids = Store.ids ;
       settings = Store.settings ;
@@ -361,7 +373,7 @@
       }
       
       for ( var i = 0, $element, element ; element = $context[ i ] ; i++ ) {
-        $element = jQuery( element )[ Store.name ]() ;
+        $element = jQuery( element ) ;
         if ( setting.terminate && !$element.find( setting.trigger )[0] ) { return ; }
         
         if ( !Store.search.call( $element, setting.nss.name, function ( setting ) {
@@ -388,12 +400,8 @@
         settings[ setting.id ] = setting ;
         jQuery.data( element, setting.nss.data, setting.id ) ;
         if ( setting.root || setting.extend ) {
-          $relations = Store.relations[ setting.nss.name ] ;
-          if ( !$relations ) {
-            Store.relations[ setting.nss.name ] = $relations = $element ;
-          } else {
-            Store.relations[ setting.nss.name ] = $relations = $relations.add( $element ) ;
-        } } // if | if
+          Store.relations( setting.nss.name, element ) ;
+        } // if | if
         
         !setting.multi && $element.find( setting.trigger ).removeData( setting.nss.data_fired ) ;
         
@@ -419,7 +427,7 @@
               fn = arg1 ;
               bubbling = arg2 ;
               !bubbling && customEvent.stopPropagation() ;
-              return fn.apply( jQuery( context )[ Store.name ](), [ setting ].concat( [].slice.call( arguments, 3 ) ) ) ;
+              return ( bubbling || customEvent.target === customEvent.currentTarget ) && fn.apply( jQuery( context )[ Store.name ](), [ setting ].concat( [].slice.call( arguments, 3 ) ) ) ;
               
             // native event
             case 'object':
@@ -523,7 +531,7 @@
                 break ;
             }
             !count++ &&
-            jQuery( Store.relations[ eventname.replace( /^\w+\.?/, '' ) || '' ] ).filter( layer ? event.target : '*' ).not( document ).trigger( eventname, args ) ;
+            Store.relations( eventname.replace( /^\w+\.?/, '' ) ).filter( layer ? event.target : '*' ).not( document ).trigger( eventname, args ) ;
             count-- ;
           }
           event.stopPropagation() ;
@@ -606,14 +614,14 @@
           winHeight = info.winHeight = info.update ? info.winHeight : $win.height() ;
           winBottom = winTop + winHeight ;
           
-          var aheadIndex, aheadTop, aheadBottom, ahead,
+          var aheadTop, aheadBottom, ahead,
               topin, topout, topover,
               bottomin, bottomout, bottomover ;
           
-          aheadIndex = Math.max( 0, setting.direction ) ;
-          aheadTop = info.aheadTop = info.update ? info.aheadTop : -1 <= setting.ahead[ 0 ] && setting.ahead[ 0 ] <= 1 ? parseInt( winHeight * setting.ahead[ 0 ], 10 ) : parseInt( setting.ahead[ 0 ], 10 ) ;
-          aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : -1 <= setting.ahead[ 1 ] && setting.ahead[ 1 ] <= 1 ? parseInt( winHeight * setting.ahead[ 1 ], 10 ) : parseInt( setting.ahead[ 1 ], 10 ) ;
-          ahead = aheadIndex ? aheadBottom : aheadTop ;
+          ahead = setting.ahead[ 0 ] ;
+          aheadTop = info.aheadTop = info.update ? info.aheadTop : typeof ahead === 'number' ? parseInt( ahead, 10 ) : parseInt( eval( winHeight + ahead ), 10 )  ;
+          ahead = setting.ahead[ 1 ] ;
+          aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : typeof ahead === 'number' ? parseInt( ahead, 10 ) : parseInt( eval( winHeight + ahead ), 10 )  ;
           beforehand = info.beforehand = info.beforehand ? info.beforehand : 0 > setting.beforehand ? targets.length + setting.beforehand + 1 : setting.beforehand ;
           
           
@@ -640,9 +648,9 @@
           
           call = setting.direction === 1 ? topin : bottomin ;
           switch ( true ) {
-            case !layer ? visibleTop > frameBottom + ahead || visibleBottom < frameTop - ahead : false:
-              call = setting.direction === 1 ? visibleTop > frameBottom && frameBottom >= tgtTop - aheadBottom
-                                             : visibleBottom < frameTop && frameTop <= tgtBottom + aheadTop ;
+            case !layer ? visibleTop > frameBottom + aheadBottom || visibleBottom < frameTop - aheadTop : false:
+              call = setting.direction === 1 ? visibleTop > frameBottom && frameBottom > tgtTop - aheadBottom
+                                             : visibleBottom < frameTop && frameTop < tgtBottom + aheadTop ;
               break ;
             case setting.first && beforehand > setting.index && ( setting.multi || !jQuery.data( target[ 0 ], setting.nss.data_fired ) ):
               // beforehand
@@ -663,8 +671,8 @@
               fire = setting.direction === 1 ? topin : bottomin ;
               // multi
               if ( !setting.first && ( !nativeEvent || nativeEvent.type !== 'resize' ) ) {
-                fire = setting.direction === 1 ? ( ( !layer ? winBottom > tgtTop + setting.distance - ahead : visibleBottom > tgtTop + setting.distance - ahead ) ? false : fire )
-                                               : ( ( !layer ? winTop < tgtBottom - setting.distance + ahead : visibleTop < tgtBottom - setting.distance + ahead ) ? false : fire ) ;
+                fire = setting.direction === 1 ? ( ( !layer ? winBottom > tgtTop + setting.distance - aheadTop : visibleBottom > tgtTop + setting.distance - aheadTop ) ? false : fire )
+                                               : ( ( !layer ? winTop < tgtBottom - setting.distance + aheadBottom : visibleTop < tgtBottom - setting.distance + aheadBottom ) ? false : fire ) ;
               }
               break ;
             case setting.skip && setting.multi:
@@ -672,8 +680,8 @@
               fire = topin && bottomin ;
               // multi
               if ( !setting.first && ( !nativeEvent || nativeEvent.type !== 'resize' ) ) {
-                fire = setting.direction === 1 ? ( ( !layer ? winBottom > tgtTop + setting.distance - ahead : visibleBottom > tgtTop + setting.distance - ahead ) ? false : fire )
-                                               : ( ( !layer ? winTop < tgtBottom - setting.distance + ahead : visibleTop < tgtBottom - setting.distance + ahead ) ? false : fire ) ;
+                fire = setting.direction === 1 ? ( ( !layer ? winBottom > tgtTop + setting.distance - aheadTop : visibleBottom > tgtTop + setting.distance - aheadTop ) ? false : fire )
+                                               : ( ( !layer ? winTop < tgtBottom - setting.distance + aheadBottom : visibleTop < tgtBottom - setting.distance + aheadBottom ) ? false : fire ) ;
               }
               break ;
           }
@@ -715,7 +723,7 @@
             index: setting.index,
             direction: setting.direction,
             distance: setting.distance,
-            relations: setting.root || setting.extend ? Store.relations[ setting.nss.name ] : null,
+            relations: setting.root || setting.extend ? Store.relations( setting.nss.name ) : null,
             parameter: setting.parameter
           }
         ] ) &&
@@ -743,7 +751,7 @@
       return true ;
     },
     terminate: function ( setting ) {
-      var $context, context, settings, $relations ;
+      var $context, context, settings ;
       
       context = setting.context ;
       $context = jQuery( context ) ;
@@ -758,9 +766,7 @@
       
       if ( setting.root || setting.extend ) {
         settings = Store.settings ;
-        $relations = Store.relations[ setting.nss.name ] ;
-        Store.relations[ setting.nss.name ] = $relations = $relations.not( $context ) ;
-        if ( !$relations[0] ) {
+        if ( !Store.relations( setting.nss.name, $context, true )[0] ) {
           jQuery( window )
           .unbind( setting.nss.scroll )
           .unbind( setting.nss.resize )
@@ -768,8 +774,6 @@
           .unbind( setting.nss.event )
           .unbind( setting.nss.alias ) ;
         }
-      } else {
-        $relations = [] ;
       }
       
       ids = Store.ids ;
