@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.3
+ * @version 0.1.4
  * @updated 2013/12/02
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -731,7 +731,7 @@
             parameter: setting.parameter
           }
         ] ) &&
-        setting.count-- && jQuery.removeData( target[ 0 ], setting.nss.data_fired ) && ( fire = false ) ;
+        setting.count-- && jQuery.removeData( target[ 0 ], setting.nss.data_fired ) ;
       }
       
       if ( setting.terminate && ( !targets.length || !setting.multi && setting.step && setting.count >= targets.length ) ) {
