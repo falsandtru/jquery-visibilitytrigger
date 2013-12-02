@@ -34,7 +34,7 @@ $.visibilitytrigger({
 ##対応
 
 + コールバック関数を実行する画面端からの距離の設定（`ahead`）。
-+ visibilitytriggerの実行頻度の制御（`interval``delay`）。
++ コールバック関数の実行頻度の制御（`interval``delay`）。
 + <a href="http://sa-kusaku.sakura.ne.jp/output/validator/">validator</a>によるユーザー環境下でのエラー検出
 
 ##使用法
