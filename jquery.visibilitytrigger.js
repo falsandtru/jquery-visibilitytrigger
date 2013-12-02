@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.2
+ * @version 0.1.3
  * @updated 2013/12/02
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -275,8 +275,10 @@
         case 'null':
         case '0':
           this.trigger( Store.name, [ callback, bubbling ] ) ;
+          break ;
         case 'boolean':
           this.trigger( Store.name, [ callback, true ] ) ;
+          break ;
         case 'false':
           this.trigger( Store.name, [ callback, false ] ) ;
           break ;
@@ -530,9 +532,11 @@
                 args.push( layer ) ;
                 break ;
             }
-            !count++ &&
-            Store.relations( eventname.replace( /^\w+\.?/, '' ) ).filter( layer ? event.target : '*' ).not( document ).trigger( eventname, args ) ;
-            count-- ;
+            if ( count < 1 ) {
+              count++ ;
+              Store.relations( eventname.replace( /^\w+\.?/, '' ) ).filter( layer ? event.target : '*' ).not( document ).trigger( eventname, args ) ;
+              count-- ;
+            }
           }
           event.stopPropagation() ;
         } ) ;
