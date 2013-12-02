@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.4
- * @updated 2013/12/02
+ * @version 0.1.5
+ * @updated 2013/12/03
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -571,7 +571,7 @@
     drive: function ( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting, info ) {
       
       Store.countDrive++ ;
-      var $context, $eventcontext, layer,  fire, increment, call, targets, target, evtScroll, evtHeight, direction, distance ;
+      var $context, $eventcontext, layer, root, fire, increment, call, targets, target, evtScroll, evtHeight, direction, distance ;
       
       info = info || {} ;
       $context = info.context = info.update ? info.context : jQuery( customEvent.currentTarget ) ;
