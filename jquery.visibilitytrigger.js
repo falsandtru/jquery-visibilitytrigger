@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.5
+ * @version 0.1.6
  * @updated 2013/12/03
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -652,15 +652,15 @@
           
           call = setting.direction === 1 ? topin : bottomin ;
           switch ( true ) {
-            case !layer ? visibleTop > frameBottom + aheadBottom || visibleBottom < frameTop - aheadTop : false:
-              call = setting.direction === 1 ? visibleTop > frameBottom && frameBottom > tgtTop - aheadBottom
-                                             : visibleBottom < frameTop && frameTop < tgtBottom + aheadTop ;
-              break ;
             case setting.first && beforehand > setting.index && ( setting.multi || !jQuery.data( target[ 0 ], setting.nss.data_fired ) ):
               // beforehand
               if ( beforehand > setting.index ) {
                 fire = call = true ;
               }
+              break ;
+            case !layer ? visibleTop > frameBottom + aheadBottom || visibleBottom < frameTop - aheadTop : false:
+              call = setting.direction === 1 ? visibleTop > frameBottom && frameBottom > tgtTop - aheadBottom
+                                             : visibleBottom < frameTop && frameTop < tgtBottom + aheadTop ;
               break ;
             case !setting.skip && !setting.multi:
               // !skip
