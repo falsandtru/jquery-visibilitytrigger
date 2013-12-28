@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.6
- * @updated 2013/12/03
+ * @version 0.1.7
+ * @updated 2013/12/29
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -769,7 +769,6 @@
       .unbind( setting.nss.resize ) ;
       
       if ( setting.root || setting.extend ) {
-        settings = Store.settings ;
         if ( !Store.relations( setting.nss.name, $context, true )[0] ) {
           jQuery( window )
           .unbind( setting.nss.scroll )
@@ -777,8 +776,7 @@
           .add( document )
           .unbind( setting.nss.event )
           .unbind( setting.nss.alias ) ;
-        }
-      }
+      } } // if | if
       
       ids = Store.ids ;
       for ( var i = ids.length ; id = ids[ --i ] ; ) {
