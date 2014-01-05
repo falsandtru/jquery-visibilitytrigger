@@ -38,7 +38,7 @@ $.visibilitytrigger({
 + <a href="http://sa-kusaku.sakura.ne.jp/output/validator/">validator</a>によるユーザー環境下でのエラー検出
 
 ##使用法
-visibilitytriggerはvtというエイリアスで呼び出すことができます。以下、vtをvisibilitytriggerの略称として使用します。また、エイリアスはすでにjQueryで使用されていない範囲で自由に追加することができます。ただし、最初の1回は必ずvisibilitytriggerを使用してエイリアスを登録しなければなりません。
+visibilitytriggerはvtというエイリアスで呼び出すことができます。以下、vtをvisibilitytriggerの略称として使用します。また、エイリアスはjQueryでまだ使用されていない範囲で自由に追加することができます。ただし、最初の1回は必ずvisibilitytriggerを使用してエイリアスを登録しなければなりません。
 
 ###用語
 説明のため以下のとおり定義して用語を使用します。
@@ -91,7 +91,7 @@ vtのメソッドを追加したコンテキストを返します。初回実行
 パラメータはすべてパラメータ用オブジェクトのプロパティに設定して渡します。パラメータとなるオブジェクトのプロパティは以下のとおりです
 
 ####*gns: Alias as string*
-グローバルネームスペースです。エイリアスとして登録されます。初期値は`null`です。
+グローバルネームスペースです。設定値はエイリアスとして登録されます。初期値は`visibilitytrigger`です。
 
 ####*ns: Namespace as string*
 ネームスペースです。vtを複数登録する場合は個別のネームスペースを設定してください。初期値は`null`です。
