@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.1.7
- * @updated 2013/12/29
+ * @version 0.2.0
+ * @updated 2014/01/07
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -45,30 +45,28 @@
   
   function initialize( jQuery, window, document, undefined, Store, option ) {
     
-    
     var $context = this ;
     
     // polymorphism
     switch ( true ) {
       case typeof option === 'object' && ( jQuery( option, document )[0] || option === window || option === document ):
-        $context = $context instanceof jQuery ? $context.add( option ) : jQuery( option ) ;
-        Store.setProperties.call( $context, null, Store ) ;
-        return $context ;
+        $context = $context instanceof jQuery ? $context : jQuery() ;
+        return Store.setProperties.call( $context, null, option ) ;
+        
       case typeof option === 'object':
-        $context = $context instanceof jQuery ? $context.add() : jQuery( document ) ;
         Store.setAlias( option.gns ) ;
-        Store.setProperties.call( $context, option.ns || '', Store ) ;
+        $context = $context instanceof jQuery ? $context : jQuery( document ) ;
+        $context = Store.setProperties.call( $context, option.ns || '', null ) ;
         if ( !option.trigger || !option.callback ) {
           return $context ;
         }
         break ;
         
       case option === 'string':
-      default :
-        $context = $context instanceof jQuery ? $context.add() : $context ;
+      default:
         Store.setAlias( option ) ;
-        Store.setProperties.call( $context, null, Store ) ;
-        return $context ;
+        $context = $context instanceof jQuery ? $context : jQuery[ Store.name ] ;
+        return Store.setProperties.call( $context, null, null ) ;
     }
     
     // setting
@@ -209,7 +207,7 @@
                     if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
                   }
                   break ;
-                default :
+                default:
                   if ( ( setting = settings[ id ] ) ) {
                     if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
                   }
@@ -288,56 +286,67 @@
     setAlias:  function ( name ) {
       Store.alias = typeof name === 'string' ? name : Store.alias ;
       if ( Store.name !== Store.alias && !jQuery[ Store.alias ] ) {
+        jQuery[ Store.name ][ Store.alias ] = jQuery.fn[ Store.name ] ;
         jQuery.fn[ Store.alias ] = jQuery[ Store.alias ] = jQuery.fn[ Store.name ] ;
       }
     },
-    setProperties: function ( namespace ) {
+    setProperties: function ( namespace, element ) {
       
-      this.vtUID = ++Store.count ;
+      var $context = this ;
       
-      this.vtNamespace = typeof namespace === 'string' ? namespace : null ;
-      
-      this.isRegistrate = function ( key ) {
-        return true === Store.search.call( this, key, function ( setting ) {
-          return true ;
-        } ) ;
-      } ;
-      
-      this.enable = function ( key, bubbling ) {
-        return Store.redirect.call( this, key, bubbling, function ( setting ) {
-          setting.status.active = true ;
-        } ), this ;
-      } ;
-      
-      this.disable = function ( key, bubbling ) {
-        return Store.redirect.call( this, key, bubbling, function ( setting ) {
-          setting.status.active = false ;
-        } ), this ;
-      } ;
-      
-      this.reset = function ( key, bubbling ) {
-        return Store.redirect.call( this, key, bubbling, function ( setting ) {
-          this.release( setting.id )[ Store.name ]( setting.option ) ;
-        } ), this ;
-      } ;
-      
-      this.release = function ( key, bubbling ) {
-        return Store.redirect.call( this, key, bubbling, function ( setting ) {
-          Store.terminate( setting ) ;
-        } ), this ;
-      } ;
-      
-      this.vtrigger = function ( key, bubbling, layer ) {
-        var keys ;
-        keys = typeof key === 'string' ? key.split( /[,\s]\s*/ ) : [ key ] ;
-        for ( var i = 0, len = keys.length ; i < len ; i++ ) {
-          key = keys[ i ] ;
-          Store.redirect.call( this, key, bubbling, function ( setting, layer ) {
-            jQuery( setting.context ).trigger( Store.name + ( setting.nss.name ? '.' + setting.nss.name : '' ), [ layer ] ) ;
+      if ( $context instanceof jQuery || $context === jQuery[ Store.name ] ) {
+        
+        $context = $context instanceof jQuery && element !== undefined ? $context.add( element ) : $context ;
+        
+        $context.vtUID = ++Store.count ;
+        
+        $context.vtNamespace = typeof namespace === 'string' ? namespace : null ;
+        
+        $context[ Store.name ] = jQuery[ Store.name ] ;
+        
+        $context.isRegistrate = function ( key ) {
+          return true === Store.search.call( this, key, function ( setting ) {
+            return true ;
           } ) ;
-        }
-        return this ;
-      } ;
+        } ;
+        
+        $context.enable = function ( key, bubbling ) {
+          return Store.redirect.call( this, key, bubbling, function ( setting ) {
+            setting.status.active = true ;
+          } ), this ;
+        } ;
+        
+        $context.disable = function ( key, bubbling ) {
+          return Store.redirect.call( this, key, bubbling, function ( setting ) {
+            setting.status.active = false ;
+          } ), this ;
+        } ;
+        
+        $context.reset = function ( key, bubbling ) {
+          return Store.redirect.call( this, key, bubbling, function ( setting ) {
+            this.release( setting.id )[ Store.name ]( setting.option ) ;
+          } ), this ;
+        } ;
+        
+        $context.release = function ( key, bubbling ) {
+          return Store.redirect.call( this, key, bubbling, function ( setting ) {
+            Store.terminate( setting ) ;
+          } ), this ;
+        } ;
+        
+        $context.vtrigger = function ( key, bubbling, layer ) {
+          var keys ;
+          keys = typeof key === 'string' ? key.split( /[,\s]\s*/ ) : [ key ] ;
+          for ( var i = 0, len = keys.length ; i < len ; i++ ) {
+            key = keys[ i ] ;
+            Store.redirect.call( this, key, bubbling, function ( setting, layer ) {
+              jQuery( setting.context ).trigger( Store.name + ( setting.nss.name ? '.' + setting.nss.name : '' ), [ layer ] ) ;
+            } ) ;
+          }
+          return this ;
+        } ;
+      }
+      return $context ;
     },
     relations:  function ( name, element, remove ) {
       var ret, names ;
@@ -388,7 +397,7 @@
                 jQuery.extend( true, setting, setting.reset ) ;
               } ) ;
               return false;
-            default :
+            default:
               return false;
           }
         } ) ) {
@@ -439,7 +448,7 @@
               
             // own trigger
             // user trigger
-            default :
+            default:
               
               eventcontext = manual ? arg1 === 0 ? document
                                                  : customEvent.target
@@ -459,7 +468,7 @@
               case setting.id !== jQuery.data( customEvent.currentTarget, setting.nss.data ):
                 jQuery( customEvent.currentTarget )[ Store.name ]().release( setting.id ) ;
                 break ;
-              default :
+              default:
                 if ( manual || !setting.delay && !setting.interval ) {
                   while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
                   Store.countTask++ ;
@@ -618,7 +627,7 @@
           winHeight = info.winHeight = info.update ? info.winHeight : $win.height() ;
           winBottom = winTop + winHeight ;
           
-          var aheadTop, aheadBottom, ahead,
+          var aheadTop, aheadBottom, ahead, beforehand,
               topin, topout, topover,
               bottomin, bottomout, bottomover ;
           
@@ -694,7 +703,6 @@
           if ( fire && !setting.multi ) {
             fire = target[ 0 ] && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
             fire = setting.turn && !info.recursion ? false : fire ;
-
           }
           break ;
       }
@@ -755,7 +763,7 @@
       return true ;
     },
     terminate: function ( setting ) {
-      var $context, context, settings ;
+      var $context, context, settings, ids, id ;
       
       context = setting.context ;
       $context = jQuery( context ) ;
