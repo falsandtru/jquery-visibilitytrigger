@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.2.0
- * @updated 2014/01/07
+ * @version 0.2.1
+ * @updated 2014/01/17
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -104,7 +104,7 @@
         distance: 0,
         turn: false,
         end: false,
-        queue: [],
+        queue: [ [], [] ],
         status: {
           active: true
         },
@@ -421,7 +421,7 @@
         .bind( setting.nss.event, setting.id, function ( event, arg1, arg2 ) {
           
           Store.countEvent++ ;
-          var setting, nativeEvent, customEvent, context, eventcontext, manual ;
+          var setting, nativeEvent, customEvent, context, eventcontext, manual, layer ;
           var fn, bubbling ;
           
           setting = Store.settings[ event.data ] ;
@@ -459,30 +459,33 @@
           
           if ( jQuery( setting.trigger, eventcontext ).first().is( ':hidden' ) ) { return ; }
           
+          layer = Number( Boolean( eventcontext.parentNode ) ) ;
           ( function ( customEvent, nativeEvent, eventcontext, setting ) {
+            var queue = setting.queue[ layer ] ;
+            
             switch ( true ) {
               case !Store.settings[ setting.id ]:
               case !setting.status.active:
-              case 3 < setting.queue.length:
+              case 3 < queue.length:
                 break ;
               case setting.id !== jQuery.data( customEvent.currentTarget, setting.nss.data ):
                 jQuery( customEvent.currentTarget )[ Store.name ]().release( setting.id ) ;
                 break ;
               default:
                 if ( manual || !setting.delay && !setting.interval ) {
-                  while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
+                  while ( id = queue.shift() ) { clearTimeout( id ) ; }
                   Store.countTask++ ;
                   Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
                 } else {
                   var id, elapse ;
                   elapse = setting.interval ? ( new Date() ).getTime() - setting.timestamp : 0 ;
-                  while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
+                  while ( id = queue.shift() ) { clearTimeout( id ) ; }
                   id = setTimeout( function () {
-                    while ( id = setting.queue.shift() ) { clearTimeout( id ) ; }
+                    while ( id = queue.shift() ) { clearTimeout( id ) ; }
                     Store.countTask++ ;
                     Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
                   }, Math.max( setting.delay, setting.interval - elapse, 50 ) ) ;
-                  setting.queue.push( id ) ;
+                  queue.push( id ) ;
                 }
                 break ;
             }
@@ -717,7 +720,7 @@
               var id = setTimeout( function () {
                 jQuery( customEvent.currentTarget ).trigger( setting.nss.event, [ nativeEvent ] ) ;
               }, Math.max( setting.interval - now + setting.timestamp, 50 ) ) ;
-              setting.queue.push( id ) ;
+              setting.queue[ layer ].push( id ) ;
             } ) ( customEvent, nativeEvent, setting ) ;
             
             return true ;
