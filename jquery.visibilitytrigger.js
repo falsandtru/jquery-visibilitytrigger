@@ -5,7 +5,7 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.2.1
+ * @version 0.2.2
  * @updated 2014/01/17
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
@@ -484,7 +484,7 @@
                     while ( id = queue.shift() ) { clearTimeout( id ) ; }
                     Store.countTask++ ;
                     Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
-                  }, Math.max( setting.delay, setting.interval - elapse, 50 ) ) ;
+                  }, Math.max( setting.delay, setting.interval - elapse, 20 ) ) ;
                   queue.push( id ) ;
                 }
                 break ;
@@ -719,7 +719,7 @@
             ( function ( customEvent, nativeEvent, setting ) {
               var id = setTimeout( function () {
                 jQuery( customEvent.currentTarget ).trigger( setting.nss.event, [ nativeEvent ] ) ;
-              }, Math.max( setting.interval - now + setting.timestamp, 50 ) ) ;
+              }, Math.max( setting.interval - now + setting.timestamp, 20 ) ) ;
               setting.queue[ layer ].push( id ) ;
             } ) ( customEvent, nativeEvent, setting ) ;
             
