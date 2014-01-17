@@ -484,7 +484,7 @@
                     while ( id = queue.shift() ) { clearTimeout( id ) ; }
                     Store.countTask++ ;
                     Store.drive( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting ) ;
-                  }, Math.max( setting.delay, setting.interval - elapse, 50 ) ) ;
+                  }, Math.max( setting.delay, setting.interval - elapse, 20 ) ) ;
                   queue.push( id ) ;
                 }
                 break ;
@@ -719,7 +719,7 @@
             ( function ( customEvent, nativeEvent, setting ) {
               var id = setTimeout( function () {
                 jQuery( customEvent.currentTarget ).trigger( setting.nss.event, [ nativeEvent ] ) ;
-              }, Math.max( setting.interval - now + setting.timestamp, 50 ) ) ;
+              }, Math.max( setting.interval - now + setting.timestamp, 20 ) ) ;
               setting.queue[ layer ].push( id ) ;
             } ) ( customEvent, nativeEvent, setting ) ;
             
