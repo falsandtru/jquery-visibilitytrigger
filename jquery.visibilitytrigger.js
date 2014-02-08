@@ -140,7 +140,7 @@
   Store = {
     name: 'visibilitytrigger',
     alias: 'vt',
-    ids: [0],
+    ids: [],
     settings: [0],
     relations: {},
     count: 0,
@@ -236,7 +236,7 @@
         case 'direct:0':
           ids = Store.ids ;
           settings = Store.settings ;
-          for ( var i = 1, len = ids.length ; id = ids[ i ] ; i++ ) {
+          for ( var i = 0, len = ids.length ; id = ids[ i ] ; i++ ) {
             if ( setting = settings[ id ] ) {
               if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
           } } // if | for
@@ -257,7 +257,7 @@
           settings = Store.settings ;
           key = key.split( '.' ).sort().join( '.' ) ;
           reg = new RegExp( typeof key === 'string' ? key && '(?:^|\.)' + key.replace( /([.*+?^=!:${}()|[\]\/\\])/g, '\\$1' ) + '(?:$|\.)' || '^$' : '' ) ;
-          for ( var i = 1, len = ids.length ; id = ids[ i ] ; i++ ) {
+          for ( var i = 0, len = ids.length ; id = ids[ i ] ; i++ ) {
             if ( ( setting = settings[ id ] ) && reg.test( setting.nss.name ) ) {
               if ( ( result = callback.call( this, setting ) ) !== undefined ) { return result ; }
           } } // if | for
