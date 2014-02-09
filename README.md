@@ -35,7 +35,6 @@ $.visibilitytrigger({
 
 * コールバック関数を実行する画面端からの距離の設定（`ahead`）。
 * コールバック関数の実行頻度の制御（`interval``delay`）。
-* <a href="http://sa-kusaku.sakura.ne.jp/output/validator/">validator</a>によるユーザー環境下でのエラー検出
 
 ##使用法
 visibilitytriggerはvtというエイリアスで呼び出すことができます。以下、vtをvisibilitytriggerの略称として使用します。また、エイリアスはjQueryでまだ使用されていない範囲で自由に追加することができます。ただし、最初の1回は必ずvisibilitytriggerを使用してエイリアスを登録しなければなりません。
