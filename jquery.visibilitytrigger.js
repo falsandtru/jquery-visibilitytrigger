@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.2.3
- * @updated 2014/02/09
+ * @version 0.2.4
+ * @updated 2014/02/13
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -583,7 +583,7 @@
     drive: function ( jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting, info ) {
       
       Store.countDrive++ ;
-      var $context, $eventcontext, layer, root, fire, increment, call, targets, target, evtScroll, evtHeight, direction, distance ;
+      var $context, $eventcontext, layer, root, fire, increment, call, targets, target, evtScroll, evtHeight, lastHeight, direction, distance ;
       
       info = info || {} ;
       $context = info.context = info.update ? info.context : jQuery( customEvent.currentTarget ) ;
@@ -597,6 +597,7 @@
       targets = info.targets = setting.index >= 0 || targets.length > setting.index ? info.targets : $context.find( setting.trigger ) ;
       evtScroll = info.evtScroll = info.update ? info.evtScroll : $eventcontext.scrollTop() ;
       evtHeight = info.evtHeight = info.update ? info.evtHeight : setting.height[ layer ] ;
+      lastHeight = evtHeight ;
       direction = info.direction = info.update ? info.direction : evtScroll === evtHeight ? setting.direction : evtScroll < evtHeight ? -1 : 1 ;
       distance = info.distance = info.update ? info.distance : Math.abs( evtScroll - evtHeight ) ;
       target = targets.eq( setting.index ) ;
@@ -723,6 +724,7 @@
               setting.queue[ layer ].push( id ) ;
             } ) ( customEvent, nativeEvent, setting ) ;
             
+            setting.height[ layer ] = lastHeight ;
             return true ;
         } } // if | if
         
