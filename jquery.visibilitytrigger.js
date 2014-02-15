@@ -734,7 +734,7 @@
           customEvent,
           nativeEvent,
           {
-            contaner: $context[ 0 ],
+            container: $context[ 0 ],
             activator: eventcontext,
             selector: setting.trigger,
             index: setting.index,
