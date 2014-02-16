@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.2.4
- * @updated 2014/02/13
+ * @version 0.2.5
+ * @updated 2014/02/16
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -734,7 +734,7 @@
           customEvent,
           nativeEvent,
           {
-            contaner: $context[ 0 ],
+            container: $context[ 0 ],
             activator: eventcontext,
             selector: setting.trigger,
             index: setting.index,
