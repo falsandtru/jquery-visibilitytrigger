@@ -75,7 +75,6 @@
       {
         gns: Store.name,
         ns: null,
-        context: null,
         trigger: null,
         callback: function () {},
         parameter: [],
@@ -95,6 +94,7 @@
       {
         id: 0,
         nss: null,
+        context: null,
         root: !$context.parent()[0],
         first: true,
         index: 0,
