@@ -671,10 +671,6 @@
                 fire = call = true ;
               }
               break ;
-            case !layer ? visibleTop > frameBottom + aheadBottom || visibleBottom < frameTop - aheadTop : false:
-              call = setting.direction === 1 ? visibleTop > frameBottom && frameBottom > tgtTop - aheadBottom
-                                             : visibleBottom < frameTop && frameTop < tgtBottom + aheadTop ;
-              break ;
             case !setting.skip && !setting.multi:
               // !skip
               fire = setting.direction === 1 ? topin : bottomin ;
@@ -687,18 +683,18 @@
               // !skip
               fire = setting.direction === 1 ? topin : bottomin ;
               // multi
-              if ( !setting.first && ( !nativeEvent || nativeEvent.type !== 'resize' ) ) {
-                fire = setting.direction === 1 ? ( ( !layer ? winBottom > tgtTop + setting.distance - aheadTop : visibleBottom > tgtTop + setting.distance - aheadTop ) ? false : fire )
-                                               : ( ( !layer ? winTop < tgtBottom - setting.distance + aheadBottom : visibleTop < tgtBottom - setting.distance + aheadBottom ) ? false : fire ) ;
+              if ( fire && !setting.first && ( !nativeEvent || nativeEvent.type !== 'resize' ) ) {
+                fire = setting.direction === 1 ? ( ( !layer ? winBottom >= tgtTop + setting.distance - aheadBottom : visibleBottom >= tgtTop + setting.distance - aheadBottom ) ? false : fire )
+                                               : ( ( !layer ? winTop <= tgtBottom - setting.distance + aheadTop : visibleTop <= tgtBottom - setting.distance + aheadTop ) ? false : fire ) ;
               }
               break ;
             case setting.skip && setting.multi:
               // skip
               fire = topin && bottomin ;
               // multi
-              if ( !setting.first && ( !nativeEvent || nativeEvent.type !== 'resize' ) ) {
-                fire = setting.direction === 1 ? ( ( !layer ? winBottom > tgtTop + setting.distance - aheadTop : visibleBottom > tgtTop + setting.distance - aheadTop ) ? false : fire )
-                                               : ( ( !layer ? winTop < tgtBottom - setting.distance + aheadBottom : visibleTop < tgtBottom - setting.distance + aheadBottom ) ? false : fire ) ;
+              if ( fire && !setting.first && ( !nativeEvent || nativeEvent.type !== 'resize' ) ) {
+                fire = setting.direction === 1 ? ( ( !layer ? winBottom >= tgtTop + setting.distance - aheadBottom : visibleBottom >= tgtTop + setting.distance - aheadBottom ) ? false : fire )
+                                               : ( ( !layer ? winTop <= tgtBottom - setting.distance + aheadTop : visibleTop <= tgtBottom - setting.distance + aheadTop ) ? false : fire ) ;
               }
               break ;
           }
