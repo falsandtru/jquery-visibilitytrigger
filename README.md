@@ -380,17 +380,20 @@ HTML上の記述順序とブラウザ上の表示順序が一致していない�
 
 ##jQuery Plugins
 
+###<a href="https://github.com/falsandtru/jquery.preload.js">preload</a>
+ユーザーが次に見るページを予測してあらかじめ読み込みページ移動を高速化します。
+
 ###<a href="https://github.com/falsandtru/jquery.pjax.js">pjax</a>
 HTML5による高速なページ移動機能をウェブサイトに実装します。
 
 ###<a href="https://github.com/falsandtru/jquery.visibilitytrigger.js">visibilitytrigger</a>
 スクロールにより特定のHTML要素が画面に表示されることを条件としてスクリプトを遅延実行させます。
 
-###<a href="http://sa-kusaku.sakura.ne.jp/output/clientenv/">clientenv</a>
+###<a href="https://github.com/falsandtru/jquery.clientenv.js">clientenv</a>
 サイトの閲覧者のOS、ブラウザ、フォント対応などを判定してクロスブラウザ対応の労力を軽減します。
 
-###<a href="http://sa-kusaku.sakura.ne.jp/output/validator/">validator</a>
+###<a href="https://github.com/falsandtru/jquery.validator.js">validator</a>
 JavaScriptの動作検証とエラーレポートを行う、インストール不要の埋め込み型検証ツールです。
 
-###<a href="http://sa-kusaku.sakura.ne.jp/output/spage/">spage</a>
+###<a href="https://github.com/falsandtru/jquery.spage.js">spage</a>
 AutoPagerやAutoPatchWorkのようなページの自動読み込み＆継ぎ足し機能をウェブサイトに実装します。
