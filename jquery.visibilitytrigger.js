@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.2.6
- * @updated 2014/02/19
+ * @version 0.2.7
+ * @updated 2014/02/21
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -614,8 +614,6 @@
       
       switch ( true ) {
         case setting.index < 0 || targets.length <= setting.index:
-          break ;
-          
         case !targets.length || !target[0]:
           break ;
           
@@ -699,11 +697,7 @@
               break ;
           }
           increment = setting.step ? setting.step * setting.direction : fire ? setting.direction === -1 && -1 || 0 : setting.direction ;
-          
-          if ( fire && !setting.multi ) {
-            fire = target[ 0 ] && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
-            fire = setting.turn && !info.recursion ? false : fire ;
-          }
+          fire = fire && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
           break ;
       }
       
