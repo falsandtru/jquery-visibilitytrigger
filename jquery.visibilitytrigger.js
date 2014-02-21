@@ -697,7 +697,7 @@
               break ;
           }
           increment = setting.step ? setting.step * setting.direction : fire ? setting.direction === -1 && -1 || 0 : setting.direction ;
-          fire = fire && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
+          fire = fire && !setting.multi && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
           break ;
       }
       
