@@ -614,9 +614,8 @@
       
       switch ( true ) {
         case setting.index < 0 || targets.length <= setting.index:
-          break ;
-          
         case !targets.length || !target[0]:
+        case !setting.multi && !!jQuery.data( target[ 0 ], setting.nss.data_fired ):
           break ;
           
         default:
@@ -699,11 +698,6 @@
               break ;
           }
           increment = setting.step ? setting.step * setting.direction : fire ? setting.direction === -1 && -1 || 0 : setting.direction ;
-          
-          if ( fire && !setting.multi ) {
-            fire = target[ 0 ] && jQuery.data( target[ 0 ], setting.nss.data_fired ) ? false : fire ;
-            fire = setting.turn && !info.recursion ? false : fire ;
-          }
           break ;
       }
       
