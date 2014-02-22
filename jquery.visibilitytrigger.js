@@ -184,7 +184,7 @@
           settings = Store.settings ;
           for ( var i = 0, element ; element = this[ i ] ; i++ ) {
             switch ( true ) {
-              case 'object' !== typeof ( events = jQuery.data( element, 'events' ) ):
+              case 'object' !== typeof ( events = jQuery._data( element, 'events' ) ):
               case !events || 'object' !== typeof ( events = events[ Store.name ] ):
                 continue;
                 break ;
