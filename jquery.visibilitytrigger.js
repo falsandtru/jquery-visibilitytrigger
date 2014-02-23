@@ -5,8 +5,8 @@
  * ---
  * @Copyright(c) 2012, falsandtru
  * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.2.7
- * @updated 2014/02/21
+ * @version 0.2.9
+ * @updated 2014/02/23
  * @author falsandtru https://github.com/falsandtru/
  * @CodingConventions Google JavaScript Style Guide
  * ---
@@ -184,7 +184,7 @@
           settings = Store.settings ;
           for ( var i = 0, element ; element = this[ i ] ; i++ ) {
             switch ( true ) {
-              case 'object' !== typeof ( events = jQuery.data( element, 'events' ) ):
+              case 'object' !== typeof ( events = jQuery._data( element, 'events' ) ):
               case !events || 'object' !== typeof ( events = events[ Store.name ] ):
                 continue;
                 break ;
