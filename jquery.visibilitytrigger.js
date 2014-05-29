@@ -478,7 +478,7 @@
                   Store.drive(jQuery, window, document, undefined, Store, customEvent, nativeEvent, eventcontext, setting);
                 } else {
                   var id, elapse;
-                  elapse = setting.interval ? (new Date()).getTime() - setting.timestamp : 0;
+                  elapse = setting.interval ? new Date().getTime() - setting.timestamp : 0;
                   while (id = queue.shift()) {clearTimeout(id);}
                   id = setTimeout(function() {
                     while (id = queue.shift()) {clearTimeout(id);}
@@ -703,7 +703,7 @@
       
       if (fire) {
         if (setting.interval) {
-          var now = (new Date()).getTime();
+          var now = new Date().getTime();
           if (setting.interval <= now - setting.timestamp) {
             setting.timestamp = now;
           } else {
