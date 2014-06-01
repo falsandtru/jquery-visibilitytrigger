@@ -457,8 +457,6 @@
               customEvent.stopPropagation();
           }
           
-          if (jQuery(setting.trigger, event.currentTarget).first().is(':hidden')) {return;}
-          
           layer = Number(Boolean(eventcontext.parentNode));
           (function(customEvent, nativeEvent, eventcontext, setting) {
             var queue = setting.queue[layer];
