@@ -49,7 +49,7 @@
     
     // polymorphism
     switch (true) {
-      case typeof option === 'object' && (jQuery(option, document)[0] || option === window || option === document):
+      case typeof option === 'object' && (!!jQuery(option, document).length || option === window || option === document):
         $context = $context instanceof jQuery ? $context : jQuery();
         return Store.setProperties.call($context, null, option);
         
@@ -95,7 +95,7 @@
         id: 0,
         nss: null,
         context: null,
-        root: !$context.parent()[0],
+        root: !$context.parent().length,
         first: true,
         index: 0,
         count: 0,
@@ -385,7 +385,7 @@
       
       for (var i = 0, $element, element; element = $context[i]; i++) {
         $element = jQuery(element);
-        if (setting.terminate && !$element.find(setting.trigger)[0]) {return;}
+        if (setting.terminate && !$element.find(setting.trigger).length) {return;}
         
         if (!Store.search.call($element[Store.name](), setting.nss.name, function(setting) {
           switch (setting.reset && typeof setting.reset || setting.reset) {
@@ -586,8 +586,8 @@
       info = info || {};
       $context = info.context = info.update ? info.context : jQuery(customEvent.currentTarget);
       $eventcontext = info.eventcontext = info.update ? info.eventcontext : jQuery(eventcontext);
-      root = info.root = info.update ? info.root : !$context.parent()[0];
-      layer = info.layer = info.update ? info.layer : Number(Boolean($eventcontext.parent()[0]));
+      root = info.root = info.update ? info.root : !$context.parent().length;
+      layer = info.layer = info.update ? info.layer : Number(Boolean($eventcontext.parent().length));
       fire = false;
       increment = false;
       call = false;
@@ -612,7 +612,7 @@
       
       switch (true) {
         case setting.index < 0 || targets.length <= setting.index:
-        case !targets.length || !target[0]:
+        case !targets.length || !target.length:
           break;
           
         default:
@@ -770,7 +770,7 @@
       .unbind(setting.nss.resize);
       
       if (setting.root || setting.extend) {
-        if (!Store.relations(setting.nss.name, $context, true)[0]) {
+        if (!Store.relations(setting.nss.name, $context, true).length) {
           jQuery(window)
           .unbind(setting.nss.scroll)
           .unbind(setting.nss.resize)
