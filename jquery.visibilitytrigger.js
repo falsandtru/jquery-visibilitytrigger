@@ -112,7 +112,8 @@
         option: option
       }
     );
-    
+
+    setting.ns = setting.ns && '.' === setting.ns[0] ? setting.ns.slice(1) : setting.ns;
     setting.nss = {
       array: [Store.name].concat(setting.ns && String(setting.ns).split('.') || [])
     };
