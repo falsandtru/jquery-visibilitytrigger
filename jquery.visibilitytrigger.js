@@ -130,6 +130,8 @@
         beforehand: typeof setting.beforehand === 'boolean' ? - Number(setting.beforehand) : setting.beforehand
       }
     );
+    setting.ahead[0] = Math.abs(setting.ahead[0]) < 1 ? '*' + setting.ahead[0] * 10 : setting.ahead[0];
+    setting.ahead[1] = Math.abs(setting.ahead[1]) < 1 ? '*' + setting.ahead[1] * 10 : setting.ahead[1];
     
     // registrate
     Store.registrate.call($context, jQuery, window, document, undefined, Store, setting);
@@ -632,9 +634,9 @@
               bottomin, bottomout, bottomover;
           
           ahead = setting.ahead[0];
-          aheadTop = info.aheadTop = info.update ? info.aheadTop : typeof ahead === 'number' ? parseInt(ahead, 10) : parseInt(eval(winHeight + ahead), 10);
+          aheadTop = info.aheadTop = info.update ? info.aheadTop : 'string' === typeof ahead && '*' === ahead[0] ? parseInt(winHeight * ahead.slice(1), 10) : parseInt(ahead, 10);
           ahead = setting.ahead[1];
-          aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : typeof ahead === 'number' ? parseInt(ahead, 10) : parseInt(eval(winHeight + ahead), 10);
+          aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : 'string' === typeof ahead && '*' === ahead[0] ? parseInt(winHeight * ahead.slice(1), 10) : parseInt(ahead, 10);
           beforehand = info.beforehand = info.beforehand ? info.beforehand : 0 > setting.beforehand ? targets.length + setting.beforehand + 1 : setting.beforehand;
           
           
