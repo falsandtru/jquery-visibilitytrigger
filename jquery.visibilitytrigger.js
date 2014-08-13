@@ -49,11 +49,13 @@
     
     // polymorphism
     switch (true) {
-      case typeof option === 'object' && (!!jQuery(option, document).length || option === window || option === document):
+      case window === option:
+      case document === option:
+      case jQuery.contains(document, 'object' === typeof option && option || null):
         $context = $context instanceof jQuery ? $context : jQuery();
         return Store.setProperties.call($context, null, option);
         
-      case typeof option === 'object':
+      case 'object' === typeof option:
         Store.setAlias(option.gns);
         $context = $context instanceof jQuery ? $context : jQuery(document);
         $context = Store.setProperties.call($context, option.ns || '', null);
@@ -62,7 +64,7 @@
         }
         break;
         
-      case option === 'string':
+      case 'string' === option:
       default:
         Store.setAlias(option);
         $context = $context instanceof jQuery ? $context : jQuery[Store.name];
