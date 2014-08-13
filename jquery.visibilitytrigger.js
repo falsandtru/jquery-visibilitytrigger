@@ -1,31 +1,13 @@
-/*
+/**
  * 
- * visibility trigger
+ * jquery.visibilitytrigger.js
  * 
+ * @name jquery.visibilitytrigger.js
+ * @version 0.4.0
  * ---
- * @Copyright(c) 2012, falsandtru
- * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.3.0
- * @updated 2014/06/01
- * @author falsandtru https://github.com/falsandtru/
- * @CodingConventions Google JavaScript Style Guide
- * ---
- * Note:
- * 
- * ---
- * Example:
- * @jquery 1.7.2
- * 
- * $.visibilitytrigger({
- *   trigger: 'img[data-origin]',
- *   callback: function(){$(this).attr('src', $(this).attr('data-origin'))},
- *   ahead: 300,
- *   beforehand: 1
- *}).vtrigger();
- * 
- * ---
- * Document:
- * https://github.com/falsandtru/jquery.visibilitytrigger.js
+ * @author falsandtru https://github.com/falsandtru/jquery.visibilitytrigger.js/
+ * @copyright 2012, falsandtru
+ * @license MIT
  * 
  */
 
@@ -49,11 +31,13 @@
     
     // polymorphism
     switch (true) {
-      case typeof option === 'object' && (jQuery(option, document)[0] || option === window || option === document):
+      case window === option:
+      case document === option:
+      case jQuery.contains(document, 'object' === typeof option && option || null):
         $context = $context instanceof jQuery ? $context : jQuery();
         return Store.setProperties.call($context, null, option);
         
-      case typeof option === 'object':
+      case 'object' === typeof option:
         Store.setAlias(option.gns);
         $context = $context instanceof jQuery ? $context : jQuery(document);
         $context = Store.setProperties.call($context, option.ns || '', null);
@@ -62,7 +46,7 @@
         }
         break;
         
-      case option === 'string':
+      case 'string' === option:
       default:
         Store.setAlias(option);
         $context = $context instanceof jQuery ? $context : jQuery[Store.name];
@@ -95,7 +79,7 @@
         id: 0,
         nss: null,
         context: null,
-        root: !$context.parent()[0],
+        root: !$context.parent().length,
         first: true,
         index: 0,
         count: 0,
@@ -112,7 +96,8 @@
         option: option
       }
     );
-    
+
+    setting.ns = setting.ns && '.' === setting.ns[0] ? setting.ns.slice(1) : setting.ns;
     setting.nss = {
       array: [Store.name].concat(setting.ns && String(setting.ns).split('.') || [])
     };
@@ -130,6 +115,8 @@
         beforehand: typeof setting.beforehand === 'boolean' ? - Number(setting.beforehand) : setting.beforehand
       }
     );
+    setting.ahead[0] = Math.abs(setting.ahead[0]) < 1 ? '*' + setting.ahead[0] * 10 : setting.ahead[0];
+    setting.ahead[1] = Math.abs(setting.ahead[1]) < 1 ? '*' + setting.ahead[1] * 10 : setting.ahead[1];
     
     // registrate
     Store.registrate.call($context, jQuery, window, document, undefined, Store, setting);
@@ -385,7 +372,7 @@
       
       for (var i = 0, $element, element; element = $context[i]; i++) {
         $element = jQuery(element);
-        if (setting.terminate && !$element.find(setting.trigger)[0]) {return;}
+        if (setting.terminate && !$element.find(setting.trigger).length) {return;}
         
         if (!Store.search.call($element[Store.name](), setting.nss.name, function(setting) {
           switch (setting.reset && typeof setting.reset || setting.reset) {
@@ -586,8 +573,8 @@
       info = info || {};
       $context = info.context = info.update ? info.context : jQuery(customEvent.currentTarget);
       $eventcontext = info.eventcontext = info.update ? info.eventcontext : jQuery(eventcontext);
-      root = info.root = info.update ? info.root : !$context.parent()[0];
-      layer = info.layer = info.update ? info.layer : Number(Boolean($eventcontext.parent()[0]));
+      root = info.root = info.update ? info.root : !$context.parent().length;
+      layer = info.layer = info.update ? info.layer : Number(Boolean($eventcontext.parent().length));
       fire = false;
       increment = false;
       call = false;
@@ -612,7 +599,7 @@
       
       switch (true) {
         case setting.index < 0 || targets.length <= setting.index:
-        case !targets.length || !target[0]:
+        case !targets.length || !target.length:
           break;
           
         default:
@@ -632,9 +619,9 @@
               bottomin, bottomout, bottomover;
           
           ahead = setting.ahead[0];
-          aheadTop = info.aheadTop = info.update ? info.aheadTop : typeof ahead === 'number' ? parseInt(ahead, 10) : parseInt(eval(winHeight + ahead), 10);
+          aheadTop = info.aheadTop = info.update ? info.aheadTop : 'string' === typeof ahead && '*' === ahead[0] ? parseInt(winHeight * ahead.slice(1), 10) : parseInt(ahead, 10);
           ahead = setting.ahead[1];
-          aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : typeof ahead === 'number' ? parseInt(ahead, 10) : parseInt(eval(winHeight + ahead), 10);
+          aheadBottom = info.aheadBottom = info.update ? info.aheadBottom : 'string' === typeof ahead && '*' === ahead[0] ? parseInt(winHeight * ahead.slice(1), 10) : parseInt(ahead, 10);
           beforehand = info.beforehand = info.beforehand ? info.beforehand : 0 > setting.beforehand ? targets.length + setting.beforehand + 1 : setting.beforehand;
           
           
@@ -770,7 +757,7 @@
       .unbind(setting.nss.resize);
       
       if (setting.root || setting.extend) {
-        if (!Store.relations(setting.nss.name, $context, true)[0]) {
+        if (!Store.relations(setting.nss.name, $context, true).length) {
           jQuery(window)
           .unbind(setting.nss.scroll)
           .unbind(setting.nss.resize)
