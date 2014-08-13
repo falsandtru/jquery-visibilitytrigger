@@ -1,31 +1,13 @@
-/*
+/**
  * 
- * visibility trigger
+ * jquery.visibilitytrigger.js
  * 
+ * @name jquery.visibilitytrigger.js
+ * @version 0.4.0
  * ---
- * @Copyright(c) 2012, falsandtru
- * @license MIT http://opensource.org/licenses/mit-license.php
- * @version 0.3.0
- * @updated 2014/06/01
- * @author falsandtru https://github.com/falsandtru/
- * @CodingConventions Google JavaScript Style Guide
- * ---
- * Note:
- * 
- * ---
- * Example:
- * @jquery 1.7.2
- * 
- * $.visibilitytrigger({
- *   trigger: 'img[data-origin]',
- *   callback: function(){$(this).attr('src', $(this).attr('data-origin'))},
- *   ahead: 300,
- *   beforehand: 1
- *}).vtrigger();
- * 
- * ---
- * Document:
- * https://github.com/falsandtru/jquery.visibilitytrigger.js
+ * @author falsandtru https://github.com/falsandtru/jquery.visibilitytrigger.js/
+ * @copyright 2012, falsandtru
+ * @license MIT
  * 
  */
 
