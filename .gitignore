@@ -1,0 +1,28 @@
+﻿# binary
+dist
+cov
+
+# secret
+.coveralls.yml
+
+# eclipse
+.project
+.metadata
+.settings
+
+# adobe
+_notes
+
+# ci
+node_modules
+
+# gh-pages
+gh-pages/coverage
+gh-pages/test
+
+
+# terminal
+cmd.exe
+
+# temp
+temp
