@@ -3,7 +3,7 @@
  * jquery.visibilitytrigger.js
  * 
  * @name jquery.visibilitytrigger.js
- * @version 1.0.1
+ * @version 1.0.2
  * ---
  * @author falsandtru https://github.com/falsandtru/jquery.visibilitytrigger.js/
  * @copyright 2012, falsandtru
@@ -147,6 +147,126 @@ var MODULE;
 /// <reference path="../define.ts"/>
 var MODULE;
 (function (MODULE) {
+    /* VIEW */
+    (function (VIEW) {
+        var Observer = (function () {
+            function Observer(model_, view_, controller_) {
+                var _this = this;
+                this.model_ = model_;
+                this.view_ = view_;
+                this.controller_ = controller_;
+                this.task = new MODULE.MODEL.Task(-1, 1);
+                this.queue_ = [];
+                this.handlers_ = {
+                    customHandler: function (customEvent, nativeEvent, bubbling, callback) {
+                        nativeEvent = nativeEvent instanceof jQuery.Event ? nativeEvent : undefined;
+                        var view = _this.view_, setting = view.setting, event = customEvent, container = window === customEvent.currentTarget ? document : customEvent.currentTarget, activator = !nativeEvent ? container : window === nativeEvent.currentTarget ? document : nativeEvent.currentTarget, layer = document === activator || window === activator ? 0 : 1, manual = !nativeEvent;
+
+                        !bubbling && event.stopPropagation();
+
+                        if (!bubbling && event.target !== event.currentTarget) {
+                            return;
+                        }
+
+                        if (!view.substance || callback) {
+                            view.dispatch(setting.nss.event, [nativeEvent, false].concat(callback || []));
+                            callback && callback(view);
+                        } else if (event.target === event.currentTarget) {
+                            _this.reserve(customEvent, nativeEvent, container, activator, layer, manual);
+                        }
+                    },
+                    //alias: (event: JQueryEventObject) => {
+                    //  var view = this.view_;
+                    //  State.open === view.state() && jQuery(event.target).trigger(view.setting.nss.event, [].slice.call(arguments, 1));
+                    //},
+                    nativeHandler: function (event) {
+                        if (document !== event.target && event.target !== event.currentTarget || event.isDefaultPrevented()) {
+                            return;
+                        }
+                        var view = _this.view_;
+                        0 /* open */ === view.state() && jQuery(window === event.currentTarget ? document : event.currentTarget).trigger(view.setting.nss.event, [event]);
+                    }
+                };
+            }
+            Observer.prototype.clean_ = function () {
+                var context = this.view_.context, setting = this.view_.setting, key = setting.nss.data_count;
+
+                jQuery.removeData(context, setting.nss.data);
+
+                this.view_.substance && jQuery(context).find(setting.trigger).each(eachTrigger);
+                function eachTrigger(i, element) {
+                    jQuery.removeData(element, key);
+                }
+            };
+
+            Observer.prototype.observe = function () {
+                var view = this.view_, setting = view.setting, context = view.context, $context = jQuery(view.context);
+
+                this.clean_();
+
+                jQuery.data(context, setting.nss.data, setting.uid);
+
+                $context.bind(setting.nss.event, view, this.handlers_.customHandler);
+
+                if (document === context) {
+                    jQuery(window).bind(setting.nss.scroll, view, this.handlers_.nativeHandler).bind(setting.nss.resize, view, this.handlers_.nativeHandler);
+                } else {
+                    $context.bind(setting.nss.scroll, view, this.handlers_.nativeHandler).bind(setting.nss.resize, view, this.handlers_.nativeHandler);
+                }
+            };
+
+            Observer.prototype.release = function () {
+                var view = this.view_, setting = view.setting, context = view.context, $context = jQuery(context);
+
+                this.clean_();
+
+                $context.unbind(setting.nss.event);
+
+                if (document === context) {
+                    jQuery(window).unbind(setting.nss.scroll).unbind(setting.nss.resize);
+                } else {
+                    $context.unbind(setting.nss.scroll).unbind(setting.nss.resize);
+                }
+            };
+
+            Observer.prototype.reserve = function (customEvent, nativeEvent, container, activator, layer, immediate) {
+                var _this = this;
+                var view = this.view_, setting = view.setting, status = view.status;
+
+                var id, queue = this.queue_;
+                while (id = queue.shift()) {
+                    clearTimeout(id);
+                }
+
+                this.task.reserve(!layer ? 'root' : 'node', this.digest, this, customEvent, nativeEvent, container, activator, layer);
+
+                if (0 /* open */ !== this.view_.state() || 0 /* open */ !== this.model_.state() || !immediate && setting.delay) {
+                    queue.push(setTimeout(function () {
+                        return void _this.task.digest('node') || void _this.task.digest();
+                    }, setting.delay));
+                } else {
+                    this.task.digest('node');
+                    this.task.digest();
+                }
+            };
+
+            Observer.prototype.digest = function (customEvent, nativeEvent, container, activator, layer) {
+                var id, queue = this.queue_;
+                while (id = queue.shift()) {
+                    clearTimeout(id);
+                }
+
+                this.view_.process(customEvent, nativeEvent, container, activator, layer);
+            };
+            return Observer;
+        })();
+        VIEW.Observer = Observer;
+    })(MODULE.VIEW || (MODULE.VIEW = {}));
+    var VIEW = MODULE.VIEW;
+})(MODULE || (MODULE = {}));
+/// <reference path="../define.ts"/>
+var MODULE;
+(function (MODULE) {
     /* MODEL */
     (function (MODEL) {
         var Task = (function () {
@@ -262,6 +382,7 @@ var MODULE;
 })(MODULE || (MODULE = {}));
 /// <reference path="../define.ts"/>
 /// <reference path="_template.ts"/>
+/// <reference path="observer.ts"/>
 /// <reference path="../model/task.ts"/>
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -339,12 +460,18 @@ var MODULE;
                 this.root_ = !!root;
                 this.parent_ = parent || null;
                 this.context = context;
-                this.redirect = this.root_ && nodes.length > 0;
+                this.substance = 1 === $context.length;
                 this.setting = setting;
                 this.status.param = setting.param;
                 this.status.scroll = [0, 0];
-                this.model_.views[setting.uid] = this;
+
+                if (!setting.standby && this.substance && !jQuery(context).find(setting.trigger).length) {
+                    this.close();
+                    return;
+                }
+
                 this.observer.observe();
+                this.model_.views[setting.uid] = this;
 
                 // child instance
                 this.root_ && jQuery.each(nodes, function (i, element) {
@@ -362,12 +489,15 @@ var MODULE;
                 jQuery.each(this.children_, function (i, child) {
                     return child.close();
                 });
+
                 this.observer.release();
+
                 var parent = this.parent_;
                 this.parent_ = null;
-                parent && parent.correct();
 
                 delete this.model_.views[this.setting.uid];
+
+                parent && parent.correct();
 
                 return this.state_ = 7 /* close */;
             };
@@ -410,6 +540,7 @@ var MODULE;
             };
 
             Main.prototype.open = function ($context, setting, parent) {
+                $context[MODULE.NAME].close(setting.nss.event);
                 this.state_ = this.initiate_($context, setting, parent);
             };
 
@@ -1144,127 +1275,4 @@ var Module = (function () {
 })();
 
 new Module();
-/// <reference path="../define.ts"/>
-/// <reference path="_template.ts"/>
-var MODULE;
-(function (MODULE) {
-    /* VIEW */
-    (function (VIEW) {
-        var Observer = (function () {
-            function Observer(model_, view_, controller_) {
-                var _this = this;
-                this.model_ = model_;
-                this.view_ = view_;
-                this.controller_ = controller_;
-                this.task = new MODULE.MODEL.Task(-1, 1);
-                this.queue_ = [];
-                this.handlers_ = {
-                    customHandler: function (customEvent, nativeEvent, bubbling, callback) {
-                        nativeEvent = nativeEvent instanceof jQuery.Event ? nativeEvent : undefined;
-                        var view = _this.view_, setting = view.setting, event = customEvent, container = window === customEvent.currentTarget ? document : customEvent.currentTarget, activator = !nativeEvent ? container : window === nativeEvent.currentTarget ? document : nativeEvent.currentTarget, layer = document === activator || window === activator ? 0 : 1, manual = !nativeEvent;
-
-                        !bubbling && event.stopPropagation();
-
-                        if (!bubbling && event.target !== event.currentTarget) {
-                            return;
-                        }
-
-                        if (view.redirect || callback) {
-                            view.dispatch(setting.nss.event, [nativeEvent, false].concat(callback || []));
-                            callback && callback(view);
-                        } else if (event.target === event.currentTarget) {
-                            _this.reserve(customEvent, nativeEvent, container, activator, layer, manual);
-                        }
-                    },
-                    //alias: (event: JQueryEventObject) => {
-                    //  var view = this.view_;
-                    //  State.open === view.state() && jQuery(event.target).trigger(view.setting.nss.event, [].slice.call(arguments, 1));
-                    //},
-                    nativeHandler: function (event) {
-                        if (document !== event.target && event.target !== event.currentTarget || event.isDefaultPrevented()) {
-                            return;
-                        }
-                        var view = _this.view_;
-                        0 /* open */ === view.state() && jQuery(window === event.currentTarget ? document : event.currentTarget).trigger(view.setting.nss.event, [event]);
-                    }
-                };
-            }
-            Observer.prototype.observe = function () {
-                var view = this.view_, setting = view.setting, context = view.context, $context = jQuery(view.context)[MODULE.NAME]();
-
-                if (!setting.standby && !$context.find(setting.trigger).length) {
-                    return;
-                }
-
-                // init data
-                $context.data(setting.nss.data, setting.uid);
-                $context.find(setting.trigger).each(eachTrigger);
-                function eachTrigger(i, element) {
-                    jQuery.removeData(element, setting.nss.data_count);
-                }
-
-                // custom event
-                $context.bind(setting.nss.event, view, this.handlers_.customHandler);
-
-                // alias
-                //setting.nss.event !== setting.nss.alias &&
-                //$context.bind(setting.nss.alias, view, this.handlers_.alias);
-                if (document === context) {
-                    jQuery(window).bind(setting.nss.scroll, view, this.handlers_.nativeHandler).bind(setting.nss.resize, view, this.handlers_.nativeHandler);
-                } else {
-                    $context.bind(setting.nss.scroll, view, this.handlers_.nativeHandler).bind(setting.nss.resize, view, this.handlers_.nativeHandler);
-                }
-            };
-
-            Observer.prototype.release = function () {
-                var view = this.view_, setting = view.setting, context = view.context, $context = jQuery(context)[MODULE.NAME]();
-
-                jQuery.removeData(context, setting.nss.data);
-                $context.find(setting.trigger).removeData(setting.nss.data_count);
-
-                $context.unbind(setting.nss.event).unbind(setting.nss.scroll).unbind(setting.nss.resize);
-
-                if (jQuery.contains(document.documentElement, context)) {
-                    return;
-                }
-
-                // redirect
-                jQuery(window).unbind(setting.nss.scroll).unbind(setting.nss.resize);
-            };
-
-            Observer.prototype.reserve = function (customEvent, nativeEvent, container, activator, layer, immediate) {
-                var _this = this;
-                var view = this.view_, setting = view.setting, status = view.status;
-
-                var id, queue = this.queue_;
-                while (id = queue.shift()) {
-                    clearTimeout(id);
-                }
-
-                this.task.reserve(!layer ? 'root' : 'node', this.digest, this, customEvent, nativeEvent, container, activator, layer);
-
-                if (0 /* open */ !== this.view_.state() || 0 /* open */ !== this.model_.state() || !immediate && setting.delay) {
-                    queue.push(setTimeout(function () {
-                        return void _this.task.digest('node') || void _this.task.digest();
-                    }, setting.delay));
-                } else {
-                    this.task.digest('node');
-                    this.task.digest();
-                }
-            };
-
-            Observer.prototype.digest = function (customEvent, nativeEvent, container, activator, layer) {
-                var id, queue = this.queue_;
-                while (id = queue.shift()) {
-                    clearTimeout(id);
-                }
-
-                this.view_.process(customEvent, nativeEvent, container, activator, layer);
-            };
-            return Observer;
-        })();
-        VIEW.Observer = Observer;
-    })(MODULE.VIEW || (MODULE.VIEW = {}));
-    var VIEW = MODULE.VIEW;
-})(MODULE || (MODULE = {}));
 })(window, window.document, void 0, jQuery);
