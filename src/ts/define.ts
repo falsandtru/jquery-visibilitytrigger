@@ -73,20 +73,6 @@ module MODULE {
 
     // Controller
   }
-  export declare class AppLayerInterface {
-    initialize(option: VTSetting, $context: JQuery): void
-    configure(option: VTSetting, $context: JQuery): SettingInterface
-    process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void
-  }
-  export declare class TaskInterface {
-    constructor(mode?: number, size?: number)
-    define(name: string, mode: number, size: number): void
-    reserve(task: () => void): void
-    reserve(name: string, task: () => void): void
-    digest(name: string, limit?: number): void
-    digest(limit?: number): void
-    clear(name?: string): void
-  }
   // View
   export declare class ViewInterface {
     constructor(model: ModelInterface, controller: ControllerInterface)
@@ -105,19 +91,6 @@ module MODULE {
     disable(): void
     dispatch(event: JQueryEventObject, params: any[]): void
     dispatch(eventType: string, params: any[]): void
-  }
-  export declare class ViewObserverInterface {
-    observe(): void
-    release(): void
-    reserve(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number, immediate: boolean): void
-    digest(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
-  }
-  export declare class ViewTaskInterface extends TaskInterface {
-    reserve(task: () => void): void
-    reserve(name: string, task: () => void): void
-    reserve(name: string, task: (customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number) => void,
-                          observer: ViewObserverInterface,
-                          customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
   }
   // Controller
   export declare class ControllerInterface {
@@ -202,4 +175,21 @@ module MODULE {
   //                       : window.setTimeout(callback instanceof Function ? () => callback.apply(window, args) : callback, delay);
   //};
 
+}
+
+module MODULE.MODEL {
+  export declare class AppLayerInterface {
+    initialize(option: VTSetting, $context: JQuery): void
+    configure(option: VTSetting, $context: JQuery): SettingInterface
+    process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void
+  }
+}
+
+module MODULE.VIEW {
+  export declare class ObserverInterface {
+    observe(): void
+    release(): void
+    reserve(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number, immediate: boolean): void
+    digest(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
+  }
 }

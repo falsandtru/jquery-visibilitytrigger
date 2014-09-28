@@ -1,15 +1,23 @@
 /// <reference path="../define.ts"/>
+/// <reference path="../library/task.ts"/>
 
 /* VIEW */
 
 module MODULE.VIEW {
-
+  
+  export declare class ObserverTaskInterface extends LIBRARY.TaskInterface {
+    reserve(task: () => void): void
+    reserve(name: string, task: () => void): void
+    reserve(name: string, task: (customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number) => void,
+                          observer: ObserverInterface,
+                          customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
+  }
   export class Observer {
 
     constructor(public model_: ModelInterface, public view_: ViewInterface, public controller_: ControllerInterface) {
     }
 
-    task: ViewTaskInterface = new MODEL.Task(-1, 1)
+    task_: ObserverTaskInterface = new LIBRARY.Task(-1, 1)
 
     queue_ = []
 
@@ -112,13 +120,13 @@ module MODULE.VIEW {
       var id: number, queue: number[] = this.queue_;
       while (id = queue.shift()) { clearTimeout(id); }
 
-      this.task.reserve(!layer ? 'root' : 'node', this.digest, this, customEvent, nativeEvent, container, activator, layer);
+      this.task_.reserve(!layer ? 'root' : 'node', this.digest, this, customEvent, nativeEvent, container, activator, layer);
 
       if (State.open !== this.view_.state() || State.open !== this.model_.state() || !immediate && setting.delay) {
-        queue.push(setTimeout(() => void this.task.digest('node') || void this.task.digest(), setting.delay));
+        queue.push(setTimeout(() => void this.task_.digest('node') || void this.task_.digest(), setting.delay));
       } else {
-        this.task.digest('node');
-        this.task.digest();
+        this.task_.digest('node');
+        this.task_.digest();
       }
     }
 

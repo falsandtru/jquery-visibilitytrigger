@@ -4,9 +4,9 @@
 
 /* MODEL */
 
-module MODULE.MODEL {
+module MODULE.MODEL.APP {
   
-  export class App implements AppLayerInterface {
+  export class Main implements AppLayerInterface {
 
     constructor(public model_: ModelInterface, public controller_: ControllerInterface) {
     }
@@ -254,4 +254,8 @@ module MODULE.MODEL {
 
   }
 
+}
+
+module MODULE.MODEL {
+  export var App = MODEL.APP.Main
 }

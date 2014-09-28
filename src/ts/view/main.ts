@@ -1,7 +1,6 @@
 /// <reference path="../define.ts"/>
 /// <reference path="_template.ts"/>
 /// <reference path="observer.ts"/>
-/// <reference path="../model/task.ts"/>
 
 /* VIEW */
 
@@ -21,7 +20,7 @@ module MODULE.VIEW {
       super(State.initiate);
     }
 
-    observer: ViewObserverInterface = new Observer(this.model_, this, this.controller_)
+    observer: ObserverInterface = new Observer(this.model_, this, this.controller_)
 
     context: HTMLElement
     substance: boolean

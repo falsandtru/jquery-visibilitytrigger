@@ -2,8 +2,17 @@
 
 /* MODEL */
 
-module MODULE.MODEL {
+module MODULE.LIBRARY {
 
+  export declare class TaskInterface {
+    constructor(mode?: number, size?: number)
+    define(name: string, mode: number, size: number): void
+    reserve(task: () => void): void
+    reserve(name: string, task: () => void): void
+    digest(name: string, limit?: number): void
+    digest(limit?: number): void
+    clear(name?: string): void
+  }
   export class Task {
 
     constructor(mode: number = 1, size: number = 0) {
