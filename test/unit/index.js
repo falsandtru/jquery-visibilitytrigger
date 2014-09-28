@@ -11,7 +11,7 @@ mocha.checkLeaks();
 mocha.globals(['jQuery*']);
 
 window.onload = typeof __karma__ === 'undefined' && function() {
-  $.mocha.run();
+  mocha.run();
 };
 
 $.ajaxSetup({ async: false, cache: true });
