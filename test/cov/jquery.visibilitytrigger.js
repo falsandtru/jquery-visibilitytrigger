@@ -3,7 +3,7 @@
  * jquery.visibilitytrigger.js
  * 
  * @name jquery.visibilitytrigger.js
- * @version 1.0.0
+ * @version 1.0.1
  * ---
  * @author falsandtru https://github.com/falsandtru/jquery.visibilitytrigger.js/
  * @copyright 2012, falsandtru
@@ -1159,7 +1159,7 @@ var MODULE;
                 this.task = new MODULE.MODEL.Task(-1, 1);
                 this.queue_ = [];
                 this.handlers_ = {
-                    custom: function (customEvent, nativeEvent, bubbling, callback) {
+                    customHandler: function (customEvent, nativeEvent, bubbling, callback) {
                         nativeEvent = nativeEvent instanceof jQuery.Event ? nativeEvent : undefined;
                         var view = _this.view_, setting = view.setting, event = customEvent, container = window === customEvent.currentTarget ? document : customEvent.currentTarget, activator = !nativeEvent ? container : window === nativeEvent.currentTarget ? document : nativeEvent.currentTarget, layer = document === activator || window === activator ? 0 : 1, manual = !nativeEvent;
 
@@ -1180,7 +1180,7 @@ var MODULE;
                     //  var view = this.view_;
                     //  State.open === view.state() && jQuery(event.target).trigger(view.setting.nss.event, [].slice.call(arguments, 1));
                     //},
-                    native: function (event) {
+                    nativeHandler: function (event) {
                         if (document !== event.target && event.target !== event.currentTarget || event.isDefaultPrevented()) {
                             return;
                         }
@@ -1204,15 +1204,15 @@ var MODULE;
                 }
 
                 // custom event
-                $context.bind(setting.nss.event, view, this.handlers_.custom);
+                $context.bind(setting.nss.event, view, this.handlers_.customHandler);
 
                 // alias
                 //setting.nss.event !== setting.nss.alias &&
                 //$context.bind(setting.nss.alias, view, this.handlers_.alias);
                 if (document === context) {
-                    jQuery(window).bind(setting.nss.scroll, view, this.handlers_.native).bind(setting.nss.resize, view, this.handlers_.native);
+                    jQuery(window).bind(setting.nss.scroll, view, this.handlers_.nativeHandler).bind(setting.nss.resize, view, this.handlers_.nativeHandler);
                 } else {
-                    $context.bind(setting.nss.scroll, view, this.handlers_.native).bind(setting.nss.resize, view, this.handlers_.native);
+                    $context.bind(setting.nss.scroll, view, this.handlers_.nativeHandler).bind(setting.nss.resize, view, this.handlers_.nativeHandler);
                 }
             };
 
