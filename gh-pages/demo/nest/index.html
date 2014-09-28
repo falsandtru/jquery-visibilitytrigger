@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>visibilitytrigger demo</title>
+<link href="../lib/style.css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../cov/jquery.visibilitytrigger.js"></script>
+<script type="text/javascript" charset="utf-8" src="../lib/setup.js"></script>
+<script type="text/javascript">
+$(function(){
+  $('ol').css({
+    overflow: 'scroll',
+    margin: 'auto',
+    width: '60%',
+    height: '80%'
+  }).clone().appendTo('body');
+
+  $('ol').visibilitytrigger({
+    trigger: 'li',
+    repeat: true,
+    handler: function (i, e, p, s) {
+      if (0 < s.direction) {
+        $(this).removeClass('green').addClass('yellow');
+      } else {
+        $(this).removeClass('yellow').addClass('green');
+      }
+      ++this.innerHTML;
+      $('div.green').text($('li.green').length);
+      $('div.yellow').text($('li.yellow').length);
+    }
+  }).vtrigger();
+});
+</script>
+</head>
+<body>
+  <h1>visibilitytrigger demo</h1>
+</body>
+</html>
