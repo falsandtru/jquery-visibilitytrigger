@@ -11,7 +11,7 @@ suite("standby", function () {
       trigger: 'li',
       standby: true,
       handler: function (i, e, p, s) {
-        done();
+        !i && done();
       }
     });
 

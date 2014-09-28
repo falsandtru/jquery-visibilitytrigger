@@ -92,7 +92,7 @@ module MODULE {
     constructor(model: ModelInterface, controller: ControllerInterface)
     context: HTMLElement
     setting: SettingInterface
-    redirect: boolean
+    substance: boolean
     state(): State
     status: StatusInterface
     

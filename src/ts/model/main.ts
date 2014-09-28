@@ -32,7 +32,6 @@ module MODULE.MODEL {
       if (name !== NAME && !jQuery[name] && !jQuery.fn[name]) {
         jQuery[name] = jQuery[NAME];
         jQuery.fn[name] = jQuery.fn[NAME];
-
       }
       return this.alias();
     }
