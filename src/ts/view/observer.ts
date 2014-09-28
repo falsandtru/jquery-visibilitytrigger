@@ -30,7 +30,7 @@ module MODULE.VIEW {
       }
 
       // custom event
-      $context.bind(setting.nss.event, view, this.handlers_.custom);
+      $context.bind(setting.nss.event, view, this.handlers_.customHandler);
 
       // alias
       //setting.nss.event !== setting.nss.alias &&
@@ -38,12 +38,12 @@ module MODULE.VIEW {
 
       if (document === <any>context) {
         jQuery(window)
-        .bind(setting.nss.scroll, view, this.handlers_.native)
-        .bind(setting.nss.resize, view, this.handlers_.native);
+        .bind(setting.nss.scroll, view, this.handlers_.nativeHandler)
+        .bind(setting.nss.resize, view, this.handlers_.nativeHandler);
       } else {
         $context
-        .bind(setting.nss.scroll, view, this.handlers_.native)
-        .bind(setting.nss.resize, view, this.handlers_.native);
+        .bind(setting.nss.scroll, view, this.handlers_.nativeHandler)
+        .bind(setting.nss.resize, view, this.handlers_.nativeHandler);
       }
     }
 
@@ -71,7 +71,7 @@ module MODULE.VIEW {
     }
 
     handlers_ = {
-      custom: (customEvent: JQueryEventObject, nativeEvent?: JQueryEventObject, bubbling?: boolean, callback?: (view: ViewInterface) => any) => {
+      customHandler: (customEvent: JQueryEventObject, nativeEvent?: JQueryEventObject, bubbling?: boolean, callback?: (view: ViewInterface) => any) => {
         nativeEvent = nativeEvent instanceof jQuery.Event ? nativeEvent : undefined;
         var view = this.view_,
             setting = view.setting,
@@ -96,7 +96,7 @@ module MODULE.VIEW {
       //  var view = this.view_;
       //  State.open === view.state() && jQuery(event.target).trigger(view.setting.nss.event, [].slice.call(arguments, 1));
       //},
-      native: (event: JQueryEventObject) => {
+      nativeHandler: (event: JQueryEventObject) => {
         if (document !== event.target && event.target !== event.currentTarget || event.isDefaultPrevented()) { return; }
         var view = this.view_;
         State.open === view.state() && jQuery(window === event.currentTarget ? document : event.currentTarget).trigger(view.setting.nss.event, [event]);
