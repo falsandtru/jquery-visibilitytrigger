@@ -1,5 +1,4 @@
 /// <reference path="../define.ts"/>
-/// <reference path="_template.ts"/>
 
 /* VIEW */
 
@@ -14,27 +13,31 @@ module MODULE.VIEW {
 
     queue_ = []
 
+    clean_(): void {
+      var context = this.view_.context,
+          setting = this.view_.setting,
+          key = setting.nss.data_count;
+
+      jQuery.removeData(context, setting.nss.data);
+      
+      this.view_.substance &&
+      jQuery(context).find(setting.trigger).each(eachTrigger);
+      function eachTrigger(i, element) {
+        jQuery.removeData(element, key);
+      }
+    }
+
     observe(): void {
       var view = this.view_,
           setting = view.setting,
           context = view.context,
-          $context = <ExtensionInterface>jQuery(view.context)[NAME]();
+          $context = <ExtensionInterface>jQuery(view.context);
 
-      if (!setting.standby && !$context.find(setting.trigger).length) { return; }
+      this.clean_();
 
-      // init data
-      $context.data(setting.nss.data, setting.uid);
-      $context.find(setting.trigger).each(eachTrigger);
-      function eachTrigger(i, element) {
-        jQuery.removeData(element, setting.nss.data_count);
-      }
-
-      // custom event
+      jQuery.data(context, setting.nss.data, setting.uid);
+      
       $context.bind(setting.nss.event, view, this.handlers_.customHandler);
-
-      // alias
-      //setting.nss.event !== setting.nss.alias &&
-      //$context.bind(setting.nss.alias, view, this.handlers_.alias);
 
       if (document === <any>context) {
         jQuery(window)
@@ -51,23 +54,21 @@ module MODULE.VIEW {
       var view = this.view_,
           setting = view.setting,
           context = view.context,
-          $context = <JQuery>jQuery(context)[NAME]();
+          $context = <JQuery>jQuery(context);
 
-      jQuery.removeData(context, setting.nss.data);
-      $context.find(setting.trigger).removeData(setting.nss.data_count);
+      this.clean_();
 
-      $context
-      .unbind(setting.nss.event)
-      //.unbind(setting.nss.alias)
-      .unbind(setting.nss.scroll)
-      .unbind(setting.nss.resize);
+      $context.unbind(setting.nss.event);
 
-      if (jQuery.contains(document.documentElement, context)) { return; }
-
-      // redirect
-      jQuery(window)
-      .unbind(setting.nss.scroll)
-      .unbind(setting.nss.resize);
+      if (document === <any>context) {
+        jQuery(window)
+        .unbind(setting.nss.scroll)
+        .unbind(setting.nss.resize);
+      } else {
+        $context
+        .unbind(setting.nss.scroll)
+        .unbind(setting.nss.resize);
+      }
     }
 
     handlers_ = {
@@ -85,7 +86,7 @@ module MODULE.VIEW {
 
         if (!bubbling && event.target !== event.currentTarget) { return; }
 
-        if (view.redirect || callback) {
+        if (!view.substance || callback) {
           view.dispatch(setting.nss.event, [nativeEvent, false].concat(callback || []));
           callback && callback(view);
         } else if (event.target === event.currentTarget) {

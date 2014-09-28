@@ -1,5 +1,6 @@
 /// <reference path="../define.ts"/>
 /// <reference path="_template.ts"/>
+/// <reference path="observer.ts"/>
 /// <reference path="../model/task.ts"/>
 
 /* VIEW */
@@ -23,7 +24,7 @@ module MODULE.VIEW {
     observer: ViewObserverInterface = new Observer(this.model_, this, this.controller_)
 
     context: HTMLElement
-    redirect: boolean
+    substance: boolean
     root_: boolean
     parent_: ViewInterface
     children_: ViewInterface[] = []
@@ -79,12 +80,18 @@ module MODULE.VIEW {
       this.root_ = !!root;
       this.parent_ = parent || null;
       this.context = <HTMLElement>context;
-      this.redirect = this.root_ && nodes.length > 0;
+      this.substance = 1 === $context.length;
       this.setting = setting;
       this.status.param = setting.param;
       this.status.scroll = [0, 0];
-      this.model_.views[setting.uid] = this;
+
+      if (!setting.standby && this.substance && !jQuery(context).find(setting.trigger).length) {
+        this.close();
+        return;
+      }
+
       this.observer.observe();
+      this.model_.views[setting.uid] = this;
 
       // child instance
       this.root_ &&
@@ -102,13 +109,15 @@ module MODULE.VIEW {
       this.state_ = State.terminate;
 
       jQuery.each(this.children_, (i: number, child: ViewInterface) => child.close());
+
       this.observer.release();
+
       var parent = this.parent_;
       this.parent_ = null;
-      parent && parent.correct();
 
       delete this.model_.views[this.setting.uid];
 
+      parent && parent.correct();
 
       return this.state_ = State.close;
     }
@@ -150,6 +159,7 @@ module MODULE.VIEW {
     }
 
     open($context: JQuery, setting: SettingInterface, parent?: ViewInterface): void {
+      $context[NAME].close(setting.nss.event);
       this.state_ = this.initiate_($context, setting, parent);
     }
 
