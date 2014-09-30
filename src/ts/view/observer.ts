@@ -45,16 +45,16 @@ module MODULE.VIEW {
 
       jQuery.data(context, setting.nss.data, setting.uid);
       
-      $context.bind(setting.nss.event, view, this.handlers_.customHandler);
+      $context.bind(setting.nss.event, setting.uid, this.handlers_.customHandler);
 
       if (document === <any>context) {
         jQuery(window)
-        .bind(setting.nss.scroll, view, this.handlers_.nativeHandler)
-        .bind(setting.nss.resize, view, this.handlers_.nativeHandler);
+        .bind(setting.nss.scroll, setting.uid, this.handlers_.nativeHandler)
+        .bind(setting.nss.resize, setting.uid, this.handlers_.nativeHandler);
       } else {
         $context
-        .bind(setting.nss.scroll, view, this.handlers_.nativeHandler)
-        .bind(setting.nss.resize, view, this.handlers_.nativeHandler);
+        .bind(setting.nss.scroll, setting.uid, this.handlers_.nativeHandler)
+        .bind(setting.nss.resize, setting.uid, this.handlers_.nativeHandler);
       }
     }
 
@@ -81,10 +81,12 @@ module MODULE.VIEW {
 
     handlers_ = {
       customHandler: (customEvent: JQueryEventObject, nativeEvent?: JQueryEventObject, bubbling?: boolean, callback?: (view: ViewInterface) => any) => {
+        var event: JQueryEventObject = customEvent;
+        if (this.view_ !== this.model_.getView(event.data)) { return void this.view_.close(); }
+
         nativeEvent = nativeEvent instanceof jQuery.Event ? nativeEvent : undefined;
-        var view = this.view_,
+        var view = this.model_.getView(event.data),
             setting = view.setting,
-            event: JQueryEventObject = customEvent,
             container: EventTarget = window === customEvent.currentTarget ? document : customEvent.currentTarget,
             activator: EventTarget = !nativeEvent ? container : window === nativeEvent.currentTarget ? document : nativeEvent.currentTarget,
             layer: number = document === activator || window === activator ? 0 : 1,
@@ -101,13 +103,11 @@ module MODULE.VIEW {
           this.reserve(customEvent, nativeEvent, container, activator, layer, manual);
         }
       },
-      //alias: (event: JQueryEventObject) => {
-      //  var view = this.view_;
-      //  State.open === view.state() && jQuery(event.target).trigger(view.setting.nss.event, [].slice.call(arguments, 1));
-      //},
       nativeHandler: (event: JQueryEventObject) => {
+        if (this.view_ !== this.model_.getView(event.data)) { return void this.view_.close(); }
+
         if (document !== event.target && event.target !== event.currentTarget || event.isDefaultPrevented()) { return; }
-        var view = this.view_;
+        var view = this.model_.getView(event.data);
         State.open === view.state() && jQuery(window === event.currentTarget ? document : event.currentTarget).trigger(view.setting.nss.event, [event]);
       }
     }

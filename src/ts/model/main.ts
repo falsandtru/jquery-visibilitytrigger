@@ -16,7 +16,7 @@ module MODULE.MODEL {
     }
 
     controller_: ControllerInterface = new Controller(this)
-    views: { [index: string]: ViewInterface; } = {}
+    views_: { [index: string]: ViewInterface; } = {}
     app_: AppLayerInterface = new MODEL.App(this, this.controller_)
     state_: State = State.blank
     state(): State { return this.state_; }
@@ -86,7 +86,7 @@ module MODULE.MODEL {
       if ($context instanceof NAMESPACE) {
         $context.trigger(NAME, [null, bubbling, filter]);
       } else {
-        jQuery.each(this.views, (i, view) => filter(view));
+        jQuery.each(this.views_, (i, view) => filter(view));
       }
     }
     
@@ -108,6 +108,21 @@ module MODULE.MODEL {
     isDOM(object: Object): boolean {
       if (!object || 'object' !== typeof object) { return false; }
       return object === object['window'] || 'ownerDocument' in object;
+    }
+
+    addView(view: ViewInterface): void {
+      this.removeView(view.setting.uid);
+      this.views_[view.setting.uid] = view;
+    }
+
+    getView(uid: string): ViewInterface {
+      return this.views_[uid];
+    }
+
+    removeView(uid: string): void {
+      var view = this.getView(uid);
+      view && State.terminate > view.state() && view.close();
+      delete this.views_[uid];
     }
 
   }

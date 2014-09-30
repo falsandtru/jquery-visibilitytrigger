@@ -41,7 +41,7 @@ module MODULE.VIEW {
       param: undefined
     }
 
-    initiate_($context: JQuery, setting: SettingInterface, parent?: ViewInterface): State {
+    initiate_($context: JQuery, setting: SettingInterface, parent?: ViewInterface): boolean {
 
       // context build
       var root: Document = null,
@@ -80,21 +80,20 @@ module MODULE.VIEW {
       }
 
       this.observer.observe();
-      this.model_.views[setting.uid] = this;
+      this.model_.addView(this);
 
       // child instance
       this.root_ &&
       jQuery.each(nodes, (i, element) => {
         var view = new View(this.model_, this.controller_);
-        this.children_.push(<ViewInterface>view);
+        this.children_.push(view);
         view.open(jQuery(element), setting.clone(), this);
       });
 
-
-      return this.state_ = State.open;
+      return true;
     }
 
-    terminate_(): State {
+    terminate_(): boolean {
       this.state_ = State.terminate;
 
       jQuery.each(this.children_, (i: number, child: ViewInterface) => child.close());
@@ -104,11 +103,11 @@ module MODULE.VIEW {
       var parent = this.parent_;
       this.parent_ = null;
 
-      delete this.model_.views[this.setting.uid];
+      this.model_.removeView(this.setting.uid);
 
       parent && parent.correct();
 
-      return this.state_ = State.close;
+      return true;
     }
 
     correct(): boolean {
@@ -149,11 +148,20 @@ module MODULE.VIEW {
 
     open($context: JQuery, setting: SettingInterface, parent?: ViewInterface): void {
       $context[NAME].close(setting.nss.event);
-      this.state_ = this.initiate_($context, setting, parent);
+      if (this.initiate_($context, setting, parent)) {
+        this.state_ = State.open;
+      } else {
+        this.close();
+      }
     }
 
     close(): void {
-      this.state_ = this.terminate_();
+      if (this.terminate_()) {
+        this.state_ = State.close;
+      } else {
+        this.state_ = State.close;
+        this.model_.removeView(this.setting.uid);
+      }
     }
 
     process(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void {

@@ -60,7 +60,6 @@ module MODULE {
     constructor()
 
     // Property
-    views: { [index: string]: ViewInterface; }
 
     // Model
     state(): State
@@ -70,6 +69,9 @@ module MODULE {
     isDOM(object: Object): boolean
 
     // View
+    addView(view: ViewInterface): void
+    getView(uid: string): ViewInterface
+    removeView(uid: string): void
 
     // Controller
   }
