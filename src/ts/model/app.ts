@@ -63,7 +63,7 @@ module MODULE.MODEL.APP {
           compute = () => {
             setting.ns = setting.ns && '.' === setting.ns.charAt(0) ? setting.ns.slice(1) : setting.ns;
             setting.ns = setting.ns && setting.ns.split('.').sort().join('.') || '';
-            var nsArray: string[] = [NAME].concat(setting.ns && String(setting.ns).split('.') || []);
+            var nsArray: string[] = [NAME].concat(setting.ns && setting.ns.split('.') || []);
             setting.ahead = setting.ahead instanceof Array ? setting.ahead.concat(setting.ahead).slice(0, 2) : [setting.ahead, setting.ahead]
             setting.ahead[0] = Math.abs(setting.ahead[0]) < 1 ? '*' + Number(setting.ahead[0] * 10) : Number(setting.ahead[0]) + '';
             setting.ahead[1] = Math.abs(setting.ahead[1]) < 1 ? '*' + Number(setting.ahead[1] * 10) : Number(setting.ahead[1]) + '';

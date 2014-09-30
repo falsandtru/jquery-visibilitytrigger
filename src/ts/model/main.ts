@@ -66,20 +66,21 @@ module MODULE.MODEL {
     }
 
     lookup($context: ExtensionInterface, key: string, bubbling: boolean, callback: (view: ViewInterface) => void): void {
-      if ('string' !== typeof key) {
+      if (typeof key !== 'string' && bubbling === undefined) {
         bubbling = !!key;
         key = '';
+      } else {
+        key = key || '';
       }
-      key = key && key.split('.').sort().join('.') || '';
+      key = jQuery.map(key.split(/\s+/), (ns) => ns.split('.').sort().join('.')).sort().join(' ');
+      var regs = jQuery.map(key.split(/\s+/), (key) => new RegExp('(?:^|[.\s])' + key + '(?:$|[.\s])'));
       var filter = (view: ViewInterface) => {
-        var context = <any>view.context;
         switch (false) {
-          case !key || key === view.setting.ns:
-          case this.isDOM(context):
-          case window === context || document === context || jQuery.contains(document.documentElement, context):
+          case !key || !!jQuery.grep(regs, (reg) => reg.test(view.setting.ns)).length:
+          case view.correct():
             break;
           default:
-            view.correct() && callback(view);
+            callback(view);
         }
       }
       if ($context instanceof NAMESPACE) {
