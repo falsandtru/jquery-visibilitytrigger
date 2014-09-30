@@ -106,17 +106,8 @@ module MODULE.MODEL {
     }
 
     isDOM(object: Object): boolean {
-      switch (true) {
-        case 'object' !== typeof object:
-        case null === object:
-          return false;
-        case window === object:
-        case document === object:
-        case 'ownerDocument' in object:
-          return true;
-        default:
-          return false;
-      }
+      if (!object || 'object' !== typeof object) { return false; }
+      return object === object['window'] || 'ownerDocument' in object;
     }
 
   }

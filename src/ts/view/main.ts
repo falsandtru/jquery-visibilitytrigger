@@ -56,21 +56,11 @@ module MODULE.VIEW {
         }
       });
 
-      // context verify
-      switch (true) {
-        case !root && 1 !== nodes.length:
-          return;
-
-        case !!root:
-        case 1 === nodes.length:
-          break;
-        default:
-          return;
-      }
       var context: HTMLElement = root ? <any>root : nodes[0];
 
-      // param verify
+      // context verify
       switch (false) {
+        case !!root || 1 === nodes.length:
         case context === <any>document || jQuery.contains(document.documentElement, context):
           return;
       }
