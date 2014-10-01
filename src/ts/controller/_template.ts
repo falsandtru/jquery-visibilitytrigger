@@ -9,7 +9,7 @@ module MODULE.CONTROLLER {
 
   export class Template {
 
-    constructor(public model_: ModelInterface, state: State) {
+    constructor(private model__: ModelInterface, state: State) {
       this.state_ = state;
 
       this.REGISTER();
@@ -46,7 +46,7 @@ module MODULE.CONTROLLER {
      * @prperty functions
      * @type {Functions}
      */
-    functions: Functions = new Functions(this.model_)
+    functions: Functions = new Functions(this.model__)
     
     /**
      * Controllerのメソッドオブジェクト
@@ -54,7 +54,7 @@ module MODULE.CONTROLLER {
      * @prperty methods
      * @type {Methods}
      */
-    methods: Methods = new Methods(this.model_)
+    methods: Methods = new Methods(this.model__)
     
     /**
      * 拡張モジュール本体。
@@ -104,7 +104,7 @@ module MODULE.CONTROLLER {
      */
     REGISTER(): void {
       var C = this,
-          M = <MODEL.Main>this.model_;
+          M = <MODEL.Main>this.model__;
       this.EXTENSION = this.EXTENSION || function (...args: any[]) {
         var context = C.EXTEND(this);
         args = [context].concat(args);

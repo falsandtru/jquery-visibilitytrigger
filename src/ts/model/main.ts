@@ -15,13 +15,13 @@ module MODULE.MODEL {
       this.state_ = State.open;
     }
 
-    controller_: ControllerInterface = new Controller(this)
-    views_: { [index: string]: ViewInterface; } = {}
-    app_: AppLayerInterface = new MODEL.App(this, this.controller_)
+    private controller_: ControllerInterface = new Controller(this)
+    private views_: { [index: string]: ViewInterface; } = {}
+    private app_: AppLayerInterface = new MODEL.App(this, this.controller_)
     state_: State = State.blank
     state(): State { return this.state_; }
 
-    alias_: string = 'vt'
+    private alias_: string = 'vt'
     alias(name?: string): string {
       if (!arguments.length) { return this.alias_; }
 

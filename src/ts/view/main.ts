@@ -16,17 +16,18 @@ module MODULE.VIEW {
     // OK element
     // NG elements
 
-    constructor(public model_: ModelInterface, public controller_: ControllerInterface) {
+    constructor(private model_: ModelInterface, private controller_: ControllerInterface) {
       super(State.initiate);
     }
 
-    observer: ObserverInterface = new Observer(this.model_, this, this.controller_)
+    private observer: ObserverInterface = new Observer(this.model_, this, this.controller_)
+    
+    private root_: boolean
+    private parent_: ViewInterface
+    private children_: ViewInterface[] = []
 
     context: HTMLElement
     substance: boolean
-    root_: boolean
-    parent_: ViewInterface
-    children_: ViewInterface[] = []
     setting: SettingInterface
     state(): State { return this.state_; }
     status: StatusInterface = {
@@ -41,7 +42,7 @@ module MODULE.VIEW {
       param: undefined
     }
 
-    initiate_($context: JQuery, setting: SettingInterface, parent?: ViewInterface): boolean {
+    private initiate_($context: JQuery, setting: SettingInterface, parent?: ViewInterface): boolean {
 
       // context build
       var root: Document = null,
@@ -93,7 +94,7 @@ module MODULE.VIEW {
       return true;
     }
 
-    terminate_(): boolean {
+    private terminate_(): boolean {
       this.state_ = State.terminate;
 
       jQuery.each(this.children_, (i: number, child: ViewInterface) => child.close());

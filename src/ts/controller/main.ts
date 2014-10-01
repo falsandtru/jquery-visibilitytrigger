@@ -7,7 +7,7 @@ module MODULE.CONTROLLER {
 
   export class Main extends Template implements ControllerInterface {
 
-    constructor(public model_: ModelInterface) {
+    constructor(private model_: ModelInterface) {
       super(model_, State.initiate);
       this.state_ = State.open;
     }

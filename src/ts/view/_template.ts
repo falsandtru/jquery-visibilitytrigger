@@ -27,4 +27,5 @@ module MODULE.VIEW {
     state_: State = State.blank
 
   }
+
 }

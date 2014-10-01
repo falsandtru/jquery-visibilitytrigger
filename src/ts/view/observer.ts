@@ -14,14 +14,14 @@ module MODULE.VIEW {
   }
   export class Observer {
 
-    constructor(public model_: ModelInterface, public view_: ViewInterface, public controller_: ControllerInterface) {
+    constructor(private model_: ModelInterface, private view_: ViewInterface, private controller_: ControllerInterface) {
     }
 
-    task_: ObserverTaskInterface = new LIBRARY.Task(-1, 1)
+    private task_: ObserverTaskInterface = new LIBRARY.Task(-1, 1)
 
-    queue_ = []
+    private queue_ = []
 
-    clean_(): void {
+    private clean_(): void {
       var context = this.view_.context,
           setting = this.view_.setting,
           key = setting.nss.data_count;
@@ -79,7 +79,7 @@ module MODULE.VIEW {
       }
     }
 
-    handlers_ = {
+    private handlers_ = {
       customHandler: (customEvent: JQueryEventObject, nativeEvent?: JQueryEventObject, bubbling?: boolean, callback?: (view: ViewInterface) => any) => {
         var event: JQueryEventObject = customEvent;
         if (this.view_ !== this.model_.getView(event.data)) { return void this.view_.close(); }
