@@ -1,12 +1,13 @@
 # VisibilityTrigger
-[![Build Status](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js.svg?branch=master)](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js)
-[![Coverage Status](https://coveralls.io/repos/falsandtru/jquery.visibilitytrigger.js/badge.png?branch=master)](https://coveralls.io/r/falsandtru/jquery.visibilitytrigger.js?branch=master)
 
 **[Document](http://falsandtru.github.io/jquery.visibilitytrigger.js/)**
  | 
 **[js](https://github.com/falsandtru/jquery.visibilitytrigger.js/releases)**
  | 
 **[d.ts](src/ts/.d/jquery.visibilitytrigger.d.ts)**
+
+[![Build Status](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js.svg?branch=master)](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js)
+[![Coverage Status](https://coveralls.io/repos/falsandtru/jquery.visibilitytrigger.js/badge.png?branch=master)](https://coveralls.io/r/falsandtru/jquery.visibilitytrigger.js?branch=master)
 
 Run callback to detect an element to have been displayed by the scroll.
 
