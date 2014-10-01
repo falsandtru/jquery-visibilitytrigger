@@ -9,19 +9,11 @@ module MODULE.CONTROLLER {
 
   export class Template {
 
-    constructor(private model__: ModelInterface, state: State) {
+    constructor(model: ModelInterface, state: State) {
       this.state_ = state;
-
-      this.REGISTER();
-
-      // プラグインに関数を設定してネームスペースに登録
-      // $.mvc.func, $().mvc.funcとして実行できるようにするための処理
-      window[NAMESPACE] = window[NAMESPACE] || {};
-      if (NAMESPACE.prototype) {
-        NAMESPACE[NAME] = NAMESPACE.prototype[NAME] = this.EXTENSION;
-      } else {
-        NAMESPACE[NAME] = this.EXTENSION;
-      }
+      this.FUNCTIONS = new Functions(model);
+      this.METHODS = new Methods(model);
+      this.REGISTER(model);
     }
 
     /**
@@ -43,18 +35,18 @@ module MODULE.CONTROLLER {
     /**
      * Controllerの関数オブジェクト
      * 
-     * @prperty functions
+     * @prperty FUNCTIONS
      * @type {Functions}
      */
-    functions: Functions = new Functions(this.model__)
+    FUNCTIONS: Functions
     
     /**
      * Controllerのメソッドオブジェクト
      * 
-     * @prperty methods
+     * @prperty METHODS
      * @type {Methods}
      */
-    methods: Methods = new Methods(this.model__)
+    METHODS: Methods
     
     /**
      * 拡張モジュール本体。
@@ -102,16 +94,23 @@ module MODULE.CONTROLLER {
      * @method REGISTER
      * @param {Any} [params]* パラメータ
      */
-    REGISTER(): void {
-      var C = this,
-          M = <MODEL.Main>this.model__;
+    REGISTER(model): void {
+      var S = this;
       this.EXTENSION = this.EXTENSION || function (...args: any[]) {
-        var context = C.EXTEND(this);
+        var context = S.EXTEND(this);
         args = [context].concat(args);
-        args = C.EXEC.apply(C, args);
-        return args instanceof Array ? M.MAIN.apply(M, args) : args;
+        args = S.EXEC.apply(S, args);
+        return args instanceof Array ? model.MAIN.apply(model, args) : args;
       };
       this.EXTEND(<ExtensionStaticInterface>this.EXTENSION);
+
+      // プラグインに関数を設定してネームスペースに登録
+      window[NAMESPACE] = window[NAMESPACE] || {};
+      if (NAMESPACE.prototype) {
+        NAMESPACE[NAME] = NAMESPACE.prototype[NAME] = this.EXTENSION;
+      } else {
+        NAMESPACE[NAME] = this.EXTENSION;
+      }
     }
 
     /**
@@ -152,7 +151,7 @@ module MODULE.CONTROLLER {
     REGISTER_FUNCTION(context: ExtensionInterface): ExtensionInterface
     REGISTER_FUNCTION(context: ExtensionStaticInterface): ExtensionStaticInterface
     REGISTER_FUNCTION(context: any): any {
-      var funcs = this.functions;
+      var funcs = this.FUNCTIONS;
       for (var i in funcs) {
         if ('constructor' === i) { continue; }
         context[i] = funcs[i];
@@ -170,10 +169,10 @@ module MODULE.CONTROLLER {
     REGISTER_METHOD(context: ExtensionInterface): ExtensionInterface
     REGISTER_METHOD(context: ExtensionStaticInterface): ExtensionStaticInterface
     REGISTER_METHOD(context: any): any {
-      var methods = this.methods;
-      for (var i in methods) {
+      var METHODS = this.METHODS;
+      for (var i in METHODS) {
         if ('constructor' === i) { continue; }
-        context[i] = methods[i];
+        context[i] = METHODS[i];
       }
       return context;
     }

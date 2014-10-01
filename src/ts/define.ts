@@ -27,8 +27,6 @@ module MODULE {
    *   single instance(M)
    * - class App (application-logic)
    *   single instance(APP)
-   * - class Util
-   *   static (UTIL)
    * 
    * View
    * - class Main (mvc-interface)
