@@ -9,6 +9,7 @@ module MODULE.MODEL.APP {
   export class Main implements AppLayerInterface {
 
     constructor(private model_: ModelInterface, private controller_: ControllerInterface) {
+      SEAL(this);
     }
 
     initialize(option: VTSetting, $context: JQuery): void {

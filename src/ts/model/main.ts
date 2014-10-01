@@ -13,6 +13,7 @@ module MODULE.MODEL {
     constructor() {
       super(State.initiate);
       this.state_ = State.open;
+      SEAL(this);
     }
 
     private controller_: ControllerInterface = new Controller(this)

@@ -10,6 +10,7 @@ module MODULE.CONTROLLER {
     constructor(private model_: ModelInterface) {
       super(model_, State.initiate);
       this.state_ = State.open;
+      SEAL(this);
     }
     
     exec_($context: ExtensionInterface, setting: VTSetting): any[]

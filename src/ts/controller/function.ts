@@ -12,6 +12,7 @@ module MODULE.CONTROLLER {
     constructor(model: ModelInterface) {
       M = model;
       S = this;
+      SEAL(this);
     }
 
     enable(bubbling?: boolean): JQueryVTStatic

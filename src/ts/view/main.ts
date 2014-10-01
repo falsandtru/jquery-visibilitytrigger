@@ -83,6 +83,8 @@ module MODULE.VIEW {
       this.observer.observe();
       this.model_.addView(this);
 
+      SEAL(this);
+
       // child instance
       this.root_ &&
       jQuery.each(nodes, (i, element) => {

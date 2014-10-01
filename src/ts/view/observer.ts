@@ -15,6 +15,7 @@ module MODULE.VIEW {
   export class Observer {
 
     constructor(private model_: ModelInterface, private view_: ViewInterface, private controller_: ControllerInterface) {
+      SEAL(this);
     }
 
     private task_: ObserverTaskInterface = new LIBRARY.Task(-1, 1)
