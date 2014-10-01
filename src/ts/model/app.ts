@@ -58,7 +58,7 @@ module MODULE.MODEL.APP {
           force = <SettingInterface>{
             gns: NAME,
             option: option,
-            clone: function (): SettingInterface { return jQuery.extend(true, {}, this, { uid: GEN_UUID() }); }
+            clone: function (): SettingInterface { return FREEZE(jQuery.extend(true, {}, this, { uid: GEN_UUID() }), true); }
           },
           compute = () => {
             setting.ns = setting.ns && '.' === setting.ns.charAt(0) ? setting.ns.slice(1) : setting.ns;
@@ -87,7 +87,7 @@ module MODULE.MODEL.APP {
       setting = jQuery.extend(true, initial, option);
       setting = jQuery.extend(true, setting, force);
       setting = jQuery.extend(true, setting, compute());
-      return setting;
+      return FREEZE(setting, true);
     }
 
     process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void {

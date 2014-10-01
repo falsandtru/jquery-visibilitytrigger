@@ -54,6 +54,7 @@ module MODULE.MODEL {
           $context = $context instanceof NAMESPACE ? $context : jQuery(document)[NAME]();
           if (!option.trigger || !option.handler) { return $context; }
           if (0 === option.step && option.repeat) { return $context; }
+          option = FREEZE(option);
           break;
 
         default:

@@ -173,6 +173,19 @@ module MODULE {
     }
   }
 
+  export function FREEZE<T>(object: T, deep?: boolean): T {
+    if (!Object.freeze || object === object['window'] || 'ownerDocument' in object) { return object; }
+    !Object.isFrozen(object) && Object.freeze(object);
+    if (!deep) { return object; }
+    for (var i in object) {
+      var prop = object[i];
+      if (~'object,function'.indexOf(typeof prop) && prop) {
+        FREEZE(prop, deep);
+      }
+    }
+    return object;
+  }
+
   //export function setTimeout(callback: (...args: any[]) => any, delay: number, ...args: any[]): number {
   //  return !document.all ? window.setTimeout.apply(window, arguments)
   //                       : window.setTimeout(callback instanceof Function ? () => callback.apply(window, args) : callback, delay);
