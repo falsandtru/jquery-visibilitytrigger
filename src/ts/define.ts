@@ -97,7 +97,7 @@ module MODULE {
     constructor()
   }
 
-  // Enum
+  // State
   export enum State { blank = -2, initiate, open, pause, lock, seal, error, crash, terminate, close }
 
   // Context
@@ -161,7 +161,8 @@ module MODULE {
     visibleBottom: number
     recursion: boolean
   }
-
+  
+  // Function
   export function GEN_UUID(): string {
     // version 4
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, gen);

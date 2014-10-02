@@ -40,6 +40,7 @@ module MODULE.MODEL.APP {
       var that = this;
 
       option = jQuery.extend(true, {}, (<SettingInterface>option).option || option);
+      FREEZE(option, true);
 
       var initial = <VTSetting>{
             ns: '',

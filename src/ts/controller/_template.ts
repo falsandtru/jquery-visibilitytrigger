@@ -11,8 +11,8 @@ module MODULE.CONTROLLER {
 
     constructor(model: ModelInterface, state: State) {
       this.state_ = state;
-      this.FUNCTIONS = new Functions(model);
-      this.METHODS = new Methods(model);
+      this.FUNCTIONS = new Functions(model, <any>this);
+      this.METHODS = new Methods(model, <any>this);
       this.REGISTER(model);
     }
 
