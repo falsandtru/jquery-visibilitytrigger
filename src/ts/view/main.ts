@@ -1,7 +1,6 @@
 /// <reference path="../define.ts"/>
 /// <reference path="_template.ts"/>
 /// <reference path="observer.ts"/>
-/// <reference path="../model/task.ts"/>
 
 /* VIEW */
 
@@ -17,17 +16,18 @@ module MODULE.VIEW {
     // OK element
     // NG elements
 
-    constructor(public model_: ModelInterface, public controller_: ControllerInterface) {
+    constructor(private model_: ModelInterface, private controller_: ControllerInterface) {
       super(State.initiate);
     }
 
-    observer: ViewObserverInterface = new Observer(this.model_, this, this.controller_)
+    private observer: ObserverInterface = new Observer(this.model_, this, this.controller_)
+    
+    private root_: boolean
+    private parent_: ViewInterface
+    private children_: ViewInterface[] = []
 
     context: HTMLElement
     substance: boolean
-    root_: boolean
-    parent_: ViewInterface
-    children_: ViewInterface[] = []
     setting: SettingInterface
     state(): State { return this.state_; }
     status: StatusInterface = {
@@ -42,7 +42,7 @@ module MODULE.VIEW {
       param: undefined
     }
 
-    initiate_($context: JQuery, setting: SettingInterface, parent?: ViewInterface): State {
+    private initiate_($context: JQuery, setting: SettingInterface, parent?: ViewInterface): boolean {
 
       // context build
       var root: Document = null,
@@ -57,21 +57,11 @@ module MODULE.VIEW {
         }
       });
 
-      // context verify
-      switch (true) {
-        case !root && 1 !== nodes.length:
-          return;
-
-        case !!root:
-        case 1 === nodes.length:
-          break;
-        default:
-          return;
-      }
       var context: HTMLElement = root ? <any>root : nodes[0];
 
-      // param verify
+      // context verify
       switch (false) {
+        case !!root || 1 === nodes.length:
         case context === <any>document || jQuery.contains(document.documentElement, context):
           return;
       }
@@ -91,21 +81,22 @@ module MODULE.VIEW {
       }
 
       this.observer.observe();
-      this.model_.views[setting.uid] = this;
+      this.model_.addView(this);
+
+      SEAL(this);
 
       // child instance
       this.root_ &&
       jQuery.each(nodes, (i, element) => {
         var view = new View(this.model_, this.controller_);
-        this.children_.push(<ViewInterface>view);
+        this.children_.push(view);
         view.open(jQuery(element), setting.clone(), this);
       });
 
-
-      return this.state_ = State.open;
+      return true;
     }
 
-    terminate_(): State {
+    private terminate_(): boolean {
       this.state_ = State.terminate;
 
       jQuery.each(this.children_, (i: number, child: ViewInterface) => child.close());
@@ -115,11 +106,11 @@ module MODULE.VIEW {
       var parent = this.parent_;
       this.parent_ = null;
 
-      delete this.model_.views[this.setting.uid];
+      this.model_.removeView(this.setting.uid);
 
       parent && parent.correct();
 
-      return this.state_ = State.close;
+      return true;
     }
 
     correct(): boolean {
@@ -160,11 +151,20 @@ module MODULE.VIEW {
 
     open($context: JQuery, setting: SettingInterface, parent?: ViewInterface): void {
       $context[NAME].close(setting.nss.event);
-      this.state_ = this.initiate_($context, setting, parent);
+      if (this.initiate_($context, setting, parent)) {
+        this.state_ = State.open;
+      } else {
+        this.close();
+      }
     }
 
     close(): void {
-      this.state_ = this.terminate_();
+      if (this.terminate_()) {
+        this.state_ = State.close;
+      } else {
+        this.state_ = State.close;
+        this.model_.removeView(this.setting.uid);
+      }
     }
 
     process(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void {

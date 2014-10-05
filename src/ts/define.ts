@@ -27,8 +27,6 @@ module MODULE {
    *   single instance(M)
    * - class App (application-logic)
    *   single instance(APP)
-   * - class Util
-   *   static (UTIL)
    * 
    * View
    * - class Main (mvc-interface)
@@ -60,7 +58,6 @@ module MODULE {
     constructor()
 
     // Property
-    views: { [index: string]: ViewInterface; }
 
     // Model
     state(): State
@@ -70,22 +67,11 @@ module MODULE {
     isDOM(object: Object): boolean
 
     // View
+    addView(view: ViewInterface): void
+    getView(uid: string): ViewInterface
+    removeView(uid: string): void
 
     // Controller
-  }
-  export declare class AppLayerInterface {
-    initialize(option: VTSetting, $context: JQuery): void
-    configure(option: VTSetting, $context: JQuery): SettingInterface
-    process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void
-  }
-  export declare class TaskInterface {
-    constructor(mode?: number, size?: number)
-    define(name: string, mode: number, size: number): void
-    reserve(task: () => void): void
-    reserve(name: string, task: () => void): void
-    digest(name: string, limit?: number): void
-    digest(limit?: number): void
-    clear(name?: string): void
   }
   // View
   export declare class ViewInterface {
@@ -106,25 +92,12 @@ module MODULE {
     dispatch(event: JQueryEventObject, params: any[]): void
     dispatch(eventType: string, params: any[]): void
   }
-  export declare class ViewObserverInterface {
-    observe(): void
-    release(): void
-    reserve(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number, immediate: boolean): void
-    digest(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
-  }
-  export declare class ViewTaskInterface extends TaskInterface {
-    reserve(task: () => void): void
-    reserve(name: string, task: () => void): void
-    reserve(name: string, task: (customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number) => void,
-                          observer: ViewObserverInterface,
-                          customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
-  }
   // Controller
   export declare class ControllerInterface {
     constructor()
   }
 
-  // Enum
+  // State
   export enum State { blank = -2, initiate, open, pause, lock, seal, error, crash, terminate, close }
 
   // Context
@@ -188,13 +161,41 @@ module MODULE {
     visibleBottom: number
     recursion: boolean
   }
-
-  export var GEN_UUID: () => string = function () {
+  
+  // Function
+  export function GEN_UUID(): string {
     // version 4
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, gen);
+    function gen(c) {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16).toUpperCase();
-    });
+    }
+  }
+
+  export function FREEZE<T>(object: T, deep?: boolean): T {
+    if (!Object.freeze || object === object['window'] || 'ownerDocument' in object) { return object; }
+    !Object.isFrozen(object) && Object.freeze(object);
+    if (!deep) { return object; }
+    for (var i in object) {
+      var prop = object[i];
+      if (~'object,function'.indexOf(typeof prop) && prop) {
+        FREEZE(prop, deep);
+      }
+    }
+    return object;
+  }
+
+  export function SEAL<T>(object: T, deep?: boolean): T {
+    if (!Object.seal || object === object['window'] || 'ownerDocument' in object) { return object; }
+    !Object.isSealed(object) && Object.seal(object);
+    if (!deep) { return object; }
+    for (var i in object) {
+      var prop = object[i];
+      if (~'object,function'.indexOf(typeof prop) && prop) {
+        SEAL(prop, deep);
+      }
+    }
+    return object;
   }
 
   //export function setTimeout(callback: (...args: any[]) => any, delay: number, ...args: any[]): number {
@@ -202,4 +203,21 @@ module MODULE {
   //                       : window.setTimeout(callback instanceof Function ? () => callback.apply(window, args) : callback, delay);
   //};
 
+}
+
+module MODULE.MODEL {
+  export declare class AppLayerInterface {
+    initialize(option: VTSetting, $context: JQuery): void
+    configure(option: VTSetting, $context: JQuery): SettingInterface
+    process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void
+  }
+}
+
+module MODULE.VIEW {
+  export declare class ObserverInterface {
+    observe(): void
+    release(): void
+    reserve(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number, immediate: boolean): void
+    digest(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
+  }
 }

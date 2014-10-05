@@ -5,13 +5,16 @@
 
 module MODULE.CONTROLLER {
   var M: ModelInterface
+  var C: ControllerInterface
   var S: Functions
 
   export class Functions {
 
-    constructor(model: ModelInterface) {
+    constructor(model: ModelInterface, controller: ControllerInterface) {
       M = model;
+      C = controller;
       S = this;
+      SEAL(this);
     }
 
     enable(bubbling?: boolean): JQueryVTStatic

@@ -1,19 +1,28 @@
 /// <reference path="../define.ts"/>
+/// <reference path="../library/task.ts"/>
 
 /* VIEW */
 
 module MODULE.VIEW {
-
+  
+  export declare class ObserverTaskInterface extends LIBRARY.TaskInterface {
+    reserve(task: () => void): void
+    reserve(name: string, task: () => void): void
+    reserve(name: string, task: (customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number) => void,
+                          observer: ObserverInterface,
+                          customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
+  }
   export class Observer {
 
-    constructor(public model_: ModelInterface, public view_: ViewInterface, public controller_: ControllerInterface) {
+    constructor(private model_: ModelInterface, private view_: ViewInterface, private controller_: ControllerInterface) {
+      SEAL(this);
     }
 
-    task: ViewTaskInterface = new MODEL.Task(-1, 1)
+    private task_: ObserverTaskInterface = new LIBRARY.Task(-1, 1)
 
-    queue_ = []
+    private queue_ = []
 
-    clean_(): void {
+    private clean_(): void {
       var context = this.view_.context,
           setting = this.view_.setting,
           key = setting.nss.data_count;
@@ -37,16 +46,16 @@ module MODULE.VIEW {
 
       jQuery.data(context, setting.nss.data, setting.uid);
       
-      $context.bind(setting.nss.event, view, this.handlers_.customHandler);
+      $context.bind(setting.nss.event, setting.uid, this.handlers_.customHandler);
 
       if (document === <any>context) {
         jQuery(window)
-        .bind(setting.nss.scroll, view, this.handlers_.nativeHandler)
-        .bind(setting.nss.resize, view, this.handlers_.nativeHandler);
+        .bind(setting.nss.scroll, setting.uid, this.handlers_.nativeHandler)
+        .bind(setting.nss.resize, setting.uid, this.handlers_.nativeHandler);
       } else {
         $context
-        .bind(setting.nss.scroll, view, this.handlers_.nativeHandler)
-        .bind(setting.nss.resize, view, this.handlers_.nativeHandler);
+        .bind(setting.nss.scroll, setting.uid, this.handlers_.nativeHandler)
+        .bind(setting.nss.resize, setting.uid, this.handlers_.nativeHandler);
       }
     }
 
@@ -71,12 +80,14 @@ module MODULE.VIEW {
       }
     }
 
-    handlers_ = {
+    private handlers_ = {
       customHandler: (customEvent: JQueryEventObject, nativeEvent?: JQueryEventObject, bubbling?: boolean, callback?: (view: ViewInterface) => any) => {
+        var event: JQueryEventObject = customEvent;
+        if (this.view_ !== this.model_.getView(event.data)) { return void this.view_.close(); }
+
         nativeEvent = nativeEvent instanceof jQuery.Event ? nativeEvent : undefined;
-        var view = this.view_,
+        var view = this.model_.getView(event.data),
             setting = view.setting,
-            event: JQueryEventObject = customEvent,
             container: EventTarget = window === customEvent.currentTarget ? document : customEvent.currentTarget,
             activator: EventTarget = !nativeEvent ? container : window === nativeEvent.currentTarget ? document : nativeEvent.currentTarget,
             layer: number = document === activator || window === activator ? 0 : 1,
@@ -93,13 +104,11 @@ module MODULE.VIEW {
           this.reserve(customEvent, nativeEvent, container, activator, layer, manual);
         }
       },
-      //alias: (event: JQueryEventObject) => {
-      //  var view = this.view_;
-      //  State.open === view.state() && jQuery(event.target).trigger(view.setting.nss.event, [].slice.call(arguments, 1));
-      //},
       nativeHandler: (event: JQueryEventObject) => {
+        if (this.view_ !== this.model_.getView(event.data)) { return void this.view_.close(); }
+
         if (document !== event.target && event.target !== event.currentTarget || event.isDefaultPrevented()) { return; }
-        var view = this.view_;
+        var view = this.model_.getView(event.data);
         State.open === view.state() && jQuery(window === event.currentTarget ? document : event.currentTarget).trigger(view.setting.nss.event, [event]);
       }
     }
@@ -112,13 +121,13 @@ module MODULE.VIEW {
       var id: number, queue: number[] = this.queue_;
       while (id = queue.shift()) { clearTimeout(id); }
 
-      this.task.reserve(!layer ? 'root' : 'node', this.digest, this, customEvent, nativeEvent, container, activator, layer);
+      this.task_.reserve(!layer ? 'root' : 'node', this.digest, this, customEvent, nativeEvent, container, activator, layer);
 
       if (State.open !== this.view_.state() || State.open !== this.model_.state() || !immediate && setting.delay) {
-        queue.push(setTimeout(() => void this.task.digest('node') || void this.task.digest(), setting.delay));
+        queue.push(setTimeout(() => void this.task_.digest('node') || void this.task_.digest(), setting.delay));
       } else {
-        this.task.digest('node');
-        this.task.digest();
+        this.task_.digest('node');
+        this.task_.digest();
       }
     }
 

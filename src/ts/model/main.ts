@@ -13,15 +13,16 @@ module MODULE.MODEL {
     constructor() {
       super(State.initiate);
       this.state_ = State.open;
+      SEAL(this);
     }
 
-    controller_: ControllerInterface = new Controller(this)
-    views: { [index: string]: ViewInterface; } = {}
-    app_: AppLayerInterface = new MODEL.App(this, this.controller_)
+    private controller_: ControllerInterface = new Controller(this)
+    private views_: { [index: string]: ViewInterface; } = {}
+    private app_: AppLayerInterface = new MODEL.App(this, this.controller_)
     state_: State = State.blank
     state(): State { return this.state_; }
 
-    alias_: string = 'vt'
+    private alias_: string = 'vt'
     alias(name?: string): string {
       if (!arguments.length) { return this.alias_; }
 
@@ -54,6 +55,7 @@ module MODULE.MODEL {
           $context = $context instanceof NAMESPACE ? $context : jQuery(document)[NAME]();
           if (!option.trigger || !option.handler) { return $context; }
           if (0 === option.step && option.repeat) { return $context; }
+          option = FREEZE(option, true);
           break;
 
         default:
@@ -66,26 +68,27 @@ module MODULE.MODEL {
     }
 
     lookup($context: ExtensionInterface, key: string, bubbling: boolean, callback: (view: ViewInterface) => void): void {
-      if ('string' !== typeof key) {
+      if (typeof key !== 'string' && bubbling === undefined) {
         bubbling = !!key;
         key = '';
+      } else {
+        key = key || '';
       }
-      key = key && key.split('.').sort().join('.') || '';
+      key = jQuery.map(key.split(/\s+/), (ns) => ns.split('.').sort().join('.')).sort().join(' ');
+      var regs = jQuery.map(key.split(/\s+/), (key) => new RegExp('(?:^|[.\s])' + key + '(?:$|[.\s])'));
       var filter = (view: ViewInterface) => {
-        var context = <any>view.context;
         switch (false) {
-          case !key || key === view.setting.ns:
-          case this.isDOM(context):
-          case window === context || document === context || jQuery.contains(document.documentElement, context):
+          case !key || !!jQuery.grep(regs, (reg) => reg.test(view.setting.ns)).length:
+          case view.correct():
             break;
           default:
-            view.correct() && callback(view);
+            callback(view);
         }
       }
       if ($context instanceof NAMESPACE) {
         $context.trigger(NAME, [null, bubbling, filter]);
       } else {
-        jQuery.each(this.views, (i, view) => filter(view));
+        jQuery.each(this.views_, (i, view) => filter(view));
       }
     }
     
@@ -105,17 +108,23 @@ module MODULE.MODEL {
     }
 
     isDOM(object: Object): boolean {
-      switch (true) {
-        case 'object' !== typeof object:
-        case null === object:
-          return false;
-        case window === object:
-        case document === object:
-        case 'ownerDocument' in object:
-          return true;
-        default:
-          return false;
-      }
+      if (!object || 'object' !== typeof object) { return false; }
+      return object === object['window'] || 'ownerDocument' in object;
+    }
+
+    addView(view: ViewInterface): void {
+      this.removeView(view.setting.uid);
+      this.views_[view.setting.uid] = view;
+    }
+
+    getView(uid: string): ViewInterface {
+      return this.views_[uid];
+    }
+
+    removeView(uid: string): void {
+      var view = this.getView(uid);
+      view && State.terminate > view.state() && view.close();
+      delete this.views_[uid];
     }
 
   }

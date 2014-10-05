@@ -4,11 +4,12 @@
 
 /* MODEL */
 
-module MODULE.MODEL {
+module MODULE.MODEL.APP {
   
-  export class App implements AppLayerInterface {
+  export class Main implements AppLayerInterface {
 
-    constructor(public model_: ModelInterface, public controller_: ControllerInterface) {
+    constructor(private model_: ModelInterface, private controller_: ControllerInterface) {
+      SEAL(this);
     }
 
     initialize(option: VTSetting, $context: JQuery): void {
@@ -39,6 +40,7 @@ module MODULE.MODEL {
       var that = this;
 
       option = jQuery.extend(true, {}, (<SettingInterface>option).option || option);
+      FREEZE(option, true);
 
       var initial = <VTSetting>{
             ns: '',
@@ -58,15 +60,15 @@ module MODULE.MODEL {
           force = <SettingInterface>{
             gns: NAME,
             option: option,
-            clone: function (): SettingInterface { return jQuery.extend(true, {}, this, { uid: GEN_UUID() }); }
+            clone: function (): SettingInterface { return FREEZE(jQuery.extend(true, {}, this, { uid: GEN_UUID() }), true); }
           },
           compute = () => {
             setting.ns = setting.ns && '.' === setting.ns.charAt(0) ? setting.ns.slice(1) : setting.ns;
             setting.ns = setting.ns && setting.ns.split('.').sort().join('.') || '';
-            var nsArray: string[] = [NAME].concat(setting.ns && String(setting.ns).split('.') || []);
+            var nsArray: string[] = [NAME].concat(setting.ns && setting.ns.split('.') || []);
             setting.ahead = setting.ahead instanceof Array ? setting.ahead.concat(setting.ahead).slice(0, 2) : [setting.ahead, setting.ahead]
-            setting.ahead[0] = Math.abs(setting.ahead[0]) < 1 ? '*' + Number(setting.ahead[0] * 10) : Number(setting.ahead[0]) + '';
-            setting.ahead[1] = Math.abs(setting.ahead[1]) < 1 ? '*' + Number(setting.ahead[1] * 10) : Number(setting.ahead[1]) + '';
+            setting.ahead[0] = Math.abs(setting.ahead[0]) < 1 ? '*' + (setting.ahead[0] * 10) : '' + setting.ahead[0];
+            setting.ahead[1] = Math.abs(setting.ahead[1]) < 1 ? '*' + (setting.ahead[1] * 10) : '' + setting.ahead[1];
             setting.step = +!!setting.step;
             return <SettingInterface>{
               uid: GEN_UUID(),
@@ -87,7 +89,7 @@ module MODULE.MODEL {
       setting = jQuery.extend(true, initial, option);
       setting = jQuery.extend(true, setting, force);
       setting = jQuery.extend(true, setting, compute());
-      return setting;
+      return FREEZE(setting, true);
     }
 
     process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void {
@@ -254,4 +256,8 @@ module MODULE.MODEL {
 
   }
 
+}
+
+module MODULE.MODEL {
+  export var App = MODEL.APP.Main
 }
