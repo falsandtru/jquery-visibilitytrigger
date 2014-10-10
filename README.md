@@ -8,6 +8,7 @@
 
 [![Build Status](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js.svg?branch=master)](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js)
 [![Coverage Status](https://coveralls.io/repos/falsandtru/jquery.visibilitytrigger.js/badge.png?branch=master)](https://coveralls.io/r/falsandtru/jquery.visibilitytrigger.js?branch=master)
+[![Dependency Status](https://gemnasium.com/falsandtru/jquery.visibilitytrigger.js.svg)](https://gemnasium.com/falsandtru/jquery.visibilitytrigger.js)
 
 Run callback to detect an element to have been displayed by the scroll.
 
