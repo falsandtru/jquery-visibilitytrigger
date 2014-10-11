@@ -73,7 +73,7 @@ TypeScriptとMVCモデルを使用したフレームワーク｢*TypeScriptMVCTe
 
 <div class="col-md-4">
 ## License
-MIT Licenseで公開しています。商用非商用を問わず無償無許諾で使用・改変できます。すべてのコンテンツは無保証であり開発者は一切責任を負いません。著作権表示と本許諾表示は必要です。[>>more](https://github.com/falsandtru/jquery.visibilitytrigger.js/blob/master/LICENSE)
+MIT Licenseで公開しています。商用非商用を問わず無償無許諾で使用・改変できます。すべてのコンテンツは無保証であり開発者は一切責任を負いません。著作権表示と本許諾表示は必要です。[>>more](https://github.com/falsandtru/jquery-visibilitytrigger/blob/master/LICENSE)
 </div>
 
 </div>
