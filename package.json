@@ -1,14 +1,14 @@
 {
-  "name": "jquery.visibilitytrigger.js",
+  "name": "jquery-visibilitytrigger",
   "version": "1.0.3",
   "description": "",
   "repository": {
     "type": "git",
-    "url": "git://github.com/falsandtru/jquery.visibilitytrigger.js.git"
+    "url": "git://github.com/falsandtru/jquery-visibilitytrigger.git"
   },
-  "homepage": "https://github.com/falsandtru/jquery.visibilitytrigger.js/",
+  "homepage": "https://github.com/falsandtru/jquery-visibilitytrigger",
   "bugs": {
-    "url": "https://github.com/falsandtru/jquery.visibilitytrigger.js/issues"
+    "url": "https://github.com/falsandtru/jquery-visibilitytrigger/issues"
   },
   "devDependencies": {
     "chai": "^1.9.2",
