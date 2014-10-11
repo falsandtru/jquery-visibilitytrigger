@@ -2,7 +2,7 @@
  * 
  * jquery.visibilitytrigger.d.ts
  * 
- * @author falsandtru https://github.com/falsandtru/jquery.visibilitytrigger.js/
+ * @author falsandtru https://github.com/falsandtru/jquery-visibilitytrigger
  */
 
 /// <reference path="jquery.d.ts"/>

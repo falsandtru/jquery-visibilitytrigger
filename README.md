@@ -1,14 +1,14 @@
 # VisibilityTrigger
 
-**[Document](http://falsandtru.github.io/jquery.visibilitytrigger.js/)**
+**[Document](http://falsandtru.github.io/jquery-visibilitytrigger/)**
  | 
-**[js](https://github.com/falsandtru/jquery.visibilitytrigger.js/releases)**
+**[js](https://github.com/falsandtru/jquery-visibilitytrigger/releases)**
  | 
 **[d.ts](src/ts/.d/jquery.visibilitytrigger.d.ts)**
 
-[![Build Status](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js.svg?branch=master)](https://travis-ci.org/falsandtru/jquery.visibilitytrigger.js)
-[![Coverage Status](https://coveralls.io/repos/falsandtru/jquery.visibilitytrigger.js/badge.png?branch=master)](https://coveralls.io/r/falsandtru/jquery.visibilitytrigger.js?branch=master)
-[![Dependency Status](https://gemnasium.com/falsandtru/jquery.visibilitytrigger.js.svg)](https://gemnasium.com/falsandtru/jquery.visibilitytrigger.js)
+[![Build Status](https://travis-ci.org/falsandtru/jquery-visibilitytrigger.svg?branch=master)](https://travis-ci.org/falsandtru/jquery-visibilitytrigger)
+[![Coverage Status](https://coveralls.io/repos/falsandtru/jquery-visibilitytrigger/badge.png?branch=master)](https://coveralls.io/r/falsandtru/jquery-visibilitytrigger?branch=master)
+[![Dependency Status](https://gemnasium.com/falsandtru/jquery-visibilitytrigger.svg)](https://gemnasium.com/falsandtru/jquery-visibilitytrigger)
 
 Run callback to detect an element to have been displayed by the scroll.
 

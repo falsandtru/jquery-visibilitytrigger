@@ -5,8 +5,8 @@ node_js:
 
 env:
   global:
-    - secure: "JlzLHWXrxYI6hpxbI4X4mC5m7a0XcFeNQ/k2YS7o4P/vxaxEDpeX0cL9IBFGmMDKQFWSI3EB4h/ebhSyl8WK/rHxxDUzzxfA+zCNP+4Nb8XNrU3wMujidWdMpCUwDdTMykgUCpgHoiKEqi3Dr9K1kq3BYJgdqMk0sh0sFbcD2U0="
-    - GIT_REPO=jquery.visibilitytrigger.js
+    - secure: "Twxs/SZnM+JxHuZ8xtENBOb4BnchKn4p152r8YSPObipTfWwr2D+byA+KmCesyQLG8uXmlCP4dyOe4WNowP7NalE+ey57Xxk6XT43EYixCMEt5yEo6MHxoL+eXQDFaZjd/cvnizC7ujg2g34vvwN4sPoVKIG/2Ug/gzY4T/BR10="
+    - GIT_REPO=jquery-visibilitytrigger
     - GIT_COMMITTER_NAME=Travis-CI
     - GIT_COMMITTER_EMAIL=Travis-CI
     - GIT_AUTHOR_NAME=falsandtru
@@ -52,6 +52,6 @@ after_success:
 notifications:
   email:
     recipients:
-      - secure: "YFEPmZeA6ts1k6KU09EIxCtyV9ot3TM/S2+vielLpUXTrgFt2MnWptWyHWnl9Ge4QcyUTi6RiiR3DC8w7THm454DEXvEoQvwKSLgNZhADpTv7yJPJpqF/Ld9+zwKDIUB62RFNCj5urmAF/7hXYvVvyufTlIhY54KuHnyKV1jaQw="
+      - secure: "GeQilEMqBRwI5gXSN4Xw4ZEoPws23vHFs1rdmFAVZAAykQ+FzCalYFK/pJ0xNmYJOf/44X/bLU4bihLTrgd2vcH8JC8vd/3xbV3jgOJ+Cmz6o9wjInvW9gpSEBmTAAPoDaOkZ8cnEYwSATE2EKAlkZ4eJXdxfxNJW7YnCV9LSac="
     on_success: change # default: change
     on_failure: always # default: always
