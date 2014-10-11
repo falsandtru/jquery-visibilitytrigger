@@ -1,11 +1,11 @@
 /**
  * 
- * jquery.visibilitytrigger.js
+ * jquery-visibilitytrigger
  * 
- * @name jquery.visibilitytrigger.js
+ * @name jquery-visibilitytrigger
  * @version 1.0.3
  * ---
- * @author falsandtru https://github.com/falsandtru/jquery.visibilitytrigger.js/
+ * @author falsandtru https://github.com/falsandtru/jquery-visibilitytrigger
  * @copyright 2012, falsandtru
  * @license MIT
  * 
