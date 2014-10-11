@@ -9,7 +9,7 @@ gems:
   - jekyll-sitemap
 
 # Config
-baseurl: /jquery.visibilitytrigger.js/
+baseurl: /jquery-visibilitytrigger/
 permalink: /:categories/:year/:month/:day/:title 
 
 # Param
