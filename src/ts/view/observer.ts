@@ -27,6 +27,8 @@ module MODULE.VIEW {
           setting = this.view_.setting,
           key = setting.nss.data_count;
 
+      if (this.view_ !== this.model_.getView(setting.uid)) { return; }
+
       jQuery.removeData(context, setting.nss.data);
       
       this.view_.substance &&
@@ -67,16 +69,16 @@ module MODULE.VIEW {
 
       this.clean_();
 
-      $context.unbind(setting.nss.event);
+      $context.unbind(setting.nss.event, this.handlers_.customHandler);
 
       if (document === <any>context) {
         jQuery(window)
-        .unbind(setting.nss.scroll)
-        .unbind(setting.nss.resize);
+        .unbind(setting.nss.scroll, this.handlers_.nativeHandler)
+        .unbind(setting.nss.resize, this.handlers_.nativeHandler);
       } else {
         $context
-        .unbind(setting.nss.scroll)
-        .unbind(setting.nss.resize);
+        .unbind(setting.nss.scroll, this.handlers_.nativeHandler)
+        .unbind(setting.nss.resize, this.handlers_.nativeHandler);
       }
     }
 
