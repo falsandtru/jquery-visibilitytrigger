@@ -67,16 +67,16 @@ module MODULE.VIEW {
 
       this.clean_();
 
-      $context.unbind(setting.nss.event);
+      $context.unbind(setting.nss.event, this.handlers_.customHandler);
 
       if (document === <any>context) {
         jQuery(window)
-        .unbind(setting.nss.scroll)
-        .unbind(setting.nss.resize);
+        .unbind(setting.nss.scroll, this.handlers_.nativeHandler)
+        .unbind(setting.nss.resize, this.handlers_.nativeHandler);
       } else {
         $context
-        .unbind(setting.nss.scroll)
-        .unbind(setting.nss.resize);
+        .unbind(setting.nss.scroll, this.handlers_.nativeHandler)
+        .unbind(setting.nss.resize, this.handlers_.nativeHandler);
       }
     }
 
