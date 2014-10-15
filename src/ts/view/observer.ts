@@ -27,6 +27,8 @@ module MODULE.VIEW {
           setting = this.view_.setting,
           key = setting.nss.data_count;
 
+      if (this.view_ !== this.model_.getView(setting.uid)) { return; }
+
       jQuery.removeData(context, setting.nss.data);
       
       this.view_.substance &&
