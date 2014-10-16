@@ -27,8 +27,6 @@ module MODULE.VIEW {
           setting = this.view_.setting,
           key = setting.nss.data_count;
 
-      if (this.view_ !== this.model_.getView(setting.uid)) { return; }
-
       jQuery.removeData(context, setting.nss.data);
       
       this.view_.substance &&
@@ -44,7 +42,7 @@ module MODULE.VIEW {
           context = view.context,
           $context = <ExtensionInterface>jQuery(view.context);
 
-      this.clean_();
+      jQuery(context)[NAME]().close(setting.ns);
 
       jQuery.data(context, setting.nss.data, setting.uid);
       
@@ -67,8 +65,6 @@ module MODULE.VIEW {
           context = view.context,
           $context = <JQuery>jQuery(context);
 
-      this.clean_();
-
       $context.unbind(setting.nss.event, this.handlers_.customHandler);
 
       if (document === <any>context) {
@@ -80,6 +76,8 @@ module MODULE.VIEW {
         .unbind(setting.nss.scroll, this.handlers_.nativeHandler)
         .unbind(setting.nss.resize, this.handlers_.nativeHandler);
       }
+
+      this.clean_();
     }
 
     private handlers_ = {
