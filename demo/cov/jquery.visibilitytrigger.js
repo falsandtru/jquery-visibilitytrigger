@@ -3,7 +3,7 @@
  * jquery-visibilitytrigger
  * 
  * @name jquery-visibilitytrigger
- * @version 1.0.4
+ * @version 1.0.5
  * ---
  * @author falsandtru https://github.com/falsandtru/jquery-visibilitytrigger
  * @copyright 2012, falsandtru
@@ -367,10 +367,6 @@ var MODULE;
             Observer.prototype.clean_ = function () {
                 var context = this.view_.context, setting = this.view_.setting, key = setting.nss.data_count;
 
-                if (this.view_ !== this.model_.getView(setting.uid)) {
-                    return;
-                }
-
                 jQuery.removeData(context, setting.nss.data);
 
                 this.view_.substance && jQuery(context).find(setting.trigger).each(eachTrigger);
@@ -382,7 +378,7 @@ var MODULE;
             Observer.prototype.observe = function () {
                 var view = this.view_, setting = view.setting, context = view.context, $context = jQuery(view.context);
 
-                this.clean_();
+                jQuery(context)[MODULE.NAME]().close(setting.ns);
 
                 jQuery.data(context, setting.nss.data, setting.uid);
 
@@ -398,8 +394,6 @@ var MODULE;
             Observer.prototype.release = function () {
                 var view = this.view_, setting = view.setting, context = view.context, $context = jQuery(context);
 
-                this.clean_();
-
                 $context.unbind(setting.nss.event, this.handlers_.customHandler);
 
                 if (document === context) {
@@ -407,6 +401,8 @@ var MODULE;
                 } else {
                     $context.unbind(setting.nss.scroll, this.handlers_.nativeHandler).unbind(setting.nss.resize, this.handlers_.nativeHandler);
                 }
+
+                this.clean_();
             };
 
             Observer.prototype.reserve = function (customEvent, nativeEvent, container, activator, layer, immediate) {
