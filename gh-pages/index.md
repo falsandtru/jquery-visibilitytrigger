@@ -13,7 +13,7 @@ class: style-top
 <div class="col-md-4">
 ## Demo
 
-* <a href="demo/simple/" target="_blank" title="シンプルな動作例">Simple</a>
+* <a href="demo/basic/" target="_blank" title="基本動作">Basic</a>
 * <a href="demo/skip/" target="_blank" title="スクロール途中の要素をスキップ">Skip</a>
 * <a href="demo/ahead/" target="_blank" title="画面端からの距離設定">Ahead</a>
 * <a href="demo/rush/" target="_blank" title="あらかじめ動作させる要素数設定">Rush</a>

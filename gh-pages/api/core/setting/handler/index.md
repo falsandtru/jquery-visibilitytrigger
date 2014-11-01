@@ -12,6 +12,13 @@ class: style-api style-api-detail
 ## handler: function (index: number, element: Element, param: Any, status: Status)
 監視対象要素が表示された場合に実行されます。
 
+<pre class="sh brush: js;">
+$.vt({
+  handler: function(index, element, param, status) {}
+  ...
+});
+</pre>
+
 以下のようにコンテキストと引数が設定されます。
 
 var|type|description
@@ -31,10 +38,3 @@ container|document/element|監視対象要素の直近のスクロール領域�
 activator|document/element|実行元のスクロール領域を持つ要素
 count|number|コールバックの実行回数
 direction|number|スクロール方向(1/-1)
-
-<pre class="sh brush: js;">
-$.vt({
-  handler: function(index, element, param, status) {}
-  ...
-});
-</pre>

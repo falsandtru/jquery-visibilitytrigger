@@ -43,7 +43,7 @@ $.visibilitytrigger();
 // $.vt === $.visibilitytrigger
 </pre>
 
-空文字: 既定のエイリアスの作成をキャンセル
+空文字: 既定のエイリアスを作成しない
 
 <pre class="sh brush: js;">
 $.visibilitytrigger('');
@@ -62,4 +62,4 @@ $.visibilitytrigger('alias');
 `$(DOM).visibilitytrigger()`または`.add(DOM).visibilitytrigger()`のショートカットです。コンテキストに引数のオブジェクトを追加します。
 
 ## $.visibilitytrigger(): this
-コンテキストにメソッドを追加して返します。
+コンテキストにメソッドを追加して返します。初回実行時であれば既定のエイリアスを追加します。
