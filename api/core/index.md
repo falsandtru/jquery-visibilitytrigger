@@ -21,10 +21,10 @@ VT(VisibilityTrigger)を設定します。
 要素が表示された際に実行する関数を設定します。
 
 ### [param:](api/core/setting/param/)
-`callback`パラメータの実行時に渡す引数を設定します。
+`handler`パラメータの実行時に渡す引数を設定します。
 
 ### [chain:](api/core/setting/chain/)
-`callback`パラメータの戻り値を次のパラメータとして使用するかを設定します。
+`handler`パラメータの戻り値を次のパラメータとして使用するかを設定します。
 
 ### [rush:](api/core/setting/rush/)
 イベント初回発生時に表示状態にかかわらずにコールバックを実行する要素数を設定します。
