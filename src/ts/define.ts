@@ -4,11 +4,13 @@
 interface JQuery {
   bind(eventType: string, handler: (eventObject?: JQueryEventObject, ...extraParameters: any[]) => any): JQuery
 }
-module MODULE {
 
+module MODULE.DEF {
   export var NAME: string = 'visibilitytrigger'
   export var NAMESPACE: any = jQuery
+}
 
+module MODULE {
   /*
    * 仕様
    * -----
@@ -24,21 +26,17 @@ module MODULE {
    * 
    * Model:
    * - class Main (mvc-interface)
-   *   single instance(M)
+   *   - singleton
    * - class App (application-logic)
-   *   single instance(APP)
+   *   - singleton
    * 
    * View
    * - class Main (mvc-interface)
-   *   multi instance
    * 
    * Controller
    * - class Main (mvc-interface)
-   *   single instance(C)
+   *   - singleton
    * - class Function
-   *   single instance
-   * - class Method
-   *   single instance
    * 
    * -----
    * 
@@ -94,11 +92,11 @@ module MODULE {
   }
   // Controller
   export declare class ControllerInterface {
-    constructor()
+    constructor(model: ModelInterface)
   }
 
   // State
-  export enum State { blank = -2, initiate, open, pause, lock, seal, error, crash, terminate, close }
+  export enum State { blank, initiate, open, pause, lock, seal, error, crash, terminate, close }
 
   // Context
   export interface ExtensionInterface extends JQueryVT { }
@@ -162,8 +160,43 @@ module MODULE {
     recursion: boolean
   }
   
-  // Function
-  export function GEN_UUID(): string {
+  //export function setTimeout(callback: (...args: any[]) => any, delay: number, ...args: any[]): number {
+  //  return !document.all ? window.setTimeout.apply(window, arguments)
+  //                       : window.setTimeout(callback instanceof Function ? () => callback.apply(window, args) : callback, delay);
+  //};
+}
+
+module MODULE.MODEL {
+  export declare class AppLayerInterface {
+    initialize(option: VTSetting, $context: JQuery): void
+    configure(option: VTSetting, $context: JQuery): SettingInterface
+    process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void
+  }
+}
+
+module MODULE.VIEW {
+  export declare class ObserverInterface {
+    observe(): void
+    release(): void
+    reserve(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number, immediate: boolean): void
+    digest(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
+  }
+}
+
+module MODULE {
+  // Macro
+  export function MIXIN(baseClass: Function, mixClasses: Function[]): void {
+    var baseClassPrototype = baseClass.prototype;
+    for (var iMixClasses = mixClasses.length; iMixClasses--;) {
+      var mixClassPrototype = mixClasses[iMixClasses].prototype;
+      for (var iProperty in mixClassPrototype) {
+        if ('constructor' === iProperty || !mixClassPrototype.hasOwnProperty(iProperty)) { continue; }
+        baseClassPrototype[iProperty] = mixClassPrototype[iProperty];
+      }
+    }
+  }
+
+  export function UUID(): string {
     // version 4
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, gen);
     function gen(c) {
@@ -196,28 +229,5 @@ module MODULE {
       }
     }
     return object;
-  }
-
-  //export function setTimeout(callback: (...args: any[]) => any, delay: number, ...args: any[]): number {
-  //  return !document.all ? window.setTimeout.apply(window, arguments)
-  //                       : window.setTimeout(callback instanceof Function ? () => callback.apply(window, args) : callback, delay);
-  //};
-
-}
-
-module MODULE.MODEL {
-  export declare class AppLayerInterface {
-    initialize(option: VTSetting, $context: JQuery): void
-    configure(option: VTSetting, $context: JQuery): SettingInterface
-    process(view: ViewInterface, customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, cache: CacheInterface): void
-  }
-}
-
-module MODULE.VIEW {
-  export declare class ObserverInterface {
-    observe(): void
-    release(): void
-    reserve(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number, immediate: boolean): void
-    digest(customEvent: JQueryEventObject, nativeEvent: JQueryEventObject, container: EventTarget, activator: EventTarget, layer: number): void
   }
 }

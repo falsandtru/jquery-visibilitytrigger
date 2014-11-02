@@ -42,7 +42,7 @@ module MODULE.VIEW {
           context = view.context,
           $context = <ExtensionInterface>jQuery(view.context);
 
-      jQuery(context)[NAME]().close(setting.ns);
+      jQuery(context)[DEF.NAME]().close(setting.ns);
 
       jQuery.data(context, setting.nss.data, setting.uid);
       
@@ -100,7 +100,7 @@ module MODULE.VIEW {
         if (!view.substance || callback) {
           view.dispatch(setting.nss.event, [nativeEvent, false].concat(callback || []));
           callback && callback(view);
-        } else if (event.target === event.currentTarget) {
+        } else if (event.target === event.currentTarget && view.state() === State.open) {
           this.reserve(customEvent, nativeEvent, container, activator, layer, manual);
         }
       },

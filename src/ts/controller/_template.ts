@@ -11,9 +11,6 @@ module MODULE.CONTROLLER {
 
     constructor(model: ModelInterface, state: State) {
       this.state_ = state;
-      this.FUNCTIONS = new Functions(model, <any>this);
-      this.METHODS = new Methods(model, <any>this);
-      this.REGISTER(model);
     }
 
     /**
@@ -22,12 +19,12 @@ module MODULE.CONTROLLER {
      * @property UUID
      * @type String
      */
-    UUID: string = GEN_UUID()
+    UUID: string = UUID()
     
     /**
      * Controllerの遷移状態を持つ
      * 
-     * @prperty state_
+     * @property state_
      * @type {State}
      */
     state_: State = State.blank
@@ -35,7 +32,7 @@ module MODULE.CONTROLLER {
     /**
      * Controllerの関数オブジェクト
      * 
-     * @prperty FUNCTIONS
+     * @property FUNCTIONS
      * @type {Functions}
      */
     FUNCTIONS: Functions
@@ -43,7 +40,7 @@ module MODULE.CONTROLLER {
     /**
      * Controllerのメソッドオブジェクト
      * 
-     * @prperty METHODS
+     * @property METHODS
      * @type {Methods}
      */
     METHODS: Methods
@@ -51,10 +48,10 @@ module MODULE.CONTROLLER {
     /**
      * 拡張モジュール本体。
      * 
-     * @prperty EXTENSION
-     * @type {Function}
+     * @property EXTENSION
+     * @type {ExtensionStaticInterface}
      */
-    EXTENSION: Function
+    EXTENSION: ExtensionStaticInterface
 
     /**
      * 与えられたコンテクストに拡張機能を設定する。
@@ -66,7 +63,7 @@ module MODULE.CONTROLLER {
     EXTEND(context: ExtensionInterface): ExtensionInterface
     EXTEND(context: ExtensionStaticInterface): ExtensionStaticInterface
     EXTEND(context: any): any {
-      if (context instanceof NAMESPACE) {
+      if (context instanceof DEF.NAMESPACE) {
         if (context instanceof jQuery) {
           // コンテクストへの変更をend()で戻せるようadd()
           context = context.add();
@@ -96,20 +93,20 @@ module MODULE.CONTROLLER {
      */
     REGISTER(model): void {
       var S = this;
-      this.EXTENSION = this.EXTENSION || function (...args: any[]) {
+      this.EXTENSION = this.EXTENSION || <ExtensionStaticInterface>function (...args: any[]) {
         var context = S.EXTEND(this);
         args = [context].concat(args);
         args = S.EXEC.apply(S, args);
         return args instanceof Array ? model.MAIN.apply(model, args) : args;
       };
-      this.EXTEND(<ExtensionStaticInterface>this.EXTENSION);
+      this.EXTEND(this.EXTENSION);
 
       // プラグインに関数を設定してネームスペースに登録
-      window[NAMESPACE] = window[NAMESPACE] || {};
-      if (NAMESPACE.prototype) {
-        NAMESPACE[NAME] = NAMESPACE.prototype[NAME] = this.EXTENSION;
+      window[DEF.NAMESPACE] = window[DEF.NAMESPACE] || {};
+      if (DEF.NAMESPACE.prototype) {
+        DEF.NAMESPACE[DEF.NAME] = DEF.NAMESPACE.prototype[DEF.NAME] = this.EXTENSION;
       } else {
-        NAMESPACE[NAME] = this.EXTENSION;
+        DEF.NAMESPACE[DEF.NAME] = this.EXTENSION;
       }
     }
 
@@ -180,7 +177,7 @@ module MODULE.CONTROLLER {
     /**
      * 拡張のプロパティを指定する
      * 
-     * @prperty PROPERTIES
+     * @property PROPERTIES
      * @type {String}
      */
     PROPERTIES: string[] = []

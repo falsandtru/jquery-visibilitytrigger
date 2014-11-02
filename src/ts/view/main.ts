@@ -150,7 +150,7 @@ module MODULE.VIEW {
     }
 
     open($context: JQuery, setting: SettingInterface, parent?: ViewInterface): void {
-      $context[NAME].close(setting.nss.event);
+      $context[DEF.NAME].close(setting.nss.event);
       if (this.initiate_($context, setting, parent)) {
         this.state_ = State.open;
       } else {
