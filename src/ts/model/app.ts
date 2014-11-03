@@ -30,9 +30,9 @@ module MODULE.MODEL.APP {
       });
 
       if (setting.global || ~jQuery.inArray(document, $context.get()) || ~jQuery.inArray(window, $context.get())) {
-        new View(<ModelInterface>this.model_, this.controller_).open($context, setting);
+        this.controller_.view($context, setting);
       } else {
-        $context.each((i) => new View(<ModelInterface>this.model_, this.controller_).open($context.eq(i), setting));
+        $context.each((i) => this.controller_.view($context.eq(i), setting));
       }
     }
 

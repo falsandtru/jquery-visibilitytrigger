@@ -93,6 +93,7 @@ module MODULE {
   // Controller
   export declare class ControllerInterface {
     constructor(model: ModelInterface)
+    view(context: JQuery, setting: SettingInterface): ViewInterface
   }
 
   // State

@@ -47,6 +47,12 @@ module MODULE.CONTROLLER {
       return [$context].concat(args);
     }
 
+    view(context: JQuery, setting: SettingInterface): ViewInterface {
+      var view = new View(this.model_, this);
+      view.open(context, setting);
+      return view;
+    }
+
   }
 
   export class Singleton {
