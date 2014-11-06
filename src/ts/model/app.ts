@@ -16,7 +16,7 @@ module MODULE.MODEL.APP {
       var setting = this.configure(<SettingInterface>option, $context);
 
       $context = $context.end()[DEF.NAME](setting.global ? document : null);
-      $context = $context.map((i, element): HTMLElement => {
+      $context = $context.map((i, element: any): HTMLElement => {
         switch (true) {
           case document === element:
             return element;
