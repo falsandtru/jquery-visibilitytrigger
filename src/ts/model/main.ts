@@ -16,7 +16,7 @@ module MODULE.MODEL {
       SEAL(this);
     }
 
-    private controller_: ControllerInterface = new Controller(this)
+    private controller_: ControllerInterface = new Controller(this).singleton()
     private views_: { [index: string]: ViewInterface; } = {}
     private app_: AppLayerInterface = new MODEL.App(this, this.controller_)
     state_: State = State.blank
@@ -27,12 +27,12 @@ module MODULE.MODEL {
       if (!arguments.length) { return this.alias_; }
 
       //name = 'string' === typeof name ? name : name || this.alias();
-      name = name || NAME;
+      name = name || DEF.NAME;
       this.alias_ = name;
 
-      if (name !== NAME && !jQuery[name] && !jQuery.fn[name]) {
-        jQuery[name] = jQuery[NAME];
-        jQuery.fn[name] = jQuery.fn[NAME];
+      if (name !== DEF.NAME && !jQuery[name] && !jQuery.fn[name]) {
+        jQuery[name] = jQuery[DEF.NAME];
+        jQuery.fn[name] = jQuery.fn[DEF.NAME];
       }
       return this.alias();
     }
@@ -48,11 +48,11 @@ module MODULE.MODEL {
           option = this.alias();
         case 'string':
           this.alias(option);
-          $context[this.alias()] = $context[NAME];
+          $context[this.alias()] = $context[DEF.NAME];
           return $context;
 
         case 'object':
-          $context = $context instanceof NAMESPACE ? $context : jQuery(document)[NAME]();
+          $context = $context instanceof DEF.NAMESPACE ? $context : jQuery(document)[DEF.NAME]();
           if (!option.trigger || !option.handler) { return $context; }
           if (0 === option.step && option.repeat) { return $context; }
           option = FREEZE(option, true);
@@ -85,8 +85,8 @@ module MODULE.MODEL {
             callback(view);
         }
       }
-      if ($context instanceof NAMESPACE) {
-        $context.trigger(NAME, [null, bubbling, filter]);
+      if ($context instanceof DEF.NAMESPACE) {
+        $context.trigger(DEF.NAME, [null, bubbling, filter]);
       } else {
         jQuery.each(this.views_, (i, view) => filter(view));
       }
@@ -128,9 +128,27 @@ module MODULE.MODEL {
     }
 
   }
-  
+
+  export class Singleton {
+
+    constructor() {
+      Singleton.instance_ = Singleton.instance_ || new Main();
+    }
+
+    private static instance_: Main
+
+    static singleton(): Main {
+      return Singleton.instance_;
+    }
+
+    singleton(): Main {
+      return Singleton.singleton();
+    }
+
+  }
+
 }
 
 module MODULE {
-  export var Model = MODEL.Main
+  export var Model = MODEL.Singleton
 }

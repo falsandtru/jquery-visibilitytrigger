@@ -9,8 +9,8 @@ module MODULE.LIBRARY {
     define(name: string, mode: number, size: number): void
     reserve(task: () => void): void
     reserve(name: string, task: () => void): void
-    digest(name: string, limit?: number): void
     digest(limit?: number): void
+    digest(name: string, limit?: number): void
     clear(name?: string): void
   }
   export class Task {
@@ -50,6 +50,8 @@ module MODULE.LIBRARY {
           break;
 
         case 'function':
+          task = label;
+          label = undefined;
           var config = this.config_,
               list = this.list_,
               args = <any[]>[].slice.call(arguments, 1);
@@ -58,6 +60,8 @@ module MODULE.LIBRARY {
         default:
           return;
       }
+
+      if ('function' !== typeof task) { return; }
 
       var method: string;
       if (config.mode > 0) {
@@ -68,11 +72,13 @@ module MODULE.LIBRARY {
       list[method]([task, args.shift(), args]);
     }
     
-    digest(label: string, limit?: number): void
     digest(limit?: number): void
+    digest(label: string, limit?: number): void
     digest(label?: any, limit?: number): void {
       switch (typeof label) {
         case 'string':
+          !this.option_[label] && this.define(label);
+
           limit = limit || 0;
           var config = this.option_[label],
               list = this.table_[label];
@@ -91,7 +97,7 @@ module MODULE.LIBRARY {
           return;
       }
 
-      if (list.length > config.size) {
+      if (list.length > config.size && config.size) {
         if (config.mode > 0) {
           list.splice(0, list.length - config.size);
         } else {
@@ -99,8 +105,8 @@ module MODULE.LIBRARY {
         }
       }
 
-      ++limit;
       var task: any[];
+      limit = limit || -1;
       while (task = limit-- && list.pop()) {
         task.shift().apply(task.shift() || window, task.shift() || []);
       }
@@ -116,6 +122,8 @@ module MODULE.LIBRARY {
     clear(label?: string): void {
       switch (typeof label) {
         case 'string':
+          !this.option_[label] && this.define(label);
+
           this.table_[label].splice(0, this.table_[label].length);
           break;
 

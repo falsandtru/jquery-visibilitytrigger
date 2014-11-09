@@ -13,18 +13,18 @@ module MODULE.MODEL {
     /**
      * 拡張モジュール名。ネームスペースにこの名前のプロパティでモジュールが追加される。
      * 
-     * @property NAME
+     * @property DEF.NAME
      * @type String
      */
-    NAME: string = NAME
+    NAME: string = DEF.NAME
     
     /**
      * ネームスペース。ここにモジュールが追加される。
      * 
-     * @property NAMESPACE
+     * @property DEF.NAMESPACE
      * @type Window|JQuery
      */
-    NAMESPACE: any = NAMESPACE
+    NAMESPACE: any = DEF.NAMESPACE
 
     /**
      * UUID
@@ -32,7 +32,7 @@ module MODULE.MODEL {
      * @property UUID
      * @type String
      */
-    UUID: string = GEN_UUID()
+    UUID: string = UUID()
     
     /**
      * Modelの遷移状態を持つ

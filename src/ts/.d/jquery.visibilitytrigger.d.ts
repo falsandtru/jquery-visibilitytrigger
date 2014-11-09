@@ -7,14 +7,14 @@
 
 /// <reference path="jquery.d.ts"/>
 
-interface JQueryStatic {
+interface JQuery {
     visibilitytrigger: JQueryVTStatic
     vt: JQueryVTStatic
 }
 
-interface JQuery {
-    visibilitytrigger: JQueryVT
-    vt: JQueryVT
+interface JQueryStatic {
+    visibilitytrigger: JQueryVTStatic
+    vt: JQueryVTStatic
 }
 
 interface VTSetting {
@@ -43,28 +43,34 @@ interface VTSetting {
     standby?: boolean
 }
 
-interface VisibilityTrigger<T> {
-    (): JQueryVT
-    (setting: VTSetting): JQueryVT
-    (alias: string): T
-    (window: Window): JQueryVT
-    (document: Document): JQueryVT
-    (element: HTMLElement): JQueryVT
-    (elements: HTMLElement[]): JQueryVT
-    (jQuery: JQuery): JQueryVT
-    open(setting: VTSetting): T
-    close(bubbling?: boolean): T
-    close(ns: string, bubbling?: boolean): T
-    enable(bubbling?: boolean): T
-    enable(ns: string, bubbling?: boolean): T
-    disable(bubbling?: boolean): T
-    disable(ns: string, bubbling?: boolean): T
-    vtrigger(bubbling?: boolean): T
-    vtrigger(ns: string, bubbling?: boolean): T
+interface JQueryVT extends VISIBILITYTRIGGER.Core<JQueryVT>, VISIBILITYTRIGGER.Method<JQueryVTStatic>, JQuery {
 }
 
-interface JQueryVTStatic extends VisibilityTrigger<JQueryVTStatic>, JQueryStatic {
+interface JQueryVTStatic extends VISIBILITYTRIGGER.Core<JQueryVTStatic>, VISIBILITYTRIGGER.Method<JQueryVTStatic> {
 }
 
-interface JQueryVT extends VisibilityTrigger<JQueryVT>, JQuery {
+declare module VISIBILITYTRIGGER {
+    
+    interface Core<T> {
+        (): T
+        (alias: string): T
+        (setting: VTSetting): JQueryVT
+        (window: Window): JQueryVT
+        (document: Document): JQueryVT
+        (element: HTMLElement): JQueryVT
+        (elements: HTMLElement[]): JQueryVT
+        (jQuery: JQuery): JQueryVT
+    }
+    
+    interface Method<T> {
+        open(setting: VTSetting): T
+        close(bubbling?: boolean): T
+        close(ns: string, bubbling?: boolean): T
+        enable(bubbling?: boolean): T
+        enable(ns: string, bubbling?: boolean): T
+        disable(bubbling?: boolean): T
+        disable(ns: string, bubbling?: boolean): T
+        vtrigger(bubbling?: boolean): T
+        vtrigger(ns: string, bubbling?: boolean): T
+    }
 }

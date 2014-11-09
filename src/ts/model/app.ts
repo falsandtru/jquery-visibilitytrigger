@@ -15,8 +15,8 @@ module MODULE.MODEL.APP {
     initialize(option: VTSetting, $context: JQuery): void {
       var setting = this.configure(<SettingInterface>option, $context);
 
-      $context = $context.end()[NAME](setting.global ? document : null);
-      $context = $context.map((i, element): HTMLElement => {
+      $context = $context.end()[DEF.NAME](setting.global ? document : null);
+      $context = $context.map((i, element: any): HTMLElement => {
         switch (true) {
           case document === element:
             return element;
@@ -30,9 +30,9 @@ module MODULE.MODEL.APP {
       });
 
       if (setting.global || ~jQuery.inArray(document, $context.get()) || ~jQuery.inArray(window, $context.get())) {
-        new View(<ModelInterface>this.model_, this.controller_).open($context, setting);
+        this.controller_.view($context, setting);
       } else {
-        $context.each((i) => new View(<ModelInterface>this.model_, this.controller_).open($context.eq(i), setting));
+        $context.each((i) => this.controller_.view($context.eq(i), setting));
       }
     }
 
@@ -58,20 +58,20 @@ module MODULE.MODEL.APP {
             cache: true
           },
           force = <SettingInterface>{
-            gns: NAME,
+            gns: DEF.NAME,
             option: option,
-            clone: function (): SettingInterface { return FREEZE(jQuery.extend(true, {}, this, { uid: GEN_UUID() }), true); }
+            clone: function (): SettingInterface { return FREEZE(jQuery.extend(true, {}, this, { uid: UUID() }), true); }
           },
           compute = () => {
             setting.ns = setting.ns && '.' === setting.ns.charAt(0) ? setting.ns.slice(1) : setting.ns;
             setting.ns = setting.ns && setting.ns.split('.').sort().join('.') || '';
-            var nsArray: string[] = [NAME].concat(setting.ns && setting.ns.split('.') || []);
+            var nsArray: string[] = [DEF.NAME].concat(setting.ns && setting.ns.split('.') || []);
             setting.ahead = setting.ahead instanceof Array ? setting.ahead.concat(setting.ahead).slice(0, 2) : [setting.ahead, setting.ahead]
             setting.ahead[0] = Math.abs(setting.ahead[0]) < 1 ? '*' + (setting.ahead[0] * 10) : '' + setting.ahead[0];
             setting.ahead[1] = Math.abs(setting.ahead[1]) < 1 ? '*' + (setting.ahead[1] * 10) : '' + setting.ahead[1];
             setting.step = +!!setting.step;
             return <SettingInterface>{
-              uid: GEN_UUID(),
+              uid: UUID(),
               nss: {
                 name: setting.ns || '',
                 array: nsArray,
