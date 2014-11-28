@@ -3,7 +3,7 @@
  * jquery-visibilitytrigger
  * 
  * @name jquery-visibilitytrigger
- * @version 1.0.6
+ * @version 1.0.7
  * ---
  * @author falsandtru https://github.com/falsandtru/jquery-visibilitytrigger
  * @copyright 2012, falsandtru
@@ -123,14 +123,14 @@ var MODULE;
                 /**
                  * 拡張モジュール名。ネームスペースにこの名前のプロパティでモジュールが追加される。
                  *
-                 * @property DEF.NAME
+                 * @property NAME
                  * @type String
                  */
                 this.NAME = MODULE.DEF.NAME;
                 /**
                  * ネームスペース。ここにモジュールが追加される。
                  *
-                 * @property DEF.NAMESPACE
+                 * @property NAMESPACE
                  * @type Window|JQuery
                  */
                 this.NAMESPACE = MODULE.DEF.NAMESPACE;
