@@ -21,6 +21,7 @@
 })(document.getElementsByTagName('base')[0])
 </script>
 <![endif]-->
+<script>document.getElementsByTagName('base')[0].href = document.getElementsByTagName('base')[0].href.replace('\w+:', location.protocol);</script>
 
 <!-- Bootstrap -->
 <link href="{{ site.baseurl }}assets/css/bootstrap.min.css" rel="stylesheet">
