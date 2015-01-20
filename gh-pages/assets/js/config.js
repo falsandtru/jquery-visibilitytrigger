@@ -75,8 +75,6 @@ new Function().apply.apply(function (accessor) {
       $.pjax({
         area: ['#container', 'body'],
         rewrite: function (document) {
-          $('base', document)[0].href = $('base', document)[0].href.replace('\w+:', location.protocol);
-
           $('#primary, #secondary', document).find('img').each(escapeImage);
           function escapeImage() {
             this.setAttribute('data-original', this.src);
