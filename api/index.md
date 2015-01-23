@@ -8,6 +8,6 @@ class: style-api
 
 # API
 
-## [Core](api/core/)
+## [Core]({{ site.basepath }}api/core/)
 
-## [Method](api/method/)
+## [Method]({{ site.basepath }}api/method/)
