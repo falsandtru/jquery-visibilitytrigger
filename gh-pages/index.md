@@ -13,23 +13,23 @@ class: style-top
 <div class="col-md-4">
 ## Demo
 
-* <a href="demo/basic/" target="_blank" title="基本動作">Basic</a>
-* <a href="demo/skip/" target="_blank" title="スクロール途中の要素をスキップ">Skip</a>
-* <a href="demo/ahead/" target="_blank" title="画面端からの距離設定">Ahead</a>
-* <a href="demo/rush/" target="_blank" title="あらかじめ動作させる要素数設定">Rush</a>
-* <a href="demo/repeat/" target="_blank" title="繰り返し実行">Repeat</a>
-* <a href="demo/nest/" target="_blank" title="個別のスクロール領域での動作">Nest</a>
+* <a href="{{ site.basepath }}demo/basic/" target="_blank" title="基本動作">Basic</a>
+* <a href="{{ site.basepath }}demo/skip/" target="_blank" title="スクロール途中の要素をスキップ">Skip</a>
+* <a href="{{ site.basepath }}demo/ahead/" target="_blank" title="画面端からの距離設定">Ahead</a>
+* <a href="{{ site.basepath }}demo/rush/" target="_blank" title="あらかじめ動作させる要素数設定">Rush</a>
+* <a href="{{ site.basepath }}demo/repeat/" target="_blank" title="繰り返し実行">Repeat</a>
+* <a href="{{ site.basepath }}demo/nest/" target="_blank" title="個別のスクロール領域での動作">Nest</a>
 
 </div>
 
 <div class="col-md-4">
 ## Installation
-画像読み込みやシンタックスハイライトでの使用例を紹介。[>>more](installation/)
+画像読み込みやシンタックスハイライトでの使用例を紹介。[>>more]({{ site.basepath }}installation/)
 </div>
 
 <div class="col-md-4">
 ## API
-実行条件となる画面端からの距離の設定、多重登録、DOMベース制御、ネームスペースベース制御などが可能です。[>>more](api/)
+実行条件となる画面端からの距離の設定、多重登録、DOMベース制御、ネームスペースベース制御などが可能です。[>>more]({{ site.basepath }}api/)
 </div>
 
 </div>
@@ -68,7 +68,7 @@ TypeScriptとMVCモデルを使用したフレームワーク｢*TypeScriptMVCTe
 <div class="row">
 <div class="col-md-4">
 ## ChangeLog
-[>>more](changelog/)
+[>>more]({{ site.basepath }}changelog/)
 </div>
 
 <div class="col-md-4">

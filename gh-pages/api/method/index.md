@@ -11,17 +11,17 @@ class: style-api style-api-list
 
 `ns`パラメータを設定した場合、ネームスペースによりさらに対象を絞り込みます。`bubbling`パラメータを設定した場合、コンテキストの上位のDOM要素を走査範囲に含めます。`bubbling`パラメータはスタティックオブジェクトでは使用できません。
 
-## [vtrigger()](api/method/vtrigger/) <small><span class="label label-info">chainable</span></small>
+## [vtrigger()]({{ site.basepath }}api/method/vtrigger/) <small><span class="label label-info">chainable</span></small>
 VTのイベント処理を実行します。
 
-## [enable()](api/method/enable/) <small><span class="label label-info">chainable</span></small>
+## [enable()]({{ site.basepath }}api/method/enable/) <small><span class="label label-info">chainable</span></small>
 VTを有効にします。
 
-## [disable()](api/method/disable/) <small><span class="label label-info">chainable</span></small>
+## [disable()]({{ site.basepath }}api/method/disable/) <small><span class="label label-info">chainable</span></small>
 VTを無効にします。
 
-## [open()](api/method/open/) <small><span class="label label-info">chainable</span></small>
+## [open()]({{ site.basepath }}api/method/open/) <small><span class="label label-info">chainable</span></small>
 VTを設定します。
 
-## [close()](api/method/close/) <small><span class="label label-info">chainable</span></small>
+## [close()]({{ site.basepath }}api/method/close/) <small><span class="label label-info">chainable</span></small>
 VTを削除します。
